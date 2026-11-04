@@ -22,13 +22,13 @@ Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dic
 |---|---|---|---|---|---|---|---|
 | 1 | [ASR-L04](#asr-l04) | Latencia | Con 5 masivos en proceso, el p99 de los pequeños sube ≤ 10 % | A | Crítica | Alto | `enunciado` · BCR |
 | 2 | [ASR-D01](#asr-d01) | Disponibilidad · enmascaramiento | Con un externo caído o lento, el acuse sigue en p99 ≤ 1 s | C1 | Crítica | Alto | `enunciado` |
-| 3 | [ASR-S01](#asr-s01) | Seguridad · prevención | Veredicto de firma, estampa y certificado en p99 ≤ 200 ms | A | Crítica | Alto | `enunciado` |
+| 3 | [ASR-S06](#asr-s06) | Seguridad · prevención | 0 archivos con resultado definitivo sin verificación criptográfica completa | A, C1 | Crítica | Alto | `enunciado` |
 | 4 | [ASR-M01](#asr-m01) | Modificabilidad · adaptativo | Una regla cambiaria nueva, sobre datos que ya llegan, entra a producción con ≤ 4 h-persona | Despliegue | Crítica | Alto | `enunciado` · BCR |
-| 5 | [ASR-E01](#asr-e01) | Escalabilidad | En pico, p99 de los pequeños ≤ 5 s durante los 45 min | B | Alta | Alto | `enunciado` |
-| 6 | [ASR-I01](#asr-i01) | Interoperabilidad | La versión nueva del contrato de un externo se integra con ≤ 4 h-persona | Desarrollo | Alta | Alto | `enunciado` · BCR |
-| 7 | [ASR-D03](#asr-d03) | Disponibilidad · prevención | Ante una falla interna en pico, 0 declaraciones acusadas perdidas o duplicadas | C2 sobre B | Alta | Alto | `enunciado` |
-| 8 | [ASR-L01](#asr-l01) | Latencia | Acuse en p99 ≤ 1 s desde el último byte | A | Alta | Alto | `enunciado` · BCR |
-| 9 | [ASR-S06](#asr-s06) | Seguridad · prevención | 0 archivos con resultado definitivo sin verificación criptográfica completa | A, C1 | Alta | Alto | `enunciado` |
+| 5 | [ASR-S01](#asr-s01) | Seguridad · prevención | Veredicto de firma, estampa y certificado en p99 ≤ 200 ms | A | Alta | Alto | `enunciado` |
+| 6 | [ASR-E01](#asr-e01) | Escalabilidad | En pico, p99 de los pequeños ≤ 5 s durante los 45 min | B | Alta | Alto | `enunciado` |
+| 7 | [ASR-I01](#asr-i01) | Interoperabilidad | La versión nueva del contrato de un externo se integra con ≤ 4 h-persona | Desarrollo | Alta | Alto | `enunciado` · BCR |
+| 8 | [ASR-D03](#asr-d03) | Disponibilidad · prevención | Ante una falla interna en pico, 0 declaraciones acusadas perdidas o duplicadas | C2 sobre B | Alta | Alto | `enunciado` |
+| 9 | [ASR-L01](#asr-l01) | Latencia | Acuse en p99 ≤ 1 s desde el último byte | A | Alta | Alto | `enunciado` · BCR |
 | 10 | [ASR-S03](#asr-s03) | Seguridad · prevención | 0 accesos efectivos a operaciones reportadas por otro remitente | A | Alta | Medio | `enunciado` |
 | 11 | [ASR-D04](#asr-d04) | Disponibilidad · prevención | Durante un cambio en producción, el acuse sigue en p99 ≤ 1 s | E | Alta | Medio | `enunciado` |
 | 12 | [ASR-L03](#asr-l03) | Latencia | Cada masivo termina en ≤ 5 min | A | Media | Alto | `enunciado` |
@@ -40,16 +40,17 @@ Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dic
 
 **Por qué este orden.** La prioridad es exposición al riesgo: qué tan probable es no cumplir, multiplicado por cuánto le duele a BCR. El impacto es la dificultad de diseño: cuánto pesa el requisito en la estructura.
 
-Los cuatro primeros son **críticos**: cada uno cubre una de las cuatro tensiones del problema (masivos contra pequeños, dependencia de externos, seguridad dentro del segundo del acuse y cambios de la Circular), y son los que guían la primera iteración del diseño. Con E01 e I01 forman los seis que BCR priorizó en su respuesta.
+Los cuatro primeros son **críticos**: cada uno cubre una de las cuatro tensiones del problema (masivos contra pequeños, dependencia de externos, archivos aceptados sin verificar y cambios de la Circular), y son los que guían la primera iteración del diseño. Los tres siguientes, S01, E01 e I01, completan los seis que BCR priorizó en su respuesta.
 
 - **L04 va primero** porque es el reto tal como lo escribe el enunciado: procesar pequeños y masivos «sin generar encolamientos ni bloqueos mutuos».
 - **D01** depende de cuatro sistemas y una ECD que BCR no controla; el informe ya calificó ese riesgo con probabilidad alta.
-- **S01** tiene el mayor riesgo de alcanzabilidad: verificar un archivo de 50 MB en 200 ms es lo primero que BCR cuestiona.
+- **S06** protege lo que el enunciado exige del 100 % de los archivos: que ninguno sin verificar termine aceptado. BCR aprobó dos casos en que el acuse sale antes de verificar, y en ellos el riesgo es real.
 - **M01** ataca el problema que el enunciado describe con «altos costos y largos tiempos de puesta en producción»: cada cambio de la Circular.
-- **E01** baja al quinto lugar porque el pico son 20 archivos por segundo, y el informe concluye que esa tasa no es la presión real.
+- **S01** encabeza los altos: mide cuánto tarda la verificación, y es el de mayor riesgo de alcanzabilidad, porque verificar un archivo de 50 MB en 200 ms es lo primero que BCR cuestiona. Lo que esa verificación protege ya lo mide S06.
+- **E01** va después porque el pico son 20 archivos por segundo, y el informe concluye que esa tasa no es la presión real.
 - **I01** comparte el problema de M01, y los contratos de los externos cambian con menos frecuencia que la Circular `[SUPUESTO → BCR]`.
 
-Del 7 al 11 son requisitos explícitos del enunciado que BCR no listó y que pesan en la estructura. Del 12 al 17 completan el alcance. BCR evalúa tres de ellos (M02, S04 e I02) con su propia inspección de código en la Fase 4 de la hoja de ruta.
+Del 8 al 11 son requisitos explícitos del enunciado que BCR no listó y que pesan en la estructura. Del 12 al 17 completan el alcance. BCR evalúa tres de ellos (M02, S04 e I02) con su propia inspección de código en la Fase 4 de la hoja de ruta.
 
 ## 2. Ambientes
 
@@ -178,28 +179,28 @@ flowchart LR
     A -- "Respuesta<br/>recibe y acusa como siempre; nada se rechaza" --> M["📏 Medida<br/>p99 ≤ 1 s, último byte → acuse"]
 ```
 
-### ASR-S01 — Veredicto criptográfico en 200 ms {#asr-s01}
+### ASR-S06 — Ningún archivo sin verificar llega a resultado definitivo {#asr-s06}
 
 | | |
 |---|---|
-| **Fuente** | Un remitente, legítimo o con un certificado vencido o revocado |
-| **Estímulo** | Envía un archivo firmado y con estampa cronológica, de hasta 50 MB; arribo estocástico |
-| **Artefacto** | La verificación de la firma digital, la estampa cronológica y la vigencia o revocación del certificado |
-| **Ambiente** | A: 400 pequeños por minuto y 5 masivos, sin fallas |
-| **Respuesta** | El sistema determina si la firma y la estampa son válidas y si el certificado está vigente y no revocado |
-| **Medida** | p99 ≤ 200 ms del último byte recibido al veredicto criptográfico, sobre el 100 % de los archivos, en A |
-| **Por qué es ASR** | Pasan por aquí todos los archivos. Hay que decidir cómo se conoce la revocación sin consultar a la ECD por cada archivo, y cómo se verifica uno de 50 MB sin cargarlo entero. Con 2 s cabría la consulta en línea; con 200 ms, no. Con la ECD caída y sin información de revocación vigente, BCR aceptó acusar con «verificación pendiente», y ahí la medida no aplica. Lo que el control protege lo mide [S06](#asr-s06) |
-| **Cómo se verifica** | Benchmark de la verificación con archivos firmados reales de 1 registro a 50 MB, con certificados vigentes, vencidos y revocados; p99 por tamaño |
-| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Seguridad: «el 100 % de los archivos… en menos de 200 milisegundos») |
+| **Fuente** | Un remitente cuyo archivo trae una firma, una estampa o un certificado inválido, o que no se pudo verificar |
+| **Estímulo** | El archivo llega y su verificación criptográfica falla o queda incompleta, por ejemplo porque la ECD está caída y la información de revocación venció |
+| **Artefacto** | El paso de un archivo acusado a resultado definitivo |
+| **Ambiente** | A: 400 pequeños por minuto y 5 masivos · C1: la ECD caída, con la carga de A |
+| **Respuesta** | El archivo puede acusarse, pero no recibe aceptación total ni parcial hasta que su verificación termine bien; si falla, se rechaza |
+| **Medida** | 0 archivos con aceptación total o parcial sin firma, estampa y revocación verificadas, contados en el registro de resultados, en A y en C1 |
+| **Por qué es ASR** | El enunciado pide verificar el 100 % de los archivos, y BCR aprobó dos casos en que el acuse sale antes de verificar: el masivo con acuse de custodia y la ECD caída con la información de revocación vencida. Hay que decidir dónde espera un archivo hasta que su verificación cierre, y cómo se garantiza que lo verificado sea lo mismo que se procesa. S01 mide cuánto tarda el control; esta medida, lo que el control protege |
+| **Cómo se verifica** | Enviar archivos con firma alterada, estampa inválida, certificado revocado y firma envuelta, y otros con la ECD caída y sin información de revocación vigente; se cuentan los que llegan a aceptación |
+| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Seguridad: «el 100 % de los archivos deben contar con validación criptográfica») |
 
 ```mermaid
 flowchart LR
-    F["🔹 Fuente<br/>Remitente legítimo o con certificado vencido o revocado"]
-    F -- "Estímulo<br/>envía un archivo firmado de hasta 50 MB" --> A
-    subgraph AMB["Ambiente A — 400 pequeños/min y 5 masivos"]
-        A["Artefacto<br/>Verificación de firma, estampa y certificado"]
+    F["🔹 Fuente<br/>Remitente con un archivo inválido o sin verificar"]
+    F -- "Estímulo<br/>la verificación falla o queda incompleta" --> A
+    subgraph AMB["Ambiente A, y C1 con la ECD caída"]
+        A["Artefacto<br/>Paso de acusado a resultado definitivo"]
     end
-    A -- "Respuesta<br/>determina si todo es válido y vigente" --> M["📏 Medida<br/>p99 ≤ 200 ms, último byte → veredicto"]
+    A -- "Respuesta<br/>no acepta hasta verificar; si falla, rechaza" --> M["📏 Medida<br/>0 aceptados sin verificación completa"]
 ```
 
 ### ASR-M01 — Una regla cambiaria nueva en 4 h-persona {#asr-m01}
@@ -226,6 +227,30 @@ flowchart LR
         A["Artefacto<br/>Aplicación de reglas cambiarias"]
     end
     A -- "Respuesta<br/>se implementa, se prueba y se pone en producción" --> M["📏 Medida<br/>≤ 4 h-persona"]
+```
+
+### ASR-S01 — Veredicto criptográfico en 200 ms {#asr-s01}
+
+| | |
+|---|---|
+| **Fuente** | Un remitente, legítimo o con un certificado vencido o revocado |
+| **Estímulo** | Envía un archivo firmado y con estampa cronológica, de hasta 50 MB; arribo estocástico |
+| **Artefacto** | La verificación de la firma digital, la estampa cronológica y la vigencia o revocación del certificado |
+| **Ambiente** | A: 400 pequeños por minuto y 5 masivos, sin fallas |
+| **Respuesta** | El sistema determina si la firma y la estampa son válidas y si el certificado está vigente y no revocado |
+| **Medida** | p99 ≤ 200 ms del último byte recibido al veredicto criptográfico, sobre el 100 % de los archivos, en A |
+| **Por qué es ASR** | Pasan por aquí todos los archivos. Hay que decidir cómo se conoce la revocación sin consultar a la ECD por cada archivo, y cómo se verifica uno de 50 MB sin cargarlo entero. Con 2 s cabría la consulta en línea; con 200 ms, no. Con la ECD caída y sin información de revocación vigente, BCR aceptó acusar con «verificación pendiente», y ahí la medida no aplica. Lo que el control protege lo mide [S06](#asr-s06) |
+| **Cómo se verifica** | Benchmark de la verificación con archivos firmados reales de 1 registro a 50 MB, con certificados vigentes, vencidos y revocados; p99 por tamaño |
+| **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` (Seguridad: «el 100 % de los archivos… en menos de 200 milisegundos») |
+
+```mermaid
+flowchart LR
+    F["🔹 Fuente<br/>Remitente legítimo o con certificado vencido o revocado"]
+    F -- "Estímulo<br/>envía un archivo firmado de hasta 50 MB" --> A
+    subgraph AMB["Ambiente A — 400 pequeños/min y 5 masivos"]
+        A["Artefacto<br/>Verificación de firma, estampa y certificado"]
+    end
+    A -- "Respuesta<br/>determina si todo es válido y vigente" --> M["📏 Medida<br/>p99 ≤ 200 ms, último byte → veredicto"]
 ```
 
 ### ASR-E01 — El pico de pequeños en 5 s {#asr-e01}
@@ -324,30 +349,6 @@ flowchart LR
         A["Artefacto<br/>Recepción y acuse de recibo"]
     end
     A -- "Respuesta<br/>registra el evento y entrega el acuse" --> M["📏 Medida<br/>p99 ≤ 1 s, último byte → acuse"]
-```
-
-### ASR-S06 — Ningún archivo sin verificar llega a resultado definitivo {#asr-s06}
-
-| | |
-|---|---|
-| **Fuente** | Un remitente cuyo archivo trae una firma, una estampa o un certificado inválido, o que no se pudo verificar |
-| **Estímulo** | El archivo llega y su verificación criptográfica falla o queda incompleta, por ejemplo porque la ECD está caída y la información de revocación venció |
-| **Artefacto** | El paso de un archivo acusado a resultado definitivo |
-| **Ambiente** | A: 400 pequeños por minuto y 5 masivos · C1: la ECD caída, con la carga de A |
-| **Respuesta** | El archivo puede acusarse, pero no recibe aceptación total ni parcial hasta que su verificación termine bien; si falla, se rechaza |
-| **Medida** | 0 archivos con aceptación total o parcial sin firma, estampa y revocación verificadas, contados en el registro de resultados, en A y en C1 |
-| **Por qué es ASR** | El enunciado pide verificar el 100 % de los archivos, y BCR aprobó dos casos en que el acuse sale antes de verificar: el masivo con acuse de custodia y la ECD caída con la información de revocación vencida. Hay que decidir dónde espera un archivo hasta que su verificación cierre, y cómo se garantiza que lo verificado sea lo mismo que se procesa. S01 mide cuánto tarda el control; esta medida, lo que el control protege |
-| **Cómo se verifica** | Enviar archivos con firma alterada, estampa inválida, certificado revocado y firma envuelta, y otros con la ECD caída y sin información de revocación vigente; se cuentan los que llegan a aceptación |
-| **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` (Seguridad: «el 100 % de los archivos deben contar con validación criptográfica») |
-
-```mermaid
-flowchart LR
-    F["🔹 Fuente<br/>Remitente con un archivo inválido o sin verificar"]
-    F -- "Estímulo<br/>la verificación falla o queda incompleta" --> A
-    subgraph AMB["Ambiente A, y C1 con la ECD caída"]
-        A["Artefacto<br/>Paso de acusado a resultado definitivo"]
-    end
-    A -- "Respuesta<br/>no acepta hasta verificar; si falla, rechaza" --> M["📏 Medida<br/>0 aceptados sin verificación completa"]
 ```
 
 ### ASR-S03 — Ningún remitente ve ni altera operaciones de otro {#asr-s03}
