@@ -26,11 +26,11 @@ Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dic
 | 4 | [ASR-M01](#asr-m01) | Modificabilidad · adaptativo | **Despliegue de una regla cambiaria nueva en ≤ 4 h-persona.** Cuando la Junta cambia la Circular con una regla sobre datos que ya llegan, implementarla, probarla y ponerla en producción cuesta ≤ 4 h-persona, sin detener el flujo | Despliegue | Crítica | Alto | `enunciado` · BCR |
 | 5 | [ASR-S01](#asr-s01) | Seguridad · prevención | **Validación criptográfica en ≤ 200 ms.** Desde que llega el último byte, el sistema sabe en p99 ≤ 200 ms si la firma, la estampa y el certificado del archivo son válidos y vigentes | A | Alta | Alto | `enunciado` |
 | 6 | [ASR-E01](#asr-e01) | Escalabilidad | **Carga pico de archivos pequeños con p99 ≤ 5 s.** En cierres de mercado y vencimientos, con 1 200 archivos pequeños por minuto durante 45 minutos y 5 archivos masivos en paralelo, cada archivo pequeño se resuelve en p99 ≤ 5 s | B | Alta | Alto | `enunciado` |
-| 7 | [ASR-I01](#asr-i01) | Interoperabilidad | **Nueva versión de la API de un sistema externo en ≤ 4 h-persona.** Cuando STM, ANTA, MAMC o RNIC publica una versión nueva de su API, integrarla en producción cuesta ≤ 4 h-persona, y sus datos se interpretan con el significado que él les da | Desarrollo | Alta | Alto | `enunciado` · BCR |
+| 7 | [ASR-I01](#asr-i01) | Interoperabilidad | **Nueva versión del contrato de API de un sistema externo en ≤ 4 h-persona.** Cuando STM, ANTA, MAMC o RNIC publica una versión nueva de su contrato de API, integrarla en producción cuesta ≤ 4 h-persona, y sus datos se interpretan con el significado que él les da | Desarrollo | Alta | Alto | `enunciado` · BCR |
 | 8 | [ASR-D03](#asr-d03) | Disponibilidad · prevención | **Cero pérdidas y cero duplicados de declaraciones con acuse emitido.** Si un nodo interno falla durante el pico, cada declaración con acuse emitido termina con exactamente un resultado definitivo: 0 perdidas y 0 dobles | C2 sobre B | Alta | Alto | `enunciado` |
 | 9 | [ASR-L01](#asr-l01) | Latencia | **Acuse de recibo en ≤ 1 s.** Desde que llega el último byte de un archivo de cualquier tamaño, el remitente recibe en p99 ≤ 1 s el acuse que confirma el inicio del procesamiento | A | Alta | Alto | `enunciado` · BCR |
 | 10 | [ASR-S03](#asr-s03) | Seguridad · prevención | **Aislamiento de datos entre remitentes.** Un remitente autenticado solo consulta, corrige o anula lo que reportó él: 0 accesos efectivos a operaciones de otro remitente | A | Alta | Medio | `enunciado` |
-| 11 | [ASR-D04](#asr-d04) | Disponibilidad · prevención | **Despliegue sin indisponibilidad (zero downtime).** Mientras se activa o se revierte una regla, un XSD o un contrato, los remitentes siguen recibiendo su acuse en p99 ≤ 1 s | E | Alta | Medio | `enunciado` |
+| 11 | [ASR-D04](#asr-d04) | Disponibilidad · prevención | **Despliegue sin indisponibilidad (zero downtime).** Mientras se activa o se revierte una regla, un XSD o un contrato de API, los remitentes siguen recibiendo su acuse en p99 ≤ 1 s | E | Alta | Medio | `enunciado` |
 | 12 | [ASR-L03](#asr-l03) | Latencia | **Procesamiento completo de un archivo masivo en ≤ 5 min.** Un archivo de 100 000 registros, procesado junto a otros 4 archivos masivos, llega a resultado definitivo en ≤ 5 min desde su último byte | A | Media | Alto | `enunciado` |
 | 13 | [ASR-D02](#asr-d02) | Disponibilidad · reparación | **Recuperación ante la falla de un nodo interno en ≤ 10 s.** Si un nodo interno se cae, las declaraciones que tenía en curso vuelven a avanzar solas en ≤ 10 s, sin que nadie intervenga | C2 | Media | Medio | `enunciado` |
 | 14 | [ASR-L05](#asr-l05) | Latencia | **Procesamiento completo de un archivo mediano con p99 ≤ 30 s.** Un archivo de 51 a 5 000 registros, que llega con 5 archivos masivos en proceso, llega a resultado definitivo en p99 ≤ 30 s | A | Media | Medio | `enunciado` |
@@ -48,7 +48,7 @@ Los cuatro primeros son **críticos**: cada uno cubre una de las cuatro tensione
 - **M01** ataca el problema que el enunciado describe con «altos costos y largos tiempos de puesta en producción»: cada cambio de la Circular.
 - **S01** encabeza los altos: mide cuánto tarda la verificación, y es el de mayor riesgo de alcanzabilidad, porque verificar un archivo de 50 MB en 200 ms es lo primero que BCR cuestiona. Lo que esa verificación protege ya lo mide S06.
 - **E01** va después porque el pico son 20 archivos por segundo, y el informe concluye que esa tasa no es la presión real.
-- **I01** comparte el problema de M01, y los contratos de los sistemas externos cambian con menos frecuencia que la Circular `[SUPUESTO → BCR]`.
+- **I01** comparte el problema de M01, y los contratos de API de los sistemas externos cambian con menos frecuencia que la Circular `[SUPUESTO → BCR]`.
 
 Del 8 al 11 son requisitos explícitos del enunciado que BCR no listó y que pesan en la estructura. Del 12 al 17 completan el alcance. BCR evalúa tres de ellos (M02, S04 e I02) con su propia inspección de código en la Fase 4 de la hoja de ruta.
 
@@ -62,7 +62,7 @@ Del 8 al 11 son requisitos explícitos del enunciado que BCR no listó y que pes
 | Medianos (51 a 5 000) | `[PREGUNTA → BCR]` ¿cuántos por minuto? | `[PREGUNTA → BCR]` | Como A | Como A | Como A |
 | Masivos (hasta 100 000, hasta 50 MB) | 5 concurrentes (BCR, tabla de ASR) | 5 concurrentes (BCR, ADR-02) | Como A | Como A | Como A |
 | Patrón de arribo | Estocástico `[SUPUESTO → BCR]` | Ráfaga en los cierres de mercado diario y los vencimientos regulatorios `[SUPUESTO → BCR]` | — | — | — |
-| Estado | Sin fallas; externos y ECD disponibles; sin pendientes | Sin fallas | STM, ANTA, MAMC, RNIC o la ECD caído o con latencia extrema, por horas (respuesta de BCR) | Un nodo interno de procesamiento deja de funcionar con archivos en curso | Se activa o se revierte una regla, un XSD o el contrato de un sistema externo |
+| Estado | Sin fallas; externos y ECD disponibles; sin pendientes | Sin fallas | STM, ANTA, MAMC, RNIC o la ECD caído o con latencia extrema, por horas (respuesta de BCR) | Un nodo interno de procesamiento deja de funcionar con archivos en curso | Se activa o se revierte una regla, un XSD o el contrato de API de un sistema externo |
 | Alcance | Dentro | Dentro | Dentro | Dentro: la falla de software. La redundancia física queda fuera | Dentro |
 
 La caída de un sistema externo puede durar horas: BCR plantea un caso de 12 horas con 500 000 declaraciones acumuladas.
@@ -80,14 +80,14 @@ Con un sistema externo caído, BCR aceptó que los plazos de procesamiento de 3 
 |---|---|---|---|
 | Correctivo | Corregir una regla que se activó con un error | Despliegue | Lo cubre [M01](#asr-m01): es el mismo cambio, por la misma vía |
 | Preventivo | Ninguno probable: el sistema es nuevo y el enunciado no trae deuda técnica del que reemplaza | — | — |
-| Adaptativo | Una regla de la Circular cambia · el XSD de las declaraciones cambia · un sistema externo cambia su contrato | Despliegue · despliegue · desarrollo | [M01](#asr-m01) · [M02](#asr-m02) · [I01](#asr-i01) (interoperabilidad) |
+| Adaptativo | Una regla de la Circular cambia · el XSD de las declaraciones cambia · un sistema externo cambia su contrato de API | Despliegue · despliegue · desarrollo | [M01](#asr-m01) · [M02](#asr-m02) · [I01](#asr-i01) (interoperabilidad) |
 | Aditivo | Un área de BCR pide los datos en un formato nuevo | Desarrollo | [I02](#asr-i02) (integración, socio propio) |
 
 ### Interoperabilidad · socios
 
 | Socio | Fase | Cómo se le conoce | Grado de control |
 |---|---|---|---|
-| STM, ANTA, MAMC, RNIC | Desarrollo | Conocidos de antemano | Tercero fuera de control: cambian su contrato por su cuenta |
+| STM, ANTA, MAMC, RNIC | Desarrollo | Conocidos de antemano | Tercero fuera de control: cambian su contrato de API por su cuenta |
 | ECD | Desarrollo | Conocida de antemano | Tercero fuera de control, con protocolos estándar |
 | Remitentes | Desarrollo | Conocidos de antemano | Tercero bajo control: BCR fija el XSD |
 | Áreas de BCR | Desarrollo | Conocidas de antemano | Propio |
@@ -121,7 +121,7 @@ El eje es el flujo de datos del dominio; el stakeholder va como columna auxiliar
 
 | Socio · control | Sintáctica | Semántica en datos | Semántica en comportamiento | Temporal | De recursos |
 |---|---|---|---|---|---|
-| STM · tercero fuera de control | **[ASR-I01](#asr-i01)** | **[ASR-I01](#asr-i01)**: base de la tasa, decimales, fecha de vigencia | Fuera: quién reintenta y qué pasa si cae es disponibilidad ([D01](#asr-d01)) | Descartada: cuándo publica STM es parte del contrato que integra I01; el tiempo del intercambio es desempeño | Descartada: `[PREGUNTA → BCR]` ¿límite de consultas? |
+| STM · tercero fuera de control | **[ASR-I01](#asr-i01)** | **[ASR-I01](#asr-i01)**: base de la tasa, decimales, fecha de vigencia | Fuera: quién reintenta y qué pasa si cae es disponibilidad ([D01](#asr-d01)) | Descartada: cuándo publica STM es parte del contrato de API que integra I01; el tiempo del intercambio es desempeño | Descartada: `[PREGUNTA → BCR]` ¿límite de consultas? |
 | ANTA · tercero fuera de control | **[ASR-I01](#asr-i01)** | **[ASR-I01](#asr-i01)**: identificación tributaria y aduanera | Fuera: [D01](#asr-d01) | Descartada: igual que STM | Descartada: igual que STM |
 | MAMC · tercero fuera de control | **[ASR-I01](#asr-i01)** | **[ASR-I01](#asr-i01)**: condición migratoria | Fuera: [D01](#asr-d01) | Descartada: igual que STM | Descartada: igual que STM |
 | RNIC · tercero fuera de control | **[ASR-I01](#asr-i01)** | **[ASR-I01](#asr-i01)**: tipo y número de documento | Fuera: [D01](#asr-d01) | Descartada: igual que STM | Descartada: igual que STM |
@@ -355,20 +355,20 @@ sequenceDiagram
     end
 ```
 
-### ASR-I01 — Nueva versión de la API de un sistema externo en ≤ 4 h-persona {#asr-i01}
+### ASR-I01 — Nueva versión del contrato de API de un sistema externo en ≤ 4 h-persona {#asr-i01}
 
 | Parte | Descripción |
 |---|---|
-| **Fuente** | El área de TI de BCR, que pide integrar la versión nueva del contrato de un sistema externo |
-| **Estímulo** | STM, ANTA, MAMC o RNIC publica una versión nueva de su contrato: campos, formatos o significados distintos para la misma información |
+| **Fuente** | El área de TI de BCR, que pide integrar la versión nueva del contrato de API de un sistema externo |
+| **Estímulo** | STM, ANTA, MAMC o RNIC publica una versión nueva de su contrato de API: campos, formatos o significados distintos para la misma información |
 | **Artefacto** | El enriquecimiento y la validación de las declaraciones con la información de ese sistema externo |
 | **Ambiente** | Desarrollo · socio conocido de antemano · tercero fuera de control |
 | **Respuesta** | La versión nueva queda integrada: los datos del sistema externo se interpretan con el significado que él les da o se rechazan con diagnóstico, y ninguno se registra con otro significado |
-| **Medida** | ≤ 4 h-persona desde que el equipo recibe el contrato nuevo hasta su puesta en producción |
-| **De dónde sale el número** | Origen: el enunciado («la adaptación y reemplazo de conectores… máximo 4 horas de esfuerzo de desarrollo»); BCR precisó que son h-persona. Base de estimación: el inventario de los campos del contrato por su distancia. Distancia que cierra: sintáctica y semántica en datos |
-| **Quién lo hace** | El equipo de TI de BCR, que conoce Orquídea y no el contrato nuevo `[SUPUESTO → BCR]` |
-| **Por qué es ASR** | Cuatro terceros cambian su contrato por su cuenta. Hay que decidir dónde se traduce y se valida su significado sin que el cambio llegue al resto del flujo: una tasa bien formada puede venir en otra base o con otra fecha de vigencia. Nota de trampa: las 4 h se cumplen integrando rápido y mal; la respuesta exige que nada se registre con otro significado, y va como pregunta al panel |
-| **Cómo se verifica** | Juicio de expertos, con el protocolo de abajo: es el ASR de interoperabilidad que se valida. Complemento: cambiar el contrato de ANTA en un simulador con tráfico, medir las h-persona y correr una prueba de punta a punta con un lote de respuestas del sistema externo |
+| **Medida** | ≤ 4 h-persona desde que el equipo recibe el nuevo contrato de API hasta su puesta en producción |
+| **De dónde sale el número** | Origen: el enunciado («la adaptación y reemplazo de conectores… máximo 4 horas de esfuerzo de desarrollo»); BCR precisó que son h-persona. Base de estimación: el inventario de los campos del contrato de API por su distancia. Distancia que cierra: sintáctica y semántica en datos |
+| **Quién lo hace** | El equipo de TI de BCR, que conoce Orquídea y no el nuevo contrato de API `[SUPUESTO → BCR]` |
+| **Por qué es ASR** | Cuatro terceros cambian su contrato de API por su cuenta. Hay que decidir dónde se traduce y se valida su significado sin que el cambio llegue al resto del flujo: una tasa bien formada puede venir en otra base o con otra fecha de vigencia. Nota de trampa: las 4 h se cumplen integrando rápido y mal; la respuesta exige que nada se registre con otro significado, y va como pregunta al panel |
+| **Cómo se verifica** | Juicio de expertos, con el protocolo de abajo: es el ASR de interoperabilidad que se valida. Complemento: cambiar el contrato de API de ANTA en un simulador con tráfico, medir las h-persona y correr una prueba de punta a punta con un lote de respuestas del sistema externo |
 | **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` (Modificabilidad e Interoperabilidad) |
 
 ```mermaid
@@ -379,19 +379,19 @@ sequenceDiagram
     participant N as Sistema externo · STM, ANTA, MAMC o RNIC
     end
     Note over T,N: AMBIENTE · desarrollo · socio conocido de antemano · tercero fuera de control
-    N->>T: ESTÍMULO · versión nueva de su contrato, con campos, formatos o significados distintos
+    N->>T: ESTÍMULO · versión nueva de su contrato de API, con campos, formatos o significados distintos
     rect rgb(222, 236, 255)
-    Note over T: t0 · el equipo recibe el contrato
+    Note over T: t0 · el equipo recibe el contrato de API
     T->>T: Integra y prueba la versión nueva
     T->>O: La integración queda en producción
     Note over T,O: t1 · en producción
     Note over T,O: MEDIDA · esfuerzo entre t0 y t1 ≤ 4 h-persona
     end
-    N->>O: Respuestas con el contrato nuevo
+    N->>O: Respuestas con el nuevo contrato de API
     Note over O: ARTEFACTO · enriquecimiento y validación con ese sistema externo
     O->>O: RESPUESTA · interpreta como el sistema externo quiso, o rechaza con diagnóstico
     rect rgb(255, 228, 225)
-    Note over T,N: LO QUE EL ASR DESCARTA · que el formato del sistema externo se filtre al resto del flujo.<br/>Cada cambio de contrato tocaría validación, reglas y transformación
+    Note over T,N: LO QUE EL ASR DESCARTA · que el formato del sistema externo se filtre al resto del flujo.<br/>Cada cambio de contrato de API tocaría validación, reglas y transformación
     end
 ```
 
@@ -496,14 +496,14 @@ sequenceDiagram
 
 | Parte | Descripción |
 |---|---|
-| **Fuente** | El equipo de TI de BCR, que activa en producción una regla, una versión del XSD o el contrato nuevo de un sistema externo |
+| **Fuente** | El equipo de TI de BCR, que activa en producción una regla, una versión del XSD o el nuevo contrato de API de un sistema externo |
 | **Estímulo** | La activación, o su reversión, ocurre con archivos llegando y en proceso |
 | **Artefacto** | La recepción y el acuse de archivos |
 | **Ambiente** | E: cambio en producción con la carga de A |
 | **Respuesta** | El sistema sigue recibiendo, acusando y procesando durante el cambio y después de él, y ningún archivo se rechaza por el cambio |
 | **Medida** | p99 ≤ 1 s del último byte recibido al acuse mientras dura la activación o su reversión, en E: el mismo umbral de A ([L01](#asr-l01)) |
 | **Por qué es ASR** | La versión anterior y la nueva tienen que convivir mientras hay archivos en curso. Con una ventana de mantenimiento bastaría detener y redesplegar, pero el 99,99 % deja 4,4 minutos al mes. Medir el acuse evita discutir qué rechazo fue culpa del cambio. Nota de trampa: la medida se cumple aunque un archivo termine evaluado con dos versiones, como en el caso de Knight Capital; BCR fijó que aplica la regla vigente a la hora de ingesta, y eso se comprueba en la misma prueba |
-| **Cómo se verifica** | Activar una regla, una versión del XSD y un contrato nuevo con tráfico de A, y luego revertirlos; se compara el p99 del acuse con el de A y se cuentan los archivos evaluados con dos versiones |
+| **Cómo se verifica** | Activar una regla, una versión del XSD y un nuevo contrato de API con tráfico de A, y luego revertirlos; se compara el p99 del acuse con el de A y se cuentan los archivos evaluados con dos versiones |
 | **Prioridad · Impacto · Origen** | Alta · Medio · `enunciado` («no debe generar tiempo de inactividad»): es la parte de M01, M02 e I01 que se mide en ejecución |
 
 ```mermaid
@@ -512,7 +512,7 @@ sequenceDiagram
     participant O as Orquídea
     participant R as Remitentes
     Note over T,R: AMBIENTE E · cambio en producción con la carga de A
-    T->>O: ESTÍMULO · activa o revierte una regla, un XSD o un contrato nuevo
+    T->>O: ESTÍMULO · activa o revierte una regla, un XSD o un nuevo contrato de API
     rect rgb(222, 236, 255)
     loop Mientras dura la activación o la reversión
         R->>O: Archivos
@@ -741,7 +741,7 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 | **Panel** | Al menos dos humanos de fuera del curso, con experiencia en arquitectura de sistemas críticos o de integración. Un evaluador no humano, si se suma, va en una columna aparte y no cuenta para la mayoría |
 | **Presentación** | Los ASR, la arquitectura y las decisiones principales, contadas en neutro y sin mostrar los umbrales. No se elogian las tácticas. Después, una sesión de preguntas |
 | **Escala** | 1 muy improbable · 2 improbable · 3 ni una ni otra · 4 probable · 5 muy probable |
-| **Escenarios** | M01: «una regla cambiaria nueva llega a producción con ≤ 2, 4, 6 y 12 h-persona»; el real queda segundo en la escalera. I01: «el contrato nuevo de ANTA se integra con ≤ 1, 2,5, 4 y 8 h-persona»; el real queda tercero. En el formulario van en orden aleatorio y no se dice cuál es el real. Control negativo, uno para el panel: «cambiar el canal de envío de los remitentes a transferencia de archivos con ≤ 4 h-persona». Preguntas abiertas: «¿la regla podría cumplir las 4 h regando el cambio por varias funciones?» y «¿el contrato podría integrarse en 4 h interpretando mal sus datos?» |
+| **Escenarios** | M01: «una regla cambiaria nueva llega a producción con ≤ 2, 4, 6 y 12 h-persona»; el real queda segundo en la escalera. I01: «el nuevo contrato de API de ANTA se integra con ≤ 1, 2,5, 4 y 8 h-persona»; el real queda tercero. En el formulario van en orden aleatorio y no se dice cuál es el real. Control negativo, uno para el panel: «cambiar el canal de envío de los remitentes a transferencia de archivos con ≤ 4 h-persona». Preguntas abiertas: «¿la regla podría cumplir las 4 h regando el cambio por varias funciones?» y «¿el contrato de API podría integrarse en 4 h interpretando mal sus datos?» |
 | **Tabulación** | Una tabla por ASR validado, con una columna por experto (A, B, C), la mediana de los humanos y el rango |
 | **Regla de decisión** | Se escribe antes de encuestar. **Sostenido**: mediana ≥ 4 en el escenario real y ningún humano ≤ 2. **Refutado**: mediana ≤ 2. **No concluyente**: cualquier otro caso. El control negativo debe salir ≤ 2; si sale alto, las respuestas tienen sesgo de aquiescencia |
 
@@ -786,7 +786,7 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 - `[PREGUNTA → BCR]` Los «5 segundos de respuesta» del pico, ¿son de procesamiento completo, como los 3 s de A, o del acuse?
 - `[PREGUNTA → BCR]` ¿Cada cuánto debe verificarse la integridad de la auditoría?
 - `[PREGUNTA → BCR]` ¿Cuántos archivos medianos llegan por minuto, en A y en B?
-- `[PREGUNTA → BCR]` ¿Cuántas veces al año cambia la Circular, y cuántas cambian su contrato los sistemas externos?
+- `[PREGUNTA → BCR]` ¿Cuántas veces al año cambia la Circular, y cuántas cambian su contrato de API los sistemas externos?
 - `[PREGUNTA → BCR]` ¿Qué pasa si llegan más de 5 archivos masivos al mismo tiempo: esperan, se rechazan o se aceptan con otro plazo?
 - `[PREGUNTA → BCR]` ¿Cada cuánto publica la ECD su lista de revocación, y en cuánto tiempo hay que detectar un archivo aceptado con un certificado ya revocado?
 - `[PREGUNTA → BCR]` ¿Qué significa «tiempo real» para las estadísticas de las áreas?
@@ -796,9 +796,9 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 
 - `[SUPUESTO → BCR]` El percentil de L01 y L05 es p99, el mismo que BCR usó en L04, E01 y S01.
 - `[SUPUESTO → BCR]` En A el arribo es estocástico, y en B llega en ráfaga en los cierres.
-- `[SUPUESTO → BCR]` Los cambios de reglas, XSD y contratos los hace el equipo propio de TI, que conoce Orquídea.
+- `[SUPUESTO → BCR]` Los cambios de reglas, XSD y contratos de API los hace el equipo propio de TI, que conoce Orquídea.
 - `[SUPUESTO → BCR]` Las versiones del XSD conviven mientras los remitentes migran, y una versión nueva no cambia el modelo canónico.
-- `[SUPUESTO → BCR]` Los contratos de los sistemas externos cambian menos que la Circular; por eso I01 va después de M01.
+- `[SUPUESTO → BCR]` Los contratos de API de los sistemas externos cambian menos que la Circular; por eso I01 va después de M01.
 
 **Riesgos de alcanzabilidad**
 
