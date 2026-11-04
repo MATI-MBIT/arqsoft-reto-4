@@ -44,7 +44,7 @@ Los cuatro primeros son **críticos**: cada uno cubre una de las cuatro tensione
 
 - **L04 va primero** porque es el reto tal como lo escribe el enunciado: procesar pequeños y masivos «sin generar encolamientos ni bloqueos mutuos».
 - **D01** depende de cuatro sistemas y una ECD que BCR no controla; el informe ya calificó ese riesgo con probabilidad alta.
-- **S06** protege lo que el enunciado exige del 100 % de los archivos: que ninguno sin verificar termine aceptado. BCR aprobó dos casos en que el acuse sale antes de verificar, y en ellos el riesgo es real.
+- **S06** protege lo que el enunciado exige del 100 % de los archivos: que ninguno sin verificar termine aceptado. BCR aprobó dos casos en que el acuse sale antes de verificar, y en ellos el riesgo es real. BCR no lo listó entre sus seis: entra como crítico en lugar de S01 porque mide lo que S01 solo cronometra.
 - **M01** ataca el problema que el enunciado describe con «altos costos y largos tiempos de puesta en producción»: cada cambio de la Circular.
 - **S01** encabeza los altos: mide cuánto tarda la verificación, y es el de mayor riesgo de alcanzabilidad, porque verificar un archivo de 50 MB en 200 ms es lo primero que BCR cuestiona. Lo que esa verificación protege ya lo mide S06.
 - **E01** va después porque el pico son 20 archivos por segundo, y el informe concluye que esa tasa no es la presión real.
@@ -597,6 +597,7 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 
 - `[PREGUNTA → BCR]` ¿A partir de qué latencia un externo cuenta como «extrema»? De eso depende cuándo dejan de aplicar los plazos de procesamiento, como aceptó BCR.
 - `[PREGUNTA → BCR]` Cuando un externo vuelve tras una caída larga, ¿en cuánto tiempo deben completarse las declaraciones que quedaron pendientes, y sin afectar el tráfico nuevo?
+- `[PREGUNTA → BCR]` S06 no está entre los seis ASR que BCR priorizó, y aquí reemplaza a S01 entre los críticos. ¿BCR acepta el cambio? S01 conserva sus 200 ms.
 - `[PREGUNTA → BCR]` Los «5 segundos de respuesta» del pico, ¿son de procesamiento completo, como los 3 s de A, o del acuse?
 - `[PREGUNTA → BCR]` ¿Cada cuánto debe verificarse la integridad de la auditoría?
 - `[PREGUNTA → BCR]` ¿Cuántos archivos medianos llegan por minuto, en A y en B?
