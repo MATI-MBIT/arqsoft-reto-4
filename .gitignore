@@ -1,0 +1,18 @@
+# Jekyll / wiki
+docs/_site/
+docs/.jekyll-cache/
+docs/.jekyll-metadata
+docs/Gemfile.lock
+docs/vendor/
+
+# Insumos del reto: documentos del cliente y del curso, solo en local
+insumos/*.pdf
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editores
+.idea/
+.vscode/
+*.swp
