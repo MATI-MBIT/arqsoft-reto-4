@@ -20,12 +20,12 @@ Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dic
 
 | # | ID | Atributo | Enunciado corto | Amb. | Prioridad | Impacto | Origen |
 |---|---|---|---|---|---|---|---|
-| 1 | [ASR-L04](#asr-l04) | Latencia | Con 5 masivos en proceso, el p99 de los pequeños sube ≤ 10 % | A | Alta | Alto | `enunciado` · BCR |
-| 2 | [ASR-D01](#asr-d01) | Disponibilidad · enmascaramiento | Con un externo caído o lento, el acuse sigue en p99 ≤ 1 s | C1 | Alta | Alto | `enunciado` |
-| 3 | [ASR-S01](#asr-s01) | Seguridad · prevención | Veredicto de firma, estampa y certificado en p99 ≤ 200 ms | A | Alta | Alto | `enunciado` |
-| 4 | [ASR-M01](#asr-m01) | Modificabilidad · adaptativo | Una regla cambiaria nueva, sobre datos que ya llegan, entra a producción con ≤ 4 h-persona | Despliegue | Alta | Alto | `enunciado` · BCR |
-| 5 | [ASR-E01](#asr-e01) | Escalabilidad | En pico, p99 de los pequeños ≤ 5 s durante los 45 min | B | Alta | Alto | `enunciado` |
-| 6 | [ASR-I01](#asr-i01) | Interoperabilidad | La versión nueva del contrato de un externo se integra con ≤ 4 h-persona | Desarrollo | Alta | Alto | `enunciado` · BCR |
+| 1 | [ASR-L04](#asr-l04) | Latencia | Con 5 masivos en proceso, el p99 de los pequeños sube ≤ 10 % | A | Crítica | Alto | `enunciado` · BCR |
+| 2 | [ASR-D01](#asr-d01) | Disponibilidad · enmascaramiento | Con un externo caído o lento, el acuse sigue en p99 ≤ 1 s | C1 | Crítica | Alto | `enunciado` |
+| 3 | [ASR-S01](#asr-s01) | Seguridad · prevención | Veredicto de firma, estampa y certificado en p99 ≤ 200 ms | A | Crítica | Alto | `enunciado` |
+| 4 | [ASR-M01](#asr-m01) | Modificabilidad · adaptativo | Una regla cambiaria nueva, sobre datos que ya llegan, entra a producción con ≤ 4 h-persona | Despliegue | Crítica | Alto | `enunciado` · BCR |
+| 5 | [ASR-E01](#asr-e01) | Escalabilidad | En pico, p99 de los pequeños ≤ 5 s durante los 45 min | B | Crítica | Alto | `enunciado` |
+| 6 | [ASR-I01](#asr-i01) | Interoperabilidad | La versión nueva del contrato de un externo se integra con ≤ 4 h-persona | Desarrollo | Crítica | Alto | `enunciado` · BCR |
 | 7 | [ASR-D03](#asr-d03) | Disponibilidad · prevención | Ante una falla interna en pico, 0 declaraciones acusadas perdidas o duplicadas | C2 sobre B | Alta | Alto | `enunciado` |
 | 8 | [ASR-L01](#asr-l01) | Latencia | Acuse en p99 ≤ 1 s desde el último byte | A | Alta | Alto | `enunciado` · BCR |
 | 9 | [ASR-S06](#asr-s06) | Seguridad · prevención | 0 archivos con resultado definitivo sin verificación criptográfica completa | A, C1 | Alta | Alto | `enunciado` |
@@ -38,7 +38,9 @@ Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dic
 | 16 | [ASR-S04](#asr-s04) | Seguridad · detección | 100 % de las alteraciones de la auditoría detectadas | A | Media | Medio | `enunciado` · BCR |
 | 17 | [ASR-I02](#asr-i02) | Integración | Un área nueva de BCR se integra con 0 funciones del flujo principal modificadas | Desarrollo | Baja | Bajo | informe · BCR |
 
-**Por qué este orden.** La prioridad es exposición al riesgo: qué tan probable es no cumplir, multiplicado por cuánto le duele a BCR. El impacto es la dificultad de diseño: cuánto pesa el requisito en la estructura. Los seis primeros son los que BCR priorizó en su respuesta.
+**Por qué este orden.** La prioridad es exposición al riesgo: qué tan probable es no cumplir, multiplicado por cuánto le duele a BCR. El impacto es la dificultad de diseño: cuánto pesa el requisito en la estructura.
+
+Los seis primeros son **críticos**: BCR los priorizó en su respuesta, y son los que guían la primera iteración del diseño. Entre ellos van M01 e I01, el de modificabilidad y el de interoperabilidad que se validan con expertos.
 
 - **L04 va primero** porque es el reto tal como lo escribe el enunciado: procesar pequeños y masivos «sin generar encolamientos ni bloqueos mutuos».
 - **D01** depende de cuatro sistemas y una ECD que BCR no controla; el informe ya calificó ese riesgo con probabilidad alta.
@@ -140,7 +142,7 @@ El eje es el flujo de datos del dominio; el stakeholder va como columna auxiliar
 | **Medida** | p99 de los pequeños con 5 masivos ≤ 1,10 × su p99 sin masivos, del último byte recibido al resultado definitivo disponible para el remitente, en A |
 | **Por qué es ASR** | Hay que decidir si archivos de tamaños distintos comparten capacidad y orden de atención. Con un margen de +100 % bastaría una prioridad sobre un camino compartido; con +10 %, el aislamiento tiene que sostenerse por construcción. Nota de trampa: la medida es relativa y se cumple aunque el p99 sin masivos ya sea malo; ese piso lo pone E01 |
 | **Cómo se verifica** | Prueba de carga en A con el mismo generador, una vez sin masivos y otra con 5, comparando los dos p99. Después se suben los masivos por encima de 5 hasta encontrar el quiebre |
-| **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` (Latencia: «jamás encolará ni degradará la latencia de los archivos de pocos registros») · BCR fijó N = 5 y el margen de 10 % |
+| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Latencia: «jamás encolará ni degradará la latencia de los archivos de pocos registros») · BCR fijó N = 5 y el margen de 10 % |
 
 ```mermaid
 flowchart LR
@@ -164,7 +166,7 @@ flowchart LR
 | **Medida** | p99 ≤ 1 s del último byte recibido al acuse, con el externo caído o lento, en C1: el mismo umbral de A ([L01](#asr-l01)) |
 | **Por qué es ASR** | Si el acuse esperara la respuesta de un externo, su caída o su lentitud le llegarían al remitente. Con este número, la recepción no puede depender en línea de ningún sistema ajeno, y la lentitud queda medida sin tener que definir cuándo un externo cuenta como caído. Nota de trampa: la medida se cumple aunque las declaraciones pendientes nunca se completen; cuánto tardan cuando el externo vuelve se le pregunta a BCR (sección 6) |
 | **Cómo se verifica** | Cortar cada externo y la ECD a mitad de una carga A, y luego agregarles latencia. Se compara el p99 del acuse con el de A y se cuentan los archivos rechazados por esa causa |
-| **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` (Disponibilidad: «continuar operando sin rechazar archivos»; reto: «sin detener la recepción ni el procesamiento local») |
+| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Disponibilidad: «continuar operando sin rechazar archivos»; reto: «sin detener la recepción ni el procesamiento local») |
 
 ```mermaid
 flowchart LR
@@ -188,7 +190,7 @@ flowchart LR
 | **Medida** | p99 ≤ 200 ms del último byte recibido al veredicto criptográfico, sobre el 100 % de los archivos, en A |
 | **Por qué es ASR** | Pasan por aquí todos los archivos. Hay que decidir cómo se conoce la revocación sin consultar a la ECD por cada archivo, y cómo se verifica uno de 50 MB sin cargarlo entero. Con 2 s cabría la consulta en línea; con 200 ms, no. Con la ECD caída y sin información de revocación vigente, BCR aceptó acusar con «verificación pendiente», y ahí la medida no aplica. Lo que el control protege lo mide [S06](#asr-s06) |
 | **Cómo se verifica** | Benchmark de la verificación con archivos firmados reales de 1 registro a 50 MB, con certificados vigentes, vencidos y revocados; p99 por tamaño |
-| **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` (Seguridad: «el 100 % de los archivos… en menos de 200 milisegundos») |
+| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Seguridad: «el 100 % de los archivos… en menos de 200 milisegundos») |
 
 ```mermaid
 flowchart LR
@@ -214,7 +216,7 @@ flowchart LR
 | **Quién lo hace** | El equipo de TI de BCR, que conoce Orquídea `[SUPUESTO → BCR]` ¿lo hace el equipo propio o un tercero? |
 | **Por qué es ASR** | Decide dónde vive la regla, si se expresa como dato o como código, y cómo se fija la que aplica a cada archivo. Si la Circular cambiara una vez por década, encapsular las reglas sería esfuerzo perdido. Una regla que pide un dato nuevo de un externo es otro cambio, más grande: suma la integración de I01. Nota de trampa: las 4 h se cumplen regando un cambio barato por varias funciones; va como pregunta al panel |
 | **Cómo se verifica** | Juicio de expertos, con el protocolo de abajo: es el ASR de modificabilidad que se valida. Complemento: activar una regla nueva con tráfico de A y contar las h-persona invertidas y las funciones tocadas |
-| **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` (Modificabilidad e Interoperabilidad) |
+| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Modificabilidad e Interoperabilidad) |
 
 ```mermaid
 flowchart LR
@@ -238,7 +240,7 @@ flowchart LR
 | **Medida** | p99 ≤ 5 s del último byte recibido al resultado definitivo disponible para el remitente, durante toda la ventana de 45 min, en B |
 | **Por qué es ASR** | La capacidad para los pequeños tiene que triplicarse durante 45 minutos sin quedar fija el resto del día. Con 5 min, una cola absorbería el pico sin cambiar nada; con 5 s, no. La pérdida cero que pide el enunciado la mide D03, y los 3 s en A se verifican en la misma prueba. El enunciado dice «5 segundos de respuesta», y aquí se lee como procesamiento completo, igual que los 3 s de A `[PREGUNTA → BCR]` |
 | **Cómo se verifica** | Prueba de carga sostenida de 45 min a 1 200 pequeños por minuto con 5 masivos; p99 por ventanas de un minuto |
-| **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` (Escalabilidad) |
+| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Escalabilidad) |
 
 ```mermaid
 flowchart LR
@@ -264,7 +266,7 @@ flowchart LR
 | **Quién lo hace** | El equipo de TI de BCR, que conoce Orquídea y no el contrato nuevo `[SUPUESTO → BCR]` |
 | **Por qué es ASR** | Cuatro terceros cambian su contrato por su cuenta. Hay que decidir dónde se traduce y se valida su significado sin que el cambio llegue al resto del flujo: una tasa bien formada puede venir en otra base o con otra fecha de vigencia. Nota de trampa: las 4 h se cumplen integrando rápido y mal; la respuesta exige que nada se registre con otro significado, y va como pregunta al panel |
 | **Cómo se verifica** | Juicio de expertos, con el protocolo de abajo: es el ASR de interoperabilidad que se valida. Complemento: cambiar el contrato de ANTA en un simulador con tráfico, medir las h-persona y correr una prueba de punta a punta con un lote de respuestas del externo |
-| **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` (Modificabilidad e Interoperabilidad) |
+| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Modificabilidad e Interoperabilidad) |
 
 ```mermaid
 flowchart LR
