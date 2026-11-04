@@ -3,8 +3,8 @@
 # mediante el workflow .github/workflows/pages.yml
 # ---------------------------------------------------------------------------
 
-title: Arqsoft Reto 4 — Orquídea
-description: Wiki de documentación del proyecto final (reto 4) de Arquitectura de Software: sistema Orquídea de BCR.
+title: "Arqsoft Reto 4 — Orquídea"
+description: "Wiki de documentación del proyecto final (reto 4) de Arquitectura de Software: sistema Orquídea de BCR."
 lang: es-CO
 
 # URL pública del sitio. El workflow sobrescribe baseurl con --baseurl,
