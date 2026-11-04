@@ -16,9 +16,9 @@ Cuatro grupos de siglas se repiten en la página. BCR es la entidad que opera Or
 
 ## 1. Los ASR
 
-Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dice dónde aplica la medida, con los ambientes de la sección 2. A es la operación normal, B el pico, C1 un externo degradado, C2 una falla interna y E un cambio en producción. En modificabilidad e interoperabilidad, en cambio, dice cuándo entra el cambio.
+Van en orden de importancia, y cada ID lleva a su ficha. La columna «Qué exige» resume el requisito con su número. La columna «Ambiente» dice dónde aplica la medida, con los ambientes de la sección 2. A es la operación normal, B el pico, C1 un externo degradado, C2 una falla interna y E un cambio en producción. En modificabilidad e interoperabilidad, en cambio, dice cuándo entra el cambio.
 
-| # | ID | Atributo | Enunciado corto | Amb. | Prioridad | Impacto | Origen |
+| # | ID | Atributo | Qué exige | Ambiente | Prioridad | Impacto | Origen |
 |---|---|---|---|---|---|---|---|
 | 1 | [ASR-L04](#asr-l04) | Latencia | Con 5 masivos en proceso, el p99 de los pequeños sube ≤ 10 % | A | Crítica | Alto | `enunciado` · BCR |
 | 2 | [ASR-D01](#asr-d01) | Disponibilidad · enmascaramiento | Con un externo caído o lento, el acuse sigue en p99 ≤ 1 s | C1 | Crítica | Alto | `enunciado` |
