@@ -16,27 +16,27 @@ Cuatro grupos de siglas se repiten en la página. BCR es la entidad que opera Or
 
 ## 1. Los ASR
 
-Van en orden de importancia, y cada ID lleva a su ficha. La columna «Qué exige» resume el requisito con su número. La columna «Ambiente» dice dónde aplica la medida, con los ambientes de la sección 2. A es la operación normal, B el pico, C1 un externo degradado, C2 una falla interna y E un cambio en producción. En modificabilidad e interoperabilidad, en cambio, dice cuándo entra el cambio.
+Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dice dónde aplica la medida, con los ambientes de la sección 2. A es la operación normal, B el pico, C1 un externo degradado, C2 una falla interna y E un cambio en producción. En modificabilidad e interoperabilidad, en cambio, dice cuándo entra el cambio.
 
-| # | ID | Atributo | Qué exige | Ambiente | Prioridad | Impacto | Origen |
+| # | ID | Atributo | Qué exige | Amb. | Prioridad | Impacto | Origen |
 |---|---|---|---|---|---|---|---|
-| 1 | [ASR-L04](#asr-l04) | Latencia | Con 5 masivos en proceso, el p99 de los pequeños sube ≤ 10 % | A | Crítica | Alto | `enunciado` · BCR |
-| 2 | [ASR-D01](#asr-d01) | Disponibilidad · enmascaramiento | Con un externo caído o lento, el acuse sigue en p99 ≤ 1 s | C1 | Crítica | Alto | `enunciado` |
-| 3 | [ASR-S06](#asr-s06) | Seguridad · prevención | 0 archivos con resultado definitivo sin verificación criptográfica completa | A, C1 | Crítica | Alto | `enunciado` |
-| 4 | [ASR-M01](#asr-m01) | Modificabilidad · adaptativo | Una regla cambiaria nueva, sobre datos que ya llegan, entra a producción con ≤ 4 h-persona | Despliegue | Crítica | Alto | `enunciado` · BCR |
-| 5 | [ASR-S01](#asr-s01) | Seguridad · prevención | Veredicto de firma, estampa y certificado en p99 ≤ 200 ms | A | Alta | Alto | `enunciado` |
-| 6 | [ASR-E01](#asr-e01) | Escalabilidad | En pico, p99 de los pequeños ≤ 5 s durante los 45 min | B | Alta | Alto | `enunciado` |
-| 7 | [ASR-I01](#asr-i01) | Interoperabilidad | La versión nueva del contrato de un externo se integra con ≤ 4 h-persona | Desarrollo | Alta | Alto | `enunciado` · BCR |
-| 8 | [ASR-D03](#asr-d03) | Disponibilidad · prevención | Ante una falla interna en pico, 0 declaraciones acusadas perdidas o duplicadas | C2 sobre B | Alta | Alto | `enunciado` |
-| 9 | [ASR-L01](#asr-l01) | Latencia | Acuse en p99 ≤ 1 s desde el último byte | A | Alta | Alto | `enunciado` · BCR |
-| 10 | [ASR-S03](#asr-s03) | Seguridad · prevención | 0 accesos efectivos a operaciones reportadas por otro remitente | A | Alta | Medio | `enunciado` |
-| 11 | [ASR-D04](#asr-d04) | Disponibilidad · prevención | Durante un cambio en producción, el acuse sigue en p99 ≤ 1 s | E | Alta | Medio | `enunciado` |
-| 12 | [ASR-L03](#asr-l03) | Latencia | Cada masivo termina en ≤ 5 min | A | Media | Alto | `enunciado` |
-| 13 | [ASR-D02](#asr-d02) | Disponibilidad · reparación | Tras una falla interna, lo que estaba en curso vuelve a avanzar en ≤ 10 s | C2 | Media | Medio | `enunciado` |
-| 14 | [ASR-L05](#asr-l05) | Latencia | Un mediano termina en p99 ≤ 30 s | A | Media | Medio | `enunciado` |
-| 15 | [ASR-M02](#asr-m02) | Modificabilidad · adaptativo | Una versión nueva del XSD, sin tocar el modelo canónico, entra a producción con ≤ 4 h-persona | Despliegue | Media | Medio | `enunciado` · BCR |
-| 16 | [ASR-S04](#asr-s04) | Seguridad · detección | 100 % de las alteraciones de la auditoría detectadas | A | Media | Medio | `enunciado` · BCR |
-| 17 | [ASR-I02](#asr-i02) | Integración | Un área nueva de BCR se integra con 0 funciones del flujo principal modificadas | Desarrollo | Baja | Bajo | informe · BCR |
+| 1 | [ASR-L04](#asr-l04) | Latencia | **Los masivos no degradan a los pequeños.** Mientras 5 archivos masivos se procesan, cada archivo pequeño debe resolverse casi igual de rápido que sin ellos: su p99 sube como máximo 10 % | A | Crítica | Alto | `enunciado` · BCR |
+| 2 | [ASR-D01](#asr-d01) | Disponibilidad · enmascaramiento | **La falla de un externo no llega al acuse.** Si STM, ANTA, MAMC, RNIC o la ECD se cae o se pone lento, el remitente sigue recibiendo su acuse en p99 ≤ 1 s, y ningún archivo se rechaza por esa falla | C1 | Crítica | Alto | `enunciado` |
+| 3 | [ASR-S06](#asr-s06) | Seguridad · prevención | **Ningún archivo sin verificar llega a resultado definitivo.** Un archivo puede acusarse antes de verificar su firma, estampa y certificado, pero no puede quedar aceptado hasta que esa verificación termine bien: 0 casos | A, C1 | Crítica | Alto | `enunciado` |
+| 4 | [ASR-M01](#asr-m01) | Modificabilidad · adaptativo | **Una regla cambiaria nueva en 4 h-persona.** Cuando la Junta cambia la Circular con una regla sobre datos que ya llegan, implementarla, probarla y ponerla en producción cuesta ≤ 4 h-persona, sin detener el flujo | Despliegue | Crítica | Alto | `enunciado` · BCR |
+| 5 | [ASR-S01](#asr-s01) | Seguridad · prevención | **Veredicto criptográfico en 200 ms.** Desde que llega el último byte, el sistema sabe en p99 ≤ 200 ms si la firma, la estampa y el certificado del archivo son válidos y vigentes | A | Alta | Alto | `enunciado` |
+| 6 | [ASR-E01](#asr-e01) | Escalabilidad | **El pico de pequeños en 5 s.** En cierres de mercado y vencimientos, con 1 200 pequeños por minuto durante 45 minutos y 5 masivos en paralelo, cada pequeño se resuelve en p99 ≤ 5 s | B | Alta | Alto | `enunciado` |
+| 7 | [ASR-I01](#asr-i01) | Interoperabilidad | **El contrato nuevo de un externo en 4 h-persona.** Cuando STM, ANTA, MAMC o RNIC cambia su contrato, integrarlo en producción cuesta ≤ 4 h-persona, y sus datos se interpretan con el significado que él les da | Desarrollo | Alta | Alto | `enunciado` · BCR |
+| 8 | [ASR-D03](#asr-d03) | Disponibilidad · prevención | **Ninguna declaración acusada se pierde ni se duplica.** Si un elemento interno falla durante el pico, cada declaración ya acusada termina con exactamente un resultado definitivo: 0 perdidas y 0 dobles | C2 sobre B | Alta | Alto | `enunciado` |
+| 9 | [ASR-L01](#asr-l01) | Latencia | **El acuse en 1 s.** Desde que llega el último byte de un archivo de cualquier tamaño, el remitente recibe en p99 ≤ 1 s el acuse que confirma el inicio del procesamiento | A | Alta | Alto | `enunciado` · BCR |
+| 10 | [ASR-S03](#asr-s03) | Seguridad · prevención | **Ningún remitente ve ni altera operaciones de otro.** Un remitente autenticado solo consulta, corrige o anula lo que reportó él: 0 accesos efectivos a operaciones de otro remitente | A | Alta | Medio | `enunciado` |
+| 11 | [ASR-D04](#asr-d04) | Disponibilidad · prevención | **Un cambio en producción no llega al acuse.** Mientras se activa o se revierte una regla, un XSD o un contrato, los remitentes siguen recibiendo su acuse en p99 ≤ 1 s | E | Alta | Medio | `enunciado` |
+| 12 | [ASR-L03](#asr-l03) | Latencia | **Un masivo termina en 5 min.** Un archivo de 100 000 registros, procesado junto a otros 4 masivos, llega a resultado definitivo en ≤ 5 min desde su último byte | A | Media | Alto | `enunciado` |
+| 13 | [ASR-D02](#asr-d02) | Disponibilidad · reparación | **Lo que estaba en curso se retoma en 10 s.** Si un elemento interno se cae, las declaraciones que tenía en curso vuelven a avanzar solas en ≤ 10 s, sin que nadie intervenga | C2 | Media | Medio | `enunciado` |
+| 14 | [ASR-L05](#asr-l05) | Latencia | **Un mediano termina en 30 s.** Un archivo de 51 a 5 000 registros, que llega con 5 masivos en proceso, llega a resultado definitivo en p99 ≤ 30 s | A | Media | Medio | `enunciado` |
+| 15 | [ASR-M02](#asr-m02) | Modificabilidad · adaptativo | **Una versión nueva del XSD en 4 h-persona.** Cuando cambia la estructura de las declaraciones sin tocar el modelo canónico, ponerla en producción cuesta ≤ 4 h-persona, y la versión anterior sigue validándose | Despliegue | Media | Medio | `enunciado` · BCR |
+| 16 | [ASR-S04](#asr-s04) | Seguridad · detección | **Toda alteración de la auditoría se detecta.** Si alguien modifica, borra o reordena registros de auditoría ya escritos, la verificación de integridad lo señala en el 100 % de los casos | A | Media | Medio | `enunciado` · BCR |
+| 17 | [ASR-I02](#asr-i02) | Integración | **Un área nueva de BCR recibe datos sin tocar el flujo principal.** Integrar un área que pide los datos en un formato nuevo no modifica la recepción, la validación, el enriquecimiento, la transformación ni la persistencia | Desarrollo | Baja | Bajo | informe · BCR |
 
 **Por qué este orden.** La prioridad es exposición al riesgo: qué tan probable es no cumplir, multiplicado por cuánto le duele a BCR. El impacto es la dificultad de diseño: cuánto pesa el requisito en la estructura.
 
