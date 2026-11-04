@@ -59,6 +59,32 @@ la secuencia:
   `Interoperability`. El reto 2 solo exploró disponibilidad y seguridad.
 - ASR-L03 mide 5 min (300 000 ms) y no cabe en el techo de 60 000 ms.
 
+## Los ASR en Helix
+
+Cada escenario cuelga de una historia de usuario; la columna «Historia» se llena
+cuando exista `requirements.md`. El TPS del ambiente A es 7 (400 pequeños por
+minuto) y el del B, 20 (1 200 por minuto).
+
+| ID | Atributo en Helix | Prioridad en Helix | ¿Cabe la medida? | Historia |
+|---|---|---|---|---|
+| ASR-L04 | Performance · Latency | Critical | Es relativa: por confirmar | — |
+| ASR-D01 | Availability · Recovery | Critical | Sí: 1 000 ms | — |
+| ASR-S01 | Security · Resistance | Critical | Sí: 200 ms | — |
+| ASR-M01 | Modifiability | Critical | Por confirmar | — |
+| ASR-E01 | Performance · Scalability | Critical | Sí: 5 000 ms, TPS 20 | — |
+| ASR-I01 | Interoperability | Critical | Por confirmar | — |
+| ASR-D03 | Availability · Prevention | High | No es de tiempo | — |
+| ASR-L01 | Performance · Latency | High | Sí: 1 000 ms | — |
+| ASR-S03 | Security · Resistance | High | No es de tiempo | — |
+| ASR-S06 | Security · Resistance | High | No es de tiempo | — |
+| ASR-D04 | Availability · Prevention | High | Sí: 1 000 ms | — |
+| ASR-L03 | Performance · Latency | Medium | No: 300 000 ms supera el techo de 60 000 ms | — |
+| ASR-D02 | Availability · Recovery | Medium | Sí: 10 000 ms | — |
+| ASR-L05 | Performance · Latency | Medium | Sí: 30 000 ms | — |
+| ASR-M02 | Modifiability | Medium | Por confirmar | — |
+| ASR-S04 | Security · Detection | Medium | No es de tiempo | — |
+| ASR-I02 | Interoperability | Low | Por confirmar | — |
+
 ---
 
 ## Bitácora de sincronizaciones

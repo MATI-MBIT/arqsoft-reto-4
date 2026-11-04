@@ -32,7 +32,7 @@ En `insumos/`, solo en local (los PDF no se versionan):
 | Archivo | Qué es |
 |---|---|
 | `ARTI4109-proyecto-final-v5.pdf` | El enunciado del curso. Manda sobre todo lo demás |
-| `Informe-Consultoria-Orquidea-Grupo1.pdf` | Informe v1.0 del equipo (3-nov-2026): AS-IS, 16 ASR candidatos, TO-BE, 18 ADR |
+| `Informe-Consultoria-Orquidea-Grupo1.pdf` | Informe de consultoría del equipo (3-nov-2026): AS-IS, 16 ASR candidatos, TO-BE, 18 ADR |
 | `Respuesta a preguntas-Grupo1.pdf` | Respuesta del cliente (3-nov-2026): aprueba los 18 ADR, prioriza seis ASR, pide cuatro vistas y deja seis preguntas para la Fase 0 |
 
 Lo que la respuesta del cliente fijó es vinculante: N = 5 masivos simultáneos en
@@ -56,7 +56,7 @@ front matter la clave `helix_section`:
 | `constraints.md` | `Constraints` | Insumo | Pendiente |
 | `requirements.md` | `Requirements & Quality` | Insumo | Pendiente |
 | `glossary.md` | `Objective → Glossary` | Insumo | Pendiente |
-| `quality-attributes.md` | `Requirements & Quality → Quality Scenarios` | Sale de los insumos | v1 |
+| `quality-attributes.md` | `Requirements & Quality → Quality Scenarios` | Sale de los insumos | Hecho |
 | `experiments.md` | `Experiments` | Valida decisiones | Pendiente |
 | `results.md` | `Experiments → Results & analysis` | Resultados | Pendiente |
 | `modelos/` | No se carga en Helix | ADR, vistas, draw.io | Pendiente |
@@ -83,6 +83,13 @@ reto:
   número), porque el cliente prioriza con esos ID y Helix numera por atributo.
 - El ASR va en el espacio del problema: no nombra componentes, colas ni
   tecnologías, aunque el cliente ya haya aprobado los ADR.
+
+## Lo que no va en `docs/`
+
+`docs/` se publica en GitHub Pages. No lleva instrucciones de Helix, estado del
+trabajo, historial de versiones ni resultados de chequeos de las skills: eso va
+en `notas/`. Tampoco marcas de versión («v1», «versión 2») en ninguna página
+(Nicolás, 2026-11-04).
 
 ## Convenciones
 
