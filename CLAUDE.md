@@ -60,7 +60,7 @@ front matter la clave `helix_section`:
 | `quality-attributes.md` | `Requirements & Quality → Quality Scenarios` | Sale de los insumos | Hecho |
 | `experiments.md` | `Experiments` | Valida decisiones | Pendiente |
 | `results.md` | `Experiments → Results & analysis` | Resultados | Pendiente |
-| `modelos/` | No se carga en Helix | ADR, vistas, draw.io | Pendiente |
+| `modelos/` | No se carga en Helix | ADR (`adrs-orquidea.md`), vistas, draw.io y PNG | Hecho (ADR en Propuesta) |
 
 ## La regla de flujo
 

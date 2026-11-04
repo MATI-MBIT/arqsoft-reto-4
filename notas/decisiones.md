@@ -25,3 +25,20 @@ esperan una cifra de BCR:
 
 - ¿Quiénes forman el panel de expertos que valida M01 e I01? Al menos dos humanos de fuera del curso.
 - Los orígenes por lente de divergencia de cada ASR (ambiente, estímulo repetido, segundo orden, inversión, fuente) se quitaron de la página publicada; quedan en el historial de git.
+
+## Registro de ADR (docs/modelos/adrs-orquidea.md)
+
+- 2026-11-04 · 12 ADR en estado Propuesta, retados contra los 18 del informe. Quedan fuera: topología activo-activo (infraestructura), notificación por webhooks (funcional, sin ASR) y Kafka como decisión propia (es producto, va como concern C-01 dentro de ADR-001).
+- Lint: `Contrato: el registro declara adr-log/v2; validado con lint_adrs (adr-log/v2, fichas tactica/v1, plugin arquitectura 1.19.1)` · 0 errores, 1 aviso. W08 en DG-CMP-001 (12 elementos): se acepta porque es la vista general del flujo.
+- Pendiente: el equipo decide qué ADR pasan a Aceptada. Solo el humano acepta.
+
+## Diagramas (docs/modelos/drawio/orquidea.drawio)
+
+- 2026-11-04 · 26 páginas generadas con `diagramar-uml-arquitectura` desde un solo modelo (ids compartidos entre vistas): los 17 diagramas del plan de ADR más 8 de eclosión (caja blanca y secuencia interna de Recepción y verificación, Carril pesado, Adaptadores y Configuración versionada) y la máquina de estados del circuit breaker.
+- Lint: `Contrato: lint_diagrama con fichas tactica/v1 · registro adr-log/v2 · plugin arquitectura 1.19.1` · 26 diagramas, 0 con ERROR, 30 avisos. Justificación de los avisos:
+  - TAC «roles no verificados» (SEG-03, SEG-18, MOD-03, MOD-04, INT-04, DIS-12, DIS-14, DIS-17): esos componentes no se eclosionaron; quedan como hueco.
+  - TAC «máquina de estados» (SEG-02, SEG-18, MOD-04, DIS-17): falta su diagrama de estados; hueco.
+  - TAC de estereotipo en roles del N1 de Adaptadores: los puertos llevan «port» pero el lint no lo lee en el rótulo del rol; se revisó a ojo.
+  - LAYOUT: 24 cruces en la vista general (el bus conecta casi todo) y aristas de retorno en varias páginas: preferencias, no bloquean.
+  - AP-09 (15 elementos) en la caja blanca de Adaptadores; AP-18/19/20 en el contexto y en páginas de componentes que no demuestran una medida.
+- Puerta 3 (mirada): revisadas en PNG la vista general, SEQ-005, CST-003, DEP-001 y CLS-001. Defecto visible: en CST-003 la línea del rol «adaptee» pasa sobre el rótulo del puerto supplier.

@@ -22,3 +22,4 @@ Circular Reglamentaria Externa termina en un redespliegue largo.
 | [Glosario](glossary.md) | El vocabulario del dominio y del proyecto |
 | [Historias de usuario](requirements.md) | Lo que cada stakeholder necesita, en épicas y funcionalidades |
 | [Los ASR de Orquídea](quality-attributes.md) | Los requisitos que deciden la arquitectura, ordenados por importancia |
+| [Vistas de arquitectura](modelos/index.md) | Las decisiones de arquitectura (ADR) y los diagramas que las hacen visibles |
