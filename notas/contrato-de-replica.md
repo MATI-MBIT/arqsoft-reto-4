@@ -4,7 +4,8 @@
 la orden *«sincroniza helix reto 4»*. La réplica va en un solo sentido: lo que
 alguien edite directo en Helix se pierde en la siguiente sincronización.
 
-Arquitectura destino: `[PREGUNTA → Nicolás]` URL y código `ARQ-xxx` del reto 4.
+Arquitectura destino:
+<https://helix.virtual.uniandes.edu.co/architecture/6d798a38-3a23-4b8d-ac44-42f325b34b19>
 La comparte el grupo G1 con rol de edición: lo que se cargue lo ven todos.
 
 ---
@@ -61,29 +62,30 @@ la secuencia:
 
 ## Los ASR en Helix
 
-Cada escenario cuelga de una historia de usuario; la columna «Historia» se llena
-cuando exista `requirements.md`. El TPS del ambiente A es 7 (400 pequeños por
+Cada escenario cuelga de una historia de usuario. Helix toma la fuente del
+escenario del stakeholder de la historia, así que en S01 y S06 muestra a la
+Auditoría de BCR y no al remitente. El TPS del ambiente A es 7 (400 pequeños por
 minuto) y el del B, 20 (1 200 por minuto).
 
 | ID | Atributo en Helix | Prioridad en Helix | ¿Cabe la medida? | Historia |
 |---|---|---|---|---|
-| ASR-L04 | Performance · Latency | Critical | Es relativa: por confirmar | — |
-| ASR-D01 | Availability · Recovery | Critical | Sí: 1 000 ms | — |
-| ASR-S01 | Security · Resistance | High | Sí: 200 ms | — |
-| ASR-M01 | Modifiability | Critical | Por confirmar | — |
-| ASR-E01 | Performance · Scalability | High | Sí: 5 000 ms, TPS 20 | — |
-| ASR-I01 | Interoperability | High | Por confirmar | — |
-| ASR-D03 | Availability · Prevention | High | No es de tiempo | — |
-| ASR-L01 | Performance · Latency | High | Sí: 1 000 ms | — |
-| ASR-S03 | Security · Resistance | High | No es de tiempo | — |
-| ASR-S06 | Security · Resistance | Critical | No es de tiempo | — |
-| ASR-D04 | Availability · Prevention | High | Sí: 1 000 ms | — |
-| ASR-L03 | Performance · Latency | Medium | No: 300 000 ms supera el techo de 60 000 ms | — |
-| ASR-D02 | Availability · Recovery | Medium | Sí: 10 000 ms | — |
-| ASR-L05 | Performance · Latency | Medium | Sí: 30 000 ms | — |
-| ASR-M02 | Modifiability | Medium | Por confirmar | — |
-| ASR-S04 | Security · Detection | Medium | No es de tiempo | — |
-| ASR-I02 | Interoperability | Low | Por confirmar | — |
+| ASR-L04 | Performance · Latency | Critical | Es relativa: por confirmar | HU-03 |
+| ASR-D01 | Availability · Recovery | Critical | Sí: 1 000 ms | HU-06 |
+| ASR-S01 | Security · Resistance | High | Sí: 200 ms | HU-02 |
+| ASR-M01 | Modifiability | Critical | Por confirmar | HU-11 |
+| ASR-E01 | Performance · Scalability | High | Sí: 5 000 ms, TPS 20 | HU-03 |
+| ASR-I01 | Interoperability | High | Por confirmar | HU-13 |
+| ASR-D03 | Availability · Prevention | High | No es de tiempo | HU-07 |
+| ASR-L01 | Performance · Latency | High | Sí: 1 000 ms | HU-01 |
+| ASR-S03 | Security · Resistance | High | No es de tiempo | HU-09 |
+| ASR-S06 | Security · Resistance | Critical | No es de tiempo | HU-02 |
+| ASR-D04 | Availability · Prevention | High | Sí: 1 000 ms | HU-11 |
+| ASR-L03 | Performance · Latency | Medium | No: 300 000 ms supera el techo de 60 000 ms | HU-04 |
+| ASR-D02 | Availability · Recovery | Medium | Sí: 10 000 ms | HU-07 |
+| ASR-L05 | Performance · Latency | Medium | Sí: 30 000 ms | HU-03 |
+| ASR-M02 | Modifiability | Medium | Por confirmar | HU-12 |
+| ASR-S04 | Security · Detection | Medium | No es de tiempo | HU-14 |
+| ASR-I02 | Interoperability | Low | Por confirmar | HU-10 |
 
 ---
 

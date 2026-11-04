@@ -23,7 +23,8 @@ a Helix. Nunca al revés. El procedimiento está en `notas/contrato-de-replica.m
 y la interfaz de Helix, en `notas/helix-recorrido-funcional.md` (heredado del
 reto 2).
 
-Arquitectura del reto 4 en Helix: `[PREGUNTA → Nicolás]` URL y código `ARQ-xxx`.
+Arquitectura del reto 4 en Helix:
+<https://helix.virtual.uniandes.edu.co/architecture/6d798a38-3a23-4b8d-ac44-42f325b34b19>
 
 ## Insumos
 
@@ -51,11 +52,11 @@ front matter la clave `helix_section`:
 | Archivo | `helix_section` | Papel | Estado |
 |---|---|---|---|
 | `index.md` | (portada) | — | Hecho |
-| `architecture.md` | `Objective` | Insumo | Pendiente |
-| `stakeholders.md` | `Stakeholders` | Insumo | Pendiente |
-| `constraints.md` | `Constraints` | Insumo | Pendiente |
-| `requirements.md` | `Requirements & Quality` | Insumo | Pendiente |
-| `glossary.md` | `Objective → Glossary` | Insumo | Pendiente |
+| `architecture.md` | `Objective` | Insumo | Hecho |
+| `stakeholders.md` | `Stakeholders` | Insumo | Hecho |
+| `constraints.md` | `Constraints` | Insumo | Hecho |
+| `requirements.md` | `Requirements & Quality` | Insumo | Hecho |
+| `glossary.md` | `Objective → Glossary` | Insumo | Hecho |
 | `quality-attributes.md` | `Requirements & Quality → Quality Scenarios` | Sale de los insumos | Hecho |
 | `experiments.md` | `Experiments` | Valida decisiones | Pendiente |
 | `results.md` | `Experiments → Results & analysis` | Resultados | Pendiente |
@@ -70,7 +71,8 @@ que pasar, nunca en cuánto tiempo: el umbral aparece por primera vez en el
 escenario de calidad.
 
 Para verificar: `grep -c ASR docs/*.md` debe dar cero en todo salvo
-`quality-attributes.md`, `experiments.md` y `results.md`.
+`index.md` (la portada enlaza la página de ASR), `quality-attributes.md`,
+`experiments.md` y `results.md`.
 
 ## Cómo se escriben los ASR
 

@@ -1,6 +1,6 @@
 ---
 title: Los ASR de Orquídea
-nav_order: 2
+nav_order: 7
 helix_section: "Requirements & Quality → Quality Scenarios"
 ---
 
@@ -51,6 +51,30 @@ Los cuatro primeros son **críticos**: cada uno cubre una de las cuatro tensione
 - **I01** comparte el problema de M01, y los contratos de API de los sistemas externos cambian con menos frecuencia que la Circular `[SUPUESTO → BCR]`.
 
 Del 8 al 11 son requisitos explícitos del enunciado que BCR no listó y que pesan en la estructura. Del 12 al 17 completan el alcance. BCR evalúa tres de ellos (M02, S04 e I02) con su propia inspección de código en la Fase 4 de la hoja de ruta.
+
+### De qué historia de usuario sale cada ASR
+
+Cada escenario de calidad cuelga de una [historia de usuario](requirements.md): la historia dice qué necesita el stakeholder, y el ASR, con qué calidad.
+
+| ASR | Historia |
+|---|---|
+| [ASR-L04](#asr-l04) | [HU-03](requirements.md) |
+| [ASR-D01](#asr-d01) | [HU-06](requirements.md) |
+| [ASR-S06](#asr-s06) | [HU-02](requirements.md) |
+| [ASR-M01](#asr-m01) | [HU-11](requirements.md) |
+| [ASR-S01](#asr-s01) | [HU-02](requirements.md) |
+| [ASR-E01](#asr-e01) | [HU-03](requirements.md) |
+| [ASR-I01](#asr-i01) | [HU-13](requirements.md) |
+| [ASR-D03](#asr-d03) | [HU-07](requirements.md) |
+| [ASR-L01](#asr-l01) | [HU-01](requirements.md) |
+| [ASR-S03](#asr-s03) | [HU-09](requirements.md) |
+| [ASR-D04](#asr-d04) | [HU-11](requirements.md) |
+| [ASR-L03](#asr-l03) | [HU-04](requirements.md) |
+| [ASR-D02](#asr-d02) | [HU-07](requirements.md) |
+| [ASR-L05](#asr-l05) | [HU-03](requirements.md) |
+| [ASR-M02](#asr-m02) | [HU-12](requirements.md) |
+| [ASR-S04](#asr-s04) | [HU-14](requirements.md) |
+| [ASR-I02](#asr-i02) | [HU-10](requirements.md) |
 
 ## 2. Ambientes
 
