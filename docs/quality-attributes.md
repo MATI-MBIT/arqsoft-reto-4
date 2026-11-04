@@ -131,11 +131,11 @@ El eje es el flujo de datos del dominio; el stakeholder va como columna auxiliar
 
 ## 4. Fichas
 
-Cada ficha trae, debajo de la tabla, un diagrama de secuencia con Orquídea como caja negra. Muestra quién produce el estímulo y quién más está en juego, el ambiente con sus cifras, dónde empieza (t0) y dónde termina (t1) la medición, y la medida escrita sobre esos dos instantes. No muestra componentes internos: esos los decide el diseño, no el requisito.
+Cada ficha trae, debajo de la tabla, un diagrama de secuencia con Orquídea como caja negra. La banda azul encierra lo que se mide: el estímulo, la respuesta y los instantes t0 y t1 entre los que corre la medida. La banda roja dice qué familia de soluciones descarta el número, que es lo que hace del requisito un ASR. Lo que queda fuera de las dos bandas pasa en el escenario pero no entra en la medida. El diagrama no muestra componentes internos: esos los decide el diseño, no el requisito.
 
 ### ASR-L04 — Los masivos no degradan a los pequeños {#asr-l04}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | Varios remitentes que envían a la vez archivos pequeños y masivos |
 | **Estímulo** | Llegan archivos pequeños (1 a 50 registros) con arribo estocástico mientras 5 masivos de hasta 100 000 registros están en proceso |
@@ -149,23 +149,28 @@ Cada ficha trae, debajo de la tabla, un diagrama de secuencia con Orquídea como
 
 ```mermaid
 sequenceDiagram
-    participant M as Remitentes de masivos
-    participant P as Fuente · remitente de un pequeño
+    participant P as FUENTE · remitente de un pequeño
     participant O as Orquídea
-    Note over M,O: Ambiente A · 400 pequeños por minuto · sin fallas
+    participant M as Remitentes de masivos
+    Note over P,M: AMBIENTE A · 400 pequeños por minuto · sin fallas
     M->>O: 5 archivos masivos de hasta 100 000 registros
-    Note right of O: Los 5 masivos siguen en proceso
-    P->>O: Estímulo · archivo pequeño de 1 a 50 registros
+    Note over O,M: Los 5 masivos siguen en proceso
+    rect rgb(222, 236, 255)
+    P->>O: ESTÍMULO · archivo pequeño de 1 a 50 registros
     Note over P,O: t0 · último byte recibido
-    Note over O: Artefacto · procesamiento completo del pequeño<br/>verificación, validación, enriquecimiento,<br/>transformación y persistencia
-    O-->>P: Respuesta · resultado definitivo, sin esperar a los masivos
-    Note over P,O: t1 · resultado disponible para el remitente
-    Note over M,O: Medida · p99 de t1 − t0 con 5 masivos ≤ 1,10 × p99 de t1 − t0 sin masivos
+    Note over O: ARTEFACTO · procesamiento completo del pequeño
+    O-->>P: RESPUESTA · resultado definitivo, sin esperar a los masivos
+    Note over P,O: t1 · resultado disponible
+    Note over P,O: MEDIDA · p99 de t1 − t0 con masivos ≤ 1,10 × p99 sin masivos
+    end
+    rect rgb(255, 228, 225)
+    Note over P,M: LO QUE EL ASR DESCARTA · pequeños y masivos en la misma fila.<br/>El pequeño esperaría a que avancen los masivos, como hoy en horas pico
+    end
 ```
 
 ### ASR-D01 — La falla de un externo no llega al acuse {#asr-d01}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | STM, ANTA, MAMC, RNIC o la ECD: sistemas que BCR no controla |
 | **Estímulo** | Uno de ellos deja de responder o responde con lentitud extrema, durante horas, mientras siguen llegando archivos |
@@ -179,25 +184,32 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant R as Remitente
+    box rgb(240,240,240) Fuera de BCR
+    participant X as FUENTE · STM, ANTA, MAMC, RNIC o ECD
+    end
     participant O as Orquídea
-    participant X as Fuente · STM, ANTA, MAMC, RNIC o la ECD
-    Note over R,X: Ambiente C1 · carga de A · un externo degradado durante horas
-    X--xO: Estímulo · deja de responder o responde con lentitud extrema
-    R->>O: Archivo firmado
-    Note over R,O: t0 · último byte recibido
-    Note over O: Artefacto · recepción y acuse
-    O-->>R: Respuesta · acuse de recibo, sin esperar al externo
-    Note over R,O: t1 · acuse entregado
-    Note over O,X: Lo que depende del externo queda pendiente<br/>ningún archivo se rechaza por la falla
-    X->>O: El externo vuelve
+    participant R as Remitente
+    Note over X,R: AMBIENTE C1 · 400 pequeños/min y 5 masivos · un externo caído o lento durante horas
+    X--xO: ESTÍMULO · deja de responder, o tarda horas en hacerlo
+    rect rgb(222, 236, 255)
+    R->>O: Envía un archivo firmado
+    Note over O,R: t0 · último byte recibido
+    Note over O: ARTEFACTO · recepción y acuse
+    O-->>R: RESPUESTA · acuse de recibo, sin esperar al externo
+    Note over O,R: t1 · acuse entregado
+    Note over O,R: MEDIDA · p99 de t1 − t0 ≤ 1 s, igual que con todo sano
+    end
+    Note over O: Lo que necesita al externo queda pendiente.<br/>Ningún archivo se rechaza por la falla
+    X->>O: Horas después, el externo vuelve
     O-->>R: Resultado definitivo, fuera de esta medida
-    Note over R,X: Medida · p99 de t1 − t0 ≤ 1 s, el mismo umbral que en A
+    rect rgb(255, 228, 225)
+    Note over X,R: LO QUE EL ASR DESCARTA · un acuse que espera la respuesta del externo.<br/>Con el externo caído, el remitente pasaría horas sin acuse
+    end
 ```
 
 ### ASR-S06 — Ningún archivo sin verificar llega a resultado definitivo {#asr-s06}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | Un remitente cuyo archivo trae una firma, una estampa o un certificado inválido, o que no se pudo verificar |
 | **Estímulo** | El archivo llega y su verificación criptográfica falla o queda incompleta, por ejemplo porque la ECD está caída y la información de revocación venció |
@@ -211,25 +223,32 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant R as Fuente · remitente
+    participant R as FUENTE · remitente
     participant O as Orquídea
+    box rgb(240,240,240) Fuera de BCR
     participant E as ECD
-    Note over R,E: Ambiente A, y C1 con la ECD caída · carga de A
-    R->>O: Estímulo · archivo con firma, estampa o certificado inválido, o sin poder verificarse
+    end
+    Note over R,E: AMBIENTE A, y C1 con la ECD caída · 400 pequeños/min y 5 masivos
+    R->>O: ESTÍMULO · archivo con firma, estampa o certificado inválido, o que no se puede verificar
     O-->>R: Acuse de recibo, que puede salir antes de verificar
     E--xO: Caída, y la información de revocación ya venció
-    Note over O: Artefacto · paso de acusado a resultado definitivo<br/>el archivo espera y no se acepta
+    rect rgb(222, 236, 255)
+    Note over O: ARTEFACTO · paso de acusado a resultado definitivo
     alt La verificación termina y falla
-        O-->>R: Respuesta · rechazo con la causa
+        O-->>R: RESPUESTA · rechazo con la causa
     else La verificación sigue incompleta
-        Note over O: Respuesta · sigue sin resultado definitivo
+        Note over O: RESPUESTA · el archivo espera, sin resultado definitivo
     end
-    Note over R,E: Medida · 0 archivos con aceptación total o parcial sin firma, estampa y revocación verificadas
+    Note over R,O: MEDIDA · 0 archivos aceptados sin firma, estampa y revocación verificadas
+    end
+    rect rgb(255, 228, 225)
+    Note over R,E: LO QUE EL ASR DESCARTA · dar por bueno un archivo porque ya se acusó.<br/>Un certificado robado o revocado terminaría en el registro oficial
+    end
 ```
 
 ### ASR-M01 — Una regla cambiaria nueva en 4 h-persona {#asr-m01}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | La Junta Directiva de BCR, que modifica la Circular Reglamentaria Externa |
 | **Estímulo** | Una regla cambiaria nueva o modificada (un tope, la consistencia de tasas, los declarantes o una vigencia) que usa datos que la declaración ya trae o que un externo integrado ya entrega, con la fecha desde la que rige. Cambia con frecuencia `[PREGUNTA → BCR]` ¿cuántas veces al año? · Tipo: adaptativo |
@@ -245,24 +264,29 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant J as Fuente · Junta Directiva de BCR
+    participant J as FUENTE · Junta Directiva de BCR
     participant T as Equipo de TI de BCR
     participant O as Orquídea en producción
     participant R as Remitentes
-    Note over J,R: Ambiente · ligado en despliegue, sin recompilar ni detener el flujo
-    J->>T: Estímulo · regla cambiaria nueva con fecha de vigencia, sobre datos que ya llegan
+    Note over J,R: AMBIENTE · ligado en despliegue, sin recompilar ni detener el flujo
+    J->>T: ESTÍMULO · regla cambiaria nueva con fecha de vigencia, sobre datos que ya llegan
+    rect rgb(222, 236, 255)
     Note over T: t0 · especificación aprobada
     T->>T: Implementa y prueba la regla
-    T->>O: Respuesta · la regla queda en producción
+    T->>O: RESPUESTA · la regla queda en producción
     Note over T,O: t1 · regla en producción
+    Note over J,O: MEDIDA · esfuerzo entre t0 y t1 ≤ 4 h-persona, con desarrollo y pruebas
+    end
     R->>O: Archivos recibidos desde la fecha de vigencia
-    Note over O: Artefacto · aplicación de reglas cambiarias<br/>la regla nueva rige para estos archivos
-    Note over J,R: Medida · esfuerzo entre t0 y t1 ≤ 4 h-persona, con desarrollo y pruebas, sin la aprobación regulatoria
+    Note over O: ARTEFACTO · aplicación de reglas cambiarias<br/>la regla nueva rige para estos archivos
+    rect rgb(255, 228, 225)
+    Note over J,R: LO QUE EL ASR DESCARTA · reglas escritas en el código del sistema.<br/>Cada cambio de la Circular obligaría a recompilar y redesplegar todo
+    end
 ```
 
 ### ASR-S01 — Veredicto criptográfico en 200 ms {#asr-s01}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | Un remitente, legítimo o con un certificado vencido o revocado |
 | **Estímulo** | Envía un archivo firmado y con estampa cronológica, de hasta 50 MB; arribo estocástico |
@@ -276,20 +300,28 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant R as Fuente · remitente
+    participant R as FUENTE · remitente
     participant O as Orquídea
-    Note over R,O: Ambiente A · 400 pequeños por minuto y 5 masivos · sin fallas
-    R->>O: Estímulo · archivo firmado y con estampa, de hasta 50 MB
+    box rgb(240,240,240) Fuera de BCR
+    participant E as ECD
+    end
+    Note over R,E: AMBIENTE A · 400 pequeños por minuto y 5 masivos · sin fallas
+    rect rgb(222, 236, 255)
+    R->>O: ESTÍMULO · archivo firmado y con estampa, de hasta 50 MB
     Note over R,O: t0 · último byte recibido
-    Note over O: Artefacto · verificación de firma, estampa<br/>y vigencia o revocación del certificado
+    Note over O: ARTEFACTO · verificación de firma, estampa<br/>y vigencia o revocación del certificado
     Note over O: t1 · veredicto, válido o inválido con su causa
-    O-->>R: Respuesta · acuse o rechazo, dentro del segundo de L01
-    Note over R,O: Medida · p99 de t1 − t0 ≤ 200 ms en el 100 % de los archivos<br/>lo que esta verificación protege lo mide S06
+    Note over R,O: MEDIDA · p99 de t1 − t0 ≤ 200 ms en el 100 % de los archivos
+    end
+    O-->>R: RESPUESTA · acuse o rechazo, dentro del segundo de L01
+    rect rgb(255, 228, 225)
+    Note over R,E: LO QUE EL ASR DESCARTA · consultar a la ECD por cada archivo,<br/>o cargar entero en memoria un archivo de 50 MB para verificarlo
+    end
 ```
 
 ### ASR-E01 — El pico de pequeños en 5 s {#asr-e01}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | Los remitentes, en los cierres de mercado diario y los vencimientos regulatorios |
 | **Estímulo** | 1 200 archivos pequeños por minuto durante 45 minutos, en ráfaga `[SUPUESTO → BCR]`, con 5 masivos en paralelo |
@@ -303,24 +335,29 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant R as Fuente · remitentes de pequeños
-    participant M as Remitentes de masivos
+    participant R as FUENTE · remitentes de pequeños
     participant O as Orquídea
-    Note over R,O: Ambiente B · cierre de mercado diario o vencimiento regulatorio · sin fallas
+    participant M as Remitentes de masivos
+    Note over R,M: AMBIENTE B · cierre de mercado diario o vencimiento regulatorio · sin fallas
     M->>O: 5 masivos en paralelo
+    rect rgb(222, 236, 255)
     loop Durante 45 minutos
-        R->>O: Estímulo · 1 200 archivos pequeños por minuto, en ráfaga
+        R->>O: ESTÍMULO · 1 200 archivos pequeños por minuto, en ráfaga
         Note over R,O: t0 de cada archivo · último byte
-        Note over O: Artefacto · procesamiento completo de los pequeños
-        O-->>R: Respuesta · resultado definitivo de cada uno
+        Note over O: ARTEFACTO · procesamiento completo de los pequeños
+        O-->>R: RESPUESTA · resultado definitivo de cada uno
         Note over R,O: t1 de cada archivo
     end
-    Note over R,O: Medida · p99 de t1 − t0 ≤ 5 s en cada minuto de la ventana
+    Note over R,O: MEDIDA · p99 de t1 − t0 ≤ 5 s en cada minuto de la ventana
+    end
+    rect rgb(255, 228, 225)
+    Note over R,M: LO QUE EL ASR DESCARTA · una cola que absorbe el pico y entrega en minutos,<br/>o capacidad fija para el pico durante todo el día
+    end
 ```
 
 ### ASR-I01 — El contrato nuevo de un externo en 4 h-persona {#asr-i01}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | El área de TI de BCR, que pide integrar la versión nueva del contrato de un externo |
 | **Estímulo** | STM, ANTA, MAMC o RNIC publica una versión nueva de su contrato: campos, formatos o significados distintos para la misma información |
@@ -336,24 +373,31 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant N as Externo · STM, ANTA, MAMC o RNIC
-    participant T as Fuente · área de TI de BCR
+    participant T as FUENTE · área de TI de BCR
     participant O as Orquídea en producción
-    Note over N,O: Ambiente · desarrollo · socio conocido de antemano · tercero fuera de control
-    N->>T: Estímulo · versión nueva de su contrato, con campos, formatos o significados distintos
+    box rgb(240,240,240) Fuera de BCR
+    participant N as Externo · STM, ANTA, MAMC o RNIC
+    end
+    Note over T,N: AMBIENTE · desarrollo · socio conocido de antemano · tercero fuera de control
+    N->>T: ESTÍMULO · versión nueva de su contrato, con campos, formatos o significados distintos
+    rect rgb(222, 236, 255)
     Note over T: t0 · el equipo recibe el contrato
-    T->>T: Integra y prueba la versión nueva<br/>cierra la distancia sintáctica y semántica
+    T->>T: Integra y prueba la versión nueva
     T->>O: La integración queda en producción
     Note over T,O: t1 · en producción
+    Note over T,O: MEDIDA · esfuerzo entre t0 y t1 ≤ 4 h-persona
+    end
     N->>O: Respuestas con el contrato nuevo
-    Note over O: Artefacto · enriquecimiento y validación con ese externo
-    O->>O: Respuesta · interpreta como el externo quiso, o rechaza con diagnóstico
-    Note over N,O: Medida · esfuerzo entre t0 y t1 ≤ 4 h-persona
+    Note over O: ARTEFACTO · enriquecimiento y validación con ese externo
+    O->>O: RESPUESTA · interpreta como el externo quiso, o rechaza con diagnóstico
+    rect rgb(255, 228, 225)
+    Note over T,N: LO QUE EL ASR DESCARTA · que el formato del externo se filtre al resto del flujo.<br/>Cada cambio de contrato tocaría validación, reglas y transformación
+    end
 ```
 
 ### ASR-D03 — Ninguna declaración acusada se pierde ni se duplica {#asr-d03}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | Un elemento interno de procesamiento que falla |
 | **Estímulo** | Deja de funcionar con archivos acusados en curso, en un momento impredecible |
@@ -369,18 +413,23 @@ sequenceDiagram
 sequenceDiagram
     participant R as Remitentes
     participant O as Orquídea
-    Note over R,O: Ambiente C2 sobre B · la falla ocurre en el pico de 45 minutos
+    Note over R,O: AMBIENTE C2 sobre B · la falla ocurre en el pico de 45 minutos
     R->>O: Archivos durante el pico
     O-->>R: Acuses, cada uno es una promesa
-    Note over O: Fuente y estímulo · un elemento interno falla<br/>con archivos acusados en curso
-    Note over O: Artefacto · declaraciones de archivos ya acusados<br/>se retoman sin perderse ni repetirse
-    O-->>R: Respuesta · exactamente un resultado definitivo por declaración
-    Note over R,O: Medida · 0 declaraciones acusadas sin resultado o con más de uno<br/>por conciliación entre lo acusado y lo resuelto al final del pico
+    rect rgb(222, 236, 255)
+    Note over O: FUENTE Y ESTÍMULO · un elemento interno falla<br/>con archivos acusados en curso
+    Note over O: ARTEFACTO · declaraciones de archivos ya acusados
+    O-->>R: RESPUESTA · exactamente un resultado definitivo por declaración
+    Note over R,O: MEDIDA · 0 declaraciones acusadas sin resultado o con más de uno,<br/>por conciliación entre lo acusado y lo resuelto
+    end
+    rect rgb(255, 228, 225)
+    Note over R,O: LO QUE EL ASR DESCARTA · acusar antes de que el archivo quede a salvo,<br/>o reprocesar sin saber qué se aplicó: declaraciones perdidas o dobles
+    end
 ```
 
 ### ASR-L01 — El acuse en 1 s {#asr-l01}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | Un remitente |
 | **Estímulo** | Termina de enviar un archivo de cualquier tamaño, hasta 50 MB; arribo estocástico |
@@ -394,21 +443,26 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant R as Fuente · remitente
+    participant R as FUENTE · remitente
     participant O as Orquídea
-    Note over R,O: Ambiente A · 400 pequeños por minuto y 5 masivos · sin fallas
-    R->>O: Estímulo · archivo de cualquier tamaño, hasta 50 MB
+    Note over R,O: AMBIENTE A · 400 pequeños por minuto y 5 masivos · sin fallas
+    rect rgb(222, 236, 255)
+    R->>O: ESTÍMULO · archivo de cualquier tamaño, hasta 50 MB
     Note over R,O: t0 · último byte recibido, la subida no cuenta
-    Note over O: Artefacto · recepción y acuse<br/>registra el evento e incluye el veredicto de S01
-    O-->>R: Respuesta · acuse que confirma el inicio del procesamiento
+    Note over O: ARTEFACTO · recepción y acuse<br/>registra el evento e incluye el veredicto de S01
+    O-->>R: RESPUESTA · acuse que confirma el inicio del procesamiento
     Note over R,O: t1 · acuse entregado
+    Note over R,O: MEDIDA · p99 de t1 − t0 ≤ 1 s
+    end
     Note over O: El procesamiento sigue después del acuse
-    Note over R,O: Medida · p99 de t1 − t0 ≤ 1 s
+    rect rgb(255, 228, 225)
+    Note over R,O: LO QUE EL ASR DESCARTA · validar el archivo completo antes de acusar.<br/>100 000 registros no caben en un segundo
+    end
 ```
 
 ### ASR-S03 — Ningún remitente ve ni altera operaciones de otro {#asr-s03}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | Un remitente autenticado que, con o sin malicia, intenta llegar a operaciones que reportó otro remitente |
 | **Estímulo** | Pide consultar resultados, declaraciones o archivos de otro remitente, o envía correcciones o anulaciones sobre declaraciones que otro reportó |
@@ -422,21 +476,25 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant A as Fuente · remitente A, autenticado
+    participant A as FUENTE · remitente A, autenticado
     participant O as Orquídea
-    Note over A,O: Ambiente A · 400 pequeños por minuto y 5 masivos · sin fallas
-    A->>O: Estímulo · consulta, corrige o anula una operación que reportó el remitente B
-    Note over O: Artefacto · consulta, corrección y anulación<br/>la identidad sale de la autenticación y del certificado
-    O-->>A: Respuesta · negado
-    Note over O: El intento queda en la auditoría
+    Note over A,O: AMBIENTE A · 400 pequeños por minuto y 5 masivos · sin fallas
+    rect rgb(222, 236, 255)
+    A->>O: ESTÍMULO · consulta, corrige o anula una operación que reportó el remitente B
+    Note over O: ARTEFACTO · consulta, corrección y anulación
+    O-->>A: RESPUESTA · negado, y el intento queda en la auditoría
     A->>O: Consulta una operación que reportó él mismo
-    O-->>A: Respuesta · la operación
-    Note over A,O: Medida · 0 accesos efectivos a operaciones de otro remitente<br/>sobre el catálogo de pruebas de acceso cruzado
+    O-->>A: La operación
+    Note over A,O: MEDIDA · 0 accesos efectivos a operaciones de otro remitente,<br/>sobre el catálogo de pruebas de acceso cruzado
+    end
+    rect rgb(255, 228, 225)
+    Note over A,O: LO QUE EL ASR DESCARTA · decidir el acceso con un campo del archivo o de la consulta.<br/>Bastaría escribir otro código de remitente para ver lo ajeno
+    end
 ```
 
 ### ASR-D04 — Un cambio en producción no llega al acuse {#asr-d04}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | El equipo de TI de BCR, que activa en producción una regla, una versión del XSD o el contrato nuevo de un externo |
 | **Estímulo** | La activación, o su reversión, ocurre con archivos llegando y en proceso |
@@ -450,24 +508,29 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant T as Fuente · equipo de TI de BCR
+    participant T as FUENTE · equipo de TI de BCR
     participant O as Orquídea
     participant R as Remitentes
-    Note over T,R: Ambiente E · cambio en producción con la carga de A
-    T->>O: Estímulo · activa o revierte una regla, un XSD o un contrato nuevo
+    Note over T,R: AMBIENTE E · cambio en producción con la carga de A
+    T->>O: ESTÍMULO · activa o revierte una regla, un XSD o un contrato nuevo
+    rect rgb(222, 236, 255)
     loop Mientras dura la activación o la reversión
         R->>O: Archivos
         Note over O,R: t0 · último byte
-        O-->>R: Respuesta · acuse, y ningún rechazo por el cambio
+        O-->>R: RESPUESTA · acuse, y ningún rechazo por el cambio
         Note over O,R: t1 · acuse
     end
-    Note over O: Artefacto · recepción y acuse<br/>cada archivo se evalúa con una sola versión
-    Note over T,R: Medida · p99 de t1 − t0 ≤ 1 s durante el cambio, el mismo umbral que en A
+    Note over O: ARTEFACTO · recepción y acuse<br/>cada archivo se evalúa con una sola versión
+    Note over O,R: MEDIDA · p99 de t1 − t0 ≤ 1 s durante el cambio, como en A
+    end
+    rect rgb(255, 228, 225)
+    Note over T,R: LO QUE EL ASR DESCARTA · una ventana de mantenimiento que detiene la recepción.<br/>El 99,99 % deja 4,4 minutos al mes
+    end
 ```
 
 ### ASR-L03 — Un masivo termina en 5 min {#asr-l03}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | Un remitente |
 | **Estímulo** | Envía un archivo masivo de hasta 100 000 registros y 50 MB mientras otros 4 masivos están en proceso |
@@ -481,20 +544,25 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant R as Fuente · remitente
+    participant R as FUENTE · remitente
     participant O as Orquídea
-    Note over R,O: Ambiente A · 400 pequeños por minuto · otros 4 masivos en proceso
-    R->>O: Estímulo · archivo masivo de 100 000 registros y 50 MB
+    Note over R,O: AMBIENTE A · 400 pequeños por minuto · otros 4 masivos en proceso
+    rect rgb(222, 236, 255)
+    R->>O: ESTÍMULO · archivo masivo de 100 000 registros y 50 MB
     Note over R,O: t0 · último byte recibido
-    Note over O: Artefacto · procesamiento completo del masivo<br/>unos 333 registros por segundo
-    O-->>R: Respuesta · resultado definitivo, aceptación total, parcial o rechazo
+    Note over O: ARTEFACTO · procesamiento completo del masivo<br/>unos 333 registros por segundo
+    O-->>R: RESPUESTA · aceptación total, parcial o rechazo
     Note over R,O: t1 · resultado disponible
-    Note over R,O: Medida · t1 − t0 ≤ 5 min para cada uno de los 5 masivos
+    Note over R,O: MEDIDA · t1 − t0 ≤ 5 min para cada uno de los 5 masivos
+    end
+    rect rgb(255, 228, 225)
+    Note over R,O: LO QUE EL ASR DESCARTA · recorrer el archivo registro por registro, en secuencia,<br/>esperando las consultas a externos de cada uno
+    end
 ```
 
 ### ASR-D02 — Lo que estaba en curso se retoma en 10 s {#asr-d02}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | Un elemento interno de procesamiento que falla |
 | **Estímulo** | Deja de funcionar con declaraciones en curso, en un momento impredecible |
@@ -511,19 +579,24 @@ sequenceDiagram
     participant R as Remitentes
     participant O as Orquídea
     participant Op as Operador de BCR
-    Note over R,Op: Ambiente C2 · falla interna con la carga de A
+    Note over R,Op: AMBIENTE C2 · falla interna con la carga de A
     R->>O: Archivos en proceso
-    Note over O: Fuente y estímulo · un elemento interno se cae<br/>con declaraciones en curso · t0
-    Note over O: Artefacto · las declaraciones que tenía en curso
+    rect rgb(222, 236, 255)
+    Note over O: FUENTE Y ESTÍMULO · un elemento interno se cae<br/>con declaraciones en curso · t0
+    Note over O: ARTEFACTO · las declaraciones que tenía en curso
+    Note over O: RESPUESTA · otro elemento las retoma<br/>t1 · la última afectada vuelve a avanzar
+    Note over R,O: MEDIDA · t1 − t0 ≤ 10 s
+    end
     Note over Op: No interviene
-    Note over O: Respuesta · otro elemento las retoma<br/>t1 · la última afectada vuelve a avanzar
     O-->>R: Resultados definitivos
-    Note over R,Op: Medida · t1 − t0 ≤ 10 s · que no se pierdan ni se repitan lo mide D03
+    rect rgb(255, 228, 225)
+    Note over R,Op: LO QUE EL ASR DESCARTA · esperar a que alguien reinicie a mano el elemento caído,<br/>o perder el estado de lo que estaba en curso
+    end
 ```
 
 ### ASR-L05 — Un mediano termina en 30 s {#asr-l05}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | Un remitente |
 | **Estímulo** | Envía un archivo mediano (51 a 5 000 registros) mientras 5 masivos están en proceso. Tasa: `[PREGUNTA → BCR]` |
@@ -537,22 +610,27 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant P as Fuente · remitente de un mediano
-    participant M as Remitentes de masivos
+    participant P as FUENTE · remitente de un mediano
     participant O as Orquídea
-    Note over P,O: Ambiente A · 400 pequeños por minuto · sin fallas
+    participant M as Remitentes de masivos
+    Note over P,M: AMBIENTE A · 400 pequeños por minuto · sin fallas
     M->>O: 5 masivos en proceso
-    P->>O: Estímulo · archivo mediano de 51 a 5 000 registros
+    rect rgb(222, 236, 255)
+    P->>O: ESTÍMULO · archivo mediano de 51 a 5 000 registros
     Note over P,O: t0 · último byte recibido
-    Note over O: Artefacto · procesamiento completo del mediano<br/>no espera detrás de los masivos
-    O-->>P: Respuesta · resultado definitivo
+    Note over O: ARTEFACTO · procesamiento completo del mediano
+    O-->>P: RESPUESTA · resultado definitivo
     Note over P,O: t1 · resultado disponible
-    Note over P,O: Medida · p99 de t1 − t0 ≤ 30 s
+    Note over P,O: MEDIDA · p99 de t1 − t0 ≤ 30 s
+    end
+    rect rgb(255, 228, 225)
+    Note over P,M: LO QUE EL ASR DESCARTA · mandar el mediano a esperar detrás de los masivos.<br/>Cinco masivos de 5 min lo dejarían fuera de los 30 s
+    end
 ```
 
 ### ASR-M02 — Una versión nueva del XSD en 4 h-persona {#asr-m02}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | La Junta Directiva de BCR, al cambiar en la Circular la estructura de las declaraciones |
 | **Estímulo** | Una versión nueva del esquema XML (XSD) de las declaraciones que agrega, quita o renombra campos sin cambiar el modelo canónico `[SUPUESTO → BCR]` · Tipo: adaptativo |
@@ -568,24 +646,29 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant J as Fuente · Junta Directiva de BCR
+    participant J as FUENTE · Junta Directiva de BCR
     participant T as Equipo de TI de BCR
     participant O as Orquídea en producción
     participant R as Remitentes
-    Note over J,R: Ambiente · ligado en despliegue
-    J->>T: Estímulo · versión nueva del XSD, que agrega, quita o renombra campos sin tocar el modelo canónico
+    Note over J,R: AMBIENTE · ligado en despliegue
+    J->>T: ESTÍMULO · versión nueva del XSD, que agrega, quita o renombra campos sin tocar el modelo canónico
+    rect rgb(222, 236, 255)
     Note over T: t0 · XSD aprobado
     T->>T: Implementa y prueba la validación
-    T->>O: Respuesta · la versión nueva queda en producción
+    T->>O: RESPUESTA · la versión nueva queda en producción
     Note over T,O: t1 · en producción
+    Note over J,O: MEDIDA · esfuerzo entre t0 y t1 ≤ 4 h-persona
+    end
     R->>O: Archivos con la versión nueva y con la anterior
-    Note over O: Artefacto · validación de estructura<br/>valida las dos versiones mientras convivan
-    Note over J,R: Medida · esfuerzo entre t0 y t1 ≤ 4 h-persona
+    Note over O: ARTEFACTO · validación de estructura<br/>valida las dos versiones mientras convivan
+    rect rgb(255, 228, 225)
+    Note over J,R: LO QUE EL ASR DESCARTA · un esquema fijo en el código,<br/>o una versión nueva que rechaza a los remitentes que aún no migran
+    end
 ```
 
 ### ASR-S04 — Toda alteración de la auditoría se detecta {#asr-s04}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | Alguien con acceso al almacenamiento, interno, por abuso o por mal uso |
 | **Estímulo** | Modifica, borra o reordena registros de auditoría ya escritos |
@@ -599,20 +682,25 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant X as Fuente · alguien con acceso al almacenamiento
+    participant X as FUENTE · alguien con acceso al almacenamiento
     participant O as Orquídea
     participant Au as Auditores de BCR
-    Note over X,Au: Ambiente A · 400 pequeños por minuto y 5 masivos · sin fallas
-    X->>O: Estímulo · modifica, borra o reordena registros de auditoría ya escritos
-    Note over O: Artefacto · auditoría de recepción, acuses y resultados
+    Note over X,Au: AMBIENTE A · 400 pequeños por minuto y 5 masivos · sin fallas
+    rect rgb(222, 236, 255)
+    X->>O: ESTÍMULO · modifica, borra o reordena registros de auditoría ya escritos
+    Note over O: ARTEFACTO · auditoría de recepción, acuses y resultados
     O->>O: Verificación de integridad siguiente
-    O-->>Au: Respuesta · alteración señalada, con el registro donde ocurrió
-    Note over X,Au: Medida · 100 % de las alteraciones del catálogo detectadas<br/>cada cuánto se verifica está abierto
+    O-->>Au: RESPUESTA · alteración señalada, con el registro donde ocurrió
+    Note over X,Au: MEDIDA · 100 % de las alteraciones del catálogo detectadas
+    end
+    rect rgb(255, 228, 225)
+    Note over X,Au: LO QUE EL ASR DESCARTA · una auditoría que quien administra el almacenamiento<br/>puede corregir sin dejar rastro
+    end
 ```
 
 ### ASR-I02 — Un área nueva de BCR recibe datos sin tocar el flujo principal {#asr-i02}
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Fuente** | Un área de BCR (estadística, analítica o búsqueda) que pide recibir los datos transformados |
 | **Estímulo** | Integrar un consumidor nuevo en un formato que hoy no se entrega: una base analítica, un índice de búsqueda o un archivo plano · Tipo: aditivo |
@@ -628,22 +716,27 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant A as Fuente · área de BCR
+    participant A as FUENTE · área de BCR
     participant T as Equipo de TI de BCR
     participant O as Orquídea
-    Note over A,O: Ambiente · desarrollo · socio conocido de antemano · propio
-    A->>T: Estímulo · pide los datos en un formato nuevo, base analítica, índice de búsqueda o archivo plano
+    Note over A,O: AMBIENTE · desarrollo · socio conocido de antemano · propio
+    A->>T: ESTÍMULO · pide los datos en un formato nuevo, base analítica, índice de búsqueda o archivo plano
+    rect rgb(222, 236, 255)
     T->>O: Integra el consumidor nuevo
-    Note over O: Artefacto · entrega de datos transformados<br/>recepción, validación, enriquecimiento,<br/>transformación y persistencia no se tocan
-    O-->>A: Respuesta · datos del modelo canónico en su formato, con el mismo significado
-    Note over A,O: Medida · 0 funciones del flujo principal modificadas
+    Note over O: ARTEFACTO · entrega de datos transformados
+    O-->>A: RESPUESTA · datos del modelo canónico en su formato, con el mismo significado
+    Note over A,O: MEDIDA · 0 funciones del flujo principal modificadas
+    end
+    rect rgb(255, 228, 225)
+    Note over A,O: LO QUE EL ASR DESCARTA · un exportador nuevo dentro del flujo de procesamiento<br/>por cada área, como en el sistema actual
+    end
 ```
 
 ### Protocolo de verificación de modificabilidad e interoperabilidad
 
 Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no van en esta encuesta.
 
-| | |
+| Parte | Descripción |
 |---|---|
 | **Panel** | Al menos dos humanos de fuera del curso, con experiencia en arquitectura de sistemas críticos o de integración. Un evaluador no humano, si se suma, va en una columna aparte y no cuenta para la mayoría |
 | **Presentación** | Los ASR, la arquitectura y las decisiones principales, contadas en neutro y sin mostrar los umbrales. No se elogian las tácticas. Después, una sesión de preguntas |
