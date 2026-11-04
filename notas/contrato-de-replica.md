@@ -71,8 +71,8 @@ minuto) y el del B, 20 (1 200 por minuto).
 | ASR-D01 | Availability · Recovery | Critical | Sí: 1 000 ms | — |
 | ASR-S01 | Security · Resistance | Critical | Sí: 200 ms | — |
 | ASR-M01 | Modifiability | Critical | Por confirmar | — |
-| ASR-E01 | Performance · Scalability | Critical | Sí: 5 000 ms, TPS 20 | — |
-| ASR-I01 | Interoperability | Critical | Por confirmar | — |
+| ASR-E01 | Performance · Scalability | High | Sí: 5 000 ms, TPS 20 | — |
+| ASR-I01 | Interoperability | High | Por confirmar | — |
 | ASR-D03 | Availability · Prevention | High | No es de tiempo | — |
 | ASR-L01 | Performance · Latency | High | Sí: 1 000 ms | — |
 | ASR-S03 | Security · Resistance | High | No es de tiempo | — |
