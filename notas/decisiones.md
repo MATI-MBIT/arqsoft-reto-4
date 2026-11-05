@@ -56,3 +56,20 @@ esperan una cifra de BCR:
   - AP-18 en SEQ-002: ASR de latencia, sin camino de fallo que demostrar. AP-16 en las generales derivadas: el emisor no copia notas. AP-20 en CMP-003/004: no son el N0. MARGEN en CST-010: defecto del emisor, sin efecto visible.
 - Puerta 3 (mirada): revisadas en PNG la vista general, SEQ-106, CLS-002, CLS-003, CON-001 y CST-007. Se leen bien.
 - Pendiente: la columna «Diagramas» del índice y el §6 de `adrs-orquidea.md` siguen con el plan anterior; actualizarlos es decisión del equipo.
+
+### 2026-11-05 · Vistas rehechas desde cero: un archivo por vista, guiadas por los cuatro ASR críticos
+
+- Pedido de Nicolás: no refinar los 51 diagramas anteriores, sino crearlos desde cero con `diagramar-uml-arquitectura` ≥ 1.20.0. Un `.drawio` por vista, máximo 3 páginas por vista (cada una profundiza la anterior), orden de importancia L04 → D01 → S06 → M01 y énfasis en sus tácticas.
+- Versión: `diagramar-uml-arquitectura · arquitectura 1.20.0` (la sesión cargó 1.19.2 de `arquitectura~g3`; se usó la 1.20.0 de `arquitectura~g4`).
+- Seis vistas en `docs/modelos/drawio/`, 14 páginas: contexto (1), funcional (3), dinámica y concurrencia (3), información (3), despliegue (1) y desarrollo (3). La vista de desarrollo es propuesta nuestra: M01 necesita N1 + N2 + clases y no cabía en las cinco vistas con el tope de 3 páginas.
+- Componentes eclosionados: Recepción y verificación (L04, S06), Adaptadores de sistemas externos (D01) y Configuración versionada (M01). Carriles, verificador de revocación, núcleo, orquestador y gestor quedan como caja negra.
+- Vista general: para que el ruteo terminara (23 aristas entre paquetes agotaban el tope del emisor) se fundieron el autorizador y los proyectores con Resultado, y la auditoría con el repositorio, y los paquetes quedaron en cuatro. DG-CON-001 salía franja (6:1) y se resolvió con `direccion: DOWN`, sin partirla.
+- Lint (puerta 2): `Contrato: lint_diagrama con fichas tactica/v1 · registro adr-log/v2 · plugin arquitectura 1.20.0`. Sobre una copia combinada de las 14 páginas (para verificar la eclosión entre archivos): 14 diagramas, 0 con ERROR, 33 avisos. Por archivo, la vista funcional da 3 ERROR de eclosión (AP-20 de Configuración versionada y AP-23 de los dos N1) porque sus N1 y N2 viven en otros archivos; es consecuencia de partir por vista, y la copia combinada los resuelve. Avisos justificados:
+  - TAC «rol sin «port»» en DG-CST-001 y DG-CST-002: el rol está en un puerto y el emisor no escribe el estereotipo en el rótulo del puerto (mismo defecto conocido de la 1.19.1).
+  - TAC «roles no verificados» de DIS-12, DIS-14, MOD-03 y SEG-18, y SEG-18 sin máquina de estados ni «provable»: sus componentes no se eclosionaron (los tres primeros se ven en DG-STM-001, DG-CON-001 y DG-CLS-002; SEG-18 es de S04, no crítico).
+  - AP-09 (14 a 18 elementos, ninguno pasa de 20) en DG-CST-001/002/003, DG-CON-001, DG-STM-001 y DG-DEP-001: los puertos y sus interfaces cuentan.
+  - LAYOUT: 12 cruces y 10 retornos en la vista general, 3 cruces en el despliegue, 1 en la concurrencia; RODEO de las aristas de los carriles al bus. AP-20 en el contexto: no es un N0.
+- Puerta 3 (mirada, PNG con draw.io desktop): contexto, vista general, DG-CST-001, DG-CON-001, DG-SEQ-001, DG-STM-001 y DG-STM-002. Se leen; la vista general es la más débil por los rodeos de las aristas hacia el bus.
+- Puerta 4: creados 7 / declarados 7. El script reporta además que el plan declara 6 `.drawio` (la regla de un solo `.drawio` por entrega, reemplazada por el pedido de un archivo por vista).
+- El `modelo.json` vivió en el scratchpad y no se versiona: tras la entrega manda cada `.drawio`.
+- Pendiente: el §6 «Plan de diagramas» de `adrs-orquidea.md` sigue con los IDs anteriores; actualizarlo es decisión del equipo.
