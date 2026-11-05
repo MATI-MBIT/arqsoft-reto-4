@@ -53,12 +53,24 @@ la secuencia:
 - Las casillas `Security Requirements` son tácticas: no se marcan al cargar un
   ASR.
 
-## Lo que falta saber del reto 4
+## Lo que se aprendió en el reto 4
 
-- `[PREGUNTA → recorrido de Helix]` Qué deslizadores trae la medida de
-  `Performance · Latency`, `Performance · Scalability`, `Modifiability` e
-  `Interoperability`. El reto 2 solo exploró disponibilidad y seguridad.
-- ASR-L03 mide 5 min (300 000 ms) y no cabe en el techo de 60 000 ms.
+Recorrido del 2026-11-04, al cargar los escenarios:
+
+- **Cada atributo trae otro formulario de medida.**
+  - `Performance · Latency`: p95 y p99, con techo de 6 000 ms.
+  - `Performance · Scalability`: carga inicial y final en TPS, duración de la subida y p95 y p99 con techo de 6 000 ms.
+  - `Availability`: un porcentaje obligatorio, que arranca en 99 %, y `Detection Time`, con techo de 60 000 ms.
+  - `Security`: nivel de autenticación, `Response Time` con techo de 60 000 ms y casillas de requisitos.
+  - `Modifiability` e `Interoperability`: ambiente y medida como texto enriquecido, sin artefacto ni TPS.
+- **Lo que no cabe en un control va en el texto.** Las medidas que no son de tiempo, las relativas y las que pasan el techo se escriben en el ambiente con el prefijo «Medida:», y el control queda en 0.
+  - No caben: L04 (relativa); L03 y L05 (pasan los 6 s); S03, S04, S06 y D03 (no son de tiempo); D01 y D04 (no son detección).
+- **El porcentaje de disponibilidad es obligatorio.** Ningún ASR lo fija, así que el texto de cada escenario de `Availability` lo aclara.
+- **El nombre del escenario lo genera Helix** con el título de la historia y el atributo. El ID del ASR va al comienzo del artefacto, o del ambiente en modificabilidad e interoperabilidad.
+- **«Undefined parts: Artifact»** aparece en el árbol de utilidad aunque el texto esté guardado: Helix espera que el artefacto sea un elemento de un modelo. Se resuelve cuando se dibujen las vistas en Helix.
+- **El rol de un stakeholder es un combo con sugerencias.** La lista de sugerencias tapa el botón `Done`. Hay que cerrarla con el botón «Show used roles» antes de guardar, porque si no el clic cae sobre una sugerencia y cambia el rol.
+- **En la lista de atributos, «Detection» aparece dos veces** (Availability y Security). Se elige con un clic sobre la opción, no por su texto.
+- **Los campos de título se guardan con un retraso.** Si se cambia de nodo enseguida, el título se pierde. Hay que esperar a que el árbol muestre el título nuevo.
 
 ## Los ASR en Helix
 
@@ -81,7 +93,6 @@ minuto) y el del B, 20 (1 200 por minuto).
 | ASR-S06 | Security · Resistance | Critical | No es de tiempo | HU-02 |
 | ASR-D04 | Availability · Prevention | High | Sí: 1 000 ms | HU-11 |
 
-Ojo con D01 y D04: su medida es la latencia del acuse en un ambiente degradado. En Helix, el deslizador de `Availability` se llama `Detection Time` y la mostraría como tiempo de detección. Al sincronizar hay que decidir si se carga ahí, con la aclaración en el ambiente, o como `Performance · Latency`.
 | ASR-L03 | Performance · Latency | Medium | No: 300 000 ms supera el techo de 60 000 ms | HU-04 |
 | ASR-D02 | Availability · Recovery | Medium | Sí: 10 000 ms | HU-07 |
 | ASR-L05 | Performance · Latency | Medium | Sí: 30 000 ms | HU-03 |
@@ -89,8 +100,23 @@ Ojo con D01 y D04: su medida es la latencia del acuse en un ambiente degradado. 
 | ASR-S04 | Security · Detection | Medium | No es de tiempo | HU-14 |
 | ASR-I02 | Interoperability | Low | Por confirmar | HU-10 |
 
+D01 y D04 miden la latencia del acuse en un ambiente degradado. Se cargaron como
+`Availability` con el control `Detection Time` en 0 y la medida escrita en el
+ambiente, para que Helix no la muestre como tiempo de detección (decisión del
+2026-11-04).
+
 ---
 
 ## Bitácora de sincronizaciones
 
-Sin sincronizaciones todavía.
+### 2026-11-04 — primera carga completa
+
+| Sección | Qué se cargó | Verificación |
+|---|---|---|
+| `Stakeholders` | Los 12 de `stakeholders.md` | Lista leída tras recargar |
+| `Objective` | `Statement`, `In scope`, `Out of scope`, `Purpose` y `Glossary`, por `Import Markdown` | Longitud y comienzo de cada campo tras recargar |
+| `Constraints` | R-1 a R-9 en `Business` y R-10 a R-12 en `Technology`, con el origen al final. R-13 a R-15 no van: Helix no tiene restricciones de proyecto | Los 12 textos tras recargar |
+| `Requirements & Quality` | 4 épicas (EP-001 a 004), 10 funcionalidades (FE-001 a 010) y 14 historias (US-001 a 014), con el ID de `docs/` al comienzo del título. Los criterios de aceptación no se cargan: Helix no tiene campo para ellos | Árbol completo |
+| Escenarios de calidad | Los 17 ASR (QS-001 a QS-017), cada uno en su historia | Árbol de utilidad tras recargar: 5 de desempeño, 4 de disponibilidad, 4 de seguridad, 2 de interoperabilidad y 2 de modificabilidad |
+
+El recorrido del reto 2 había dejado rastro sucio en `ARQ-005`; en esta arquitectura no quedó nada sucio.
