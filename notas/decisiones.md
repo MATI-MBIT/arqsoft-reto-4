@@ -42,3 +42,17 @@ esperan una cifra de BCR:
   - LAYOUT: 24 cruces en la vista general (el bus conecta casi todo) y aristas de retorno en varias páginas: preferencias, no bloquean.
   - AP-09 (15 elementos) en la caja blanca de Adaptadores; AP-18/19/20 en el contexto y en páginas de componentes que no demuestran una medida.
 - Puerta 3 (mirada): revisadas en PNG la vista general, SEQ-005, CST-003, DEP-001 y CLS-001. Defecto visible: en CST-003 la línea del rol «adaptee» pasa sobre el rótulo del puerto supplier.
+
+### 2026-11-05 · Regeneración completa: tácticas visibles por tipo de diagrama
+
+- Pedido de Nicolás: que cada táctica se vea en el diagrama donde mejor se demuestra (secuencia, clases, estados, concurrencia), no solo como marca en los componentes. El mapa táctica → diagrama primario quedó en `docs/modelos/index.md`.
+- 51 páginas (antes 26), desde un solo `modelo.json` con ids compartidos (el modelo vive en el scratchpad de la sesión; no se versiona). Nuevas: 6 eclosiones más (Verificador de revocación, Núcleo de validación en dos N1, Orquestador, Autorizador, Auditoría, Proyectores), DG-CLS-002 (patrón Adapter, INT-01), DG-CLS-003 (modelo canónico, INT-04), DG-CLS-004 (API del motor de reglas, MOD-03 y MOD-09), DG-STM-003/004/005 (pendientes, outbox, cadena de auditoría), DG-CON-002 (pendientes y drenaje, LAT-02), DG-SEQ-010 (contrato nuevo de un externo, ASR-I01), DG-ACT-001 (activar y revertir, MOD-12) y las generales derivadas DG-CON-000 y DG-CLS-000.
+- Vista general: cada componente con la marca de su táctica principal. Para que se lea, omite quién más publica en el bus (núcleo, orquestador), la suscripción del gestor de pendientes y quién más escribe en la auditoría; esas relaciones están en las cajas blancas y en DG-CON-002. Quedan 20 cruces y 7 retornos (preferencia, no bloquea).
+- DG-STM-001 se simplificó (sin Recibido ni PendienteEnriquecimiento, que pasó a DG-STM-003) porque como cadena salía franja y el emisor pedía partirla.
+- Lint: `Contrato: lint_diagrama con fichas tactica/v1 · registro adr-log/v2 · plugin arquitectura 1.19.1` · 51 diagramas, 0 con ERROR, 42 avisos. Sin AP-20 a AP-23 ni TAC de roles faltantes ni de máquina de estados faltante. Justificación de los avisos:
+  - TAC «rol sin «port»» (12, en CST-003/005/006/008/009/010/011): el rol está en un puerto y el emisor no escribe el estereotipo en el rótulo del puerto. TAC «Auditor» en CST-009: falso positivo, el nombre del componente «Auditoría» contiene «Auditor»; la parte `auditor : VerificadorDeIntegridad` existe.
+  - AP-09 (13 a 18 elementos) en DEP-001, CST-001/002/005/006/007/008, CON-002 y ACT-001: los puertos y sus interfaces cuentan; ninguno pasa de 20.
+  - AP-19 en SEQ-008, SEQ-009, SEQ-107, SEQ-109 y SEQ-111: su medida es un conteo (0 accesos, 100 % detectadas, 0 funciones), no un tiempo; está anotada en la nota.
+  - AP-18 en SEQ-002: ASR de latencia, sin camino de fallo que demostrar. AP-16 en las generales derivadas: el emisor no copia notas. AP-20 en CMP-003/004: no son el N0. MARGEN en CST-010: defecto del emisor, sin efecto visible.
+- Puerta 3 (mirada): revisadas en PNG la vista general, SEQ-106, CLS-002, CLS-003, CON-001 y CST-007. Se leen bien.
+- Pendiente: la columna «Diagramas» del índice y el §6 de `adrs-orquidea.md` siguen con el plan anterior; actualizarlos es decisión del equipo.
