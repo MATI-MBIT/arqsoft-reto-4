@@ -28,7 +28,7 @@ helix_section: "Objective → Glossary"
 
 **Archivo pequeño, mediano y masivo.** Pequeño, de 1 a 50 registros; mediano, de 51 a 5 000; masivo, de 5 001 a 100 000.
 
-**Acuse de recibo.** La respuesta con que Orquídea confirma que recibió un archivo y empezó a procesarlo. No dice si el archivo es válido.
+**Acuse de recibo.** La respuesta con que Orquídea confirma que recibió un archivo y empezó a procesarlo. Dice si la firma ya se verificó, pero nunca que el contenido sea válido: eso lo dice el resultado definitivo.
 
 **Acuse de custodia.** El acuse de un archivo cuya verificación criptográfica todavía no termina: confirma que BCR lo tiene guardado, no que la firma sea válida.
 

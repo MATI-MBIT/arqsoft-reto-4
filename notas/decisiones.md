@@ -34,11 +34,11 @@ esperan una cifra de BCR:
 
 ## Diagramas (docs/modelos/drawio/orquidea.drawio)
 
-- 2026-11-04 · 26 páginas generadas con `diagramar-uml-arquitectura` desde un solo modelo (ids compartidos entre vistas): los 17 diagramas del plan de ADR más 8 de eclosión (caja blanca y secuencia interna de Recepción y verificación, Carril pesado, Adaptadores y Configuración versionada) y la máquina de estados del circuit breaker.
+- 2026-11-04 · 26 páginas generadas (revisadas el mismo día: clasificación por bytes, nodo de procesamiento en el despliegue, parte «control» del circuit breaker) con `diagramar-uml-arquitectura` desde un solo modelo (ids compartidos entre vistas): los 17 diagramas del plan de ADR más 8 de eclosión (caja blanca y secuencia interna de Recepción y verificación, Carril pesado, Adaptadores y Configuración versionada) y la máquina de estados del circuit breaker.
 - Lint: `Contrato: lint_diagrama con fichas tactica/v1 · registro adr-log/v2 · plugin arquitectura 1.19.1` · 26 diagramas, 0 con ERROR, 30 avisos. Justificación de los avisos:
   - TAC «roles no verificados» (SEG-03, SEG-18, MOD-03, MOD-04, INT-04, DIS-12, DIS-14, DIS-17): esos componentes no se eclosionaron; quedan como hueco.
   - TAC «máquina de estados» (SEG-02, SEG-18, MOD-04, DIS-17): falta su diagrama de estados; hueco.
-  - TAC de estereotipo en roles del N1 de Adaptadores: los puertos llevan «port» pero el lint no lo lee en el rótulo del rol; se revisó a ojo.
+  - TAC de roles en el N1 de Adaptadores: el rol «client» estaba ligado a una parte «adapter», y la ficha pide «control» o «boundary»; se corrigió con la parte `client : LlamadaProtegida` «control». Quedan 4 avisos de roles en puertos (target, supplier, adaptee, breakerEvents): el modelo los declara con estereotipo «port», pero el emisor no escribe el estereotipo en el rótulo del puerto (verificado en el XML), así que el lint no lo ve.
   - LAYOUT: 24 cruces en la vista general (el bus conecta casi todo) y aristas de retorno en varias páginas: preferencias, no bloquean.
   - AP-09 (15 elementos) en la caja blanca de Adaptadores; AP-18/19/20 en el contexto y en páginas de componentes que no demuestran una medida.
 - Puerta 3 (mirada): revisadas en PNG la vista general, SEQ-005, CST-003, DEP-001 y CLS-001. Defecto visible: en CST-003 la línea del rol «adaptee» pasa sobre el rótulo del puerto supplier.

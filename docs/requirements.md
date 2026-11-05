@@ -141,7 +141,7 @@ Dicen qué tiene que pasar para dar la historia por cumplida.
 
 | HU | Criterios |
 |---|---|
-| HU-01 | El acuse llega para archivos de 1 a 100 000 registros · El acuse dice que el archivo se recibió, no que es válido · Si la verificación del archivo no ha terminado, el acuse lo dice (acuse de custodia) |
+| HU-01 | El acuse llega para archivos de 1 a 100 000 registros · El acuse dice si la firma ya se verificó, nunca que el contenido sea válido · Si la verificación del archivo no ha terminado, el acuse lo dice (acuse de custodia) |
 | HU-02 | Se verifican la firma, la estampa cronológica, la vigencia y la revocación del certificado de todos los archivos · Un archivo con cualquiera de ellas inválida se rechaza con la causa · Un archivo cuya revocación no se pudo comprobar queda en verificación pendiente y no recibe resultado definitivo · El firmante tiene que ser el mismo remitente autenticado |
 | HU-03 | Un archivo pequeño o mediano no espera a que termine un masivo · Se cumple también en horas pico, con archivos masivos en paralelo · Ningún archivo se pierde en la espera |
 | HU-04 | El archivo llega a resultado definitivo aunque haya otros masivos en proceso · Cada declaración tiene su propio resultado, con la causa si se rechazó · Las declaraciones válidas se aceptan aunque otras del mismo archivo se rechacen |

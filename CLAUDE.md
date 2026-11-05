@@ -105,8 +105,8 @@ en `notas/`. Tampoco marcas de versión («v1», «versión 2») en ninguna pág
 - Vocabulario: **declaración** (cada registro reportado), **archivo** (el XML
   que llega), **remitente** (el IMC o titular que envía), **acuse** (la
   confirmación de recibo), **resultado definitivo** (aceptación total, parcial
-  o rechazo). Pequeño: 1 a 50 registros · mediano: hasta 5.000 · masivo: hasta
-  100.000.
+  o rechazo). Pequeño: 1 a 50 registros · mediano: 51 a 5 000 · masivo: 5 001 a
+  100 000.
 
 ## Entorno
 

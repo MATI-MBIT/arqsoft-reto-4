@@ -60,7 +60,7 @@ Qué etapas y componentes tiene Orquídea y dónde vive cada táctica. Abre con 
 
 ![DG-CST-003 · Adaptadores de sistemas externos (caja blanca)](png/DG-CST-003.png)
 
-- **Qué muestra:** El adaptador de ANTA con su circuit breaker, el estado del circuito, el cliente HTTP y los eventos del circuito, con los roles ligados por las dos tácticas.
+- **Qué muestra:** El adaptador de ANTA, la llamada protegida que usa el circuit breaker, el estado del circuito, el cliente HTTP y el puerto de eventos del circuito.
 - **Decisión que refleja:** ADR-006: el contrato de API del externo se queda en su adaptador, protegido por un circuit breaker.
 - **Qué no muestra:** Los otros tres adaptadores, que tienen la misma estructura.
 

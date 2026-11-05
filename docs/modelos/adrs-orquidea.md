@@ -73,6 +73,8 @@ Hoy los masivos bloquean a los pequeños, la falla de un externo se vuelve falla
 | SUP-04 | supuesto | Las reglas cambiarias nuevas sobre datos existentes se expresan con el lenguaje de reglas sin código nuevo | [SUPUESTO] |
 | SUP-05 | supuesto | Un bloque de 1 000 registros es una unidad de trabajo adecuada para el carril pesado | [SUPUESTO] |
 | SUP-06 | supuesto | La identidad de los ciudadanos se valida al registrar al actor, no en cada declaración | [SUPUESTO] |
+| SUP-07 | supuesto | El tamaño en bytes de un archivo predice su número de registros lo bastante bien para elegir el carril | [SUPUESTO] |
+| SUP-08 | supuesto | El tiempo de sesión del consumidor del log se configura en pocos segundos, no en el valor por defecto | [SUPUESTO] |
 
 ## 2. Catálogo de elementos
 | EL | Nombre | Tipo UML | Estereotipo | Responsabilidad | Estado que posee | Eclosión | Introducido por |
@@ -202,7 +204,7 @@ Descartes: B — KO: no cumple ASR-L01 con archivos masivos. C — la cadena sí
 ASR-L04 exige que, con 5 masivos en proceso, el p99 de los pequeños suba como máximo 10 % (Ambiente A). ASR-E01 exige p99 ≤ 5 s para los pequeños en la carga pico, y ASR-L05 exige p99 ≤ 30 s para los medianos con 5 masivos en proceso. ADR-001 dejó el procesamiento en etapas que consumen del log, pero no dijo si todos los archivos comparten la misma etapa. ¿Cómo se reparte la capacidad de procesamiento para que un masivo nunca quite capacidad a un pequeño?
 
 #### Decisión
-Separaremos dos carriles con tópico, pool y despliegue propios: uno liviano para archivos pequeños y uno pesado para medianos y masivos. La recepción clasifica por número de registros, que lee del encabezado del archivo, porque el aislamiento por construcción es la única forma de sostener el +10 % de ASR-L04 sin depender de cómo se comporte la carga ajena.
+Separaremos dos carriles con tópico, pool y despliegue propios: uno liviano para archivos pequeños y uno pesado para medianos y masivos. La recepción clasifica por el tamaño en bytes, que conoce al terminar de recibir el archivo sin abrirlo, con un umbral equivalente a 50 registros (SUP-07), porque el aislamiento por construcción es la única forma de sostener el +10 % de ASR-L04 sin depender de cómo se comporte la carga ajena.
 
 #### Consecuencias
 - (+) ASR-L04 y ASR-E01: un masivo no puede consumir capacidad del carril liviano aunque lo intente.
@@ -244,7 +246,7 @@ Descartes: B — la prioridad no expropia un masivo que ya ocupa el pool, y ASR-
 | S-002a | Sensibilidad | El p99 de ASR-E01 depende del tamaño del pool del carril liviano | La carga pico es de 1 200 pequeños/min |
 | TO-002a | Trade-off | Carriles dedicados: latencia de pequeños ▲, eficiencia de capacidad ▼ | BCR acepta pagar capacidad ociosa |
 | R-002a | Riesgo | Con más de 5 masivos el carril pesado se satura, aunque el liviano no lo note | Nadie ha dicho qué pasa con el sexto masivo |
-| NR-002a | No-riesgo | Clasificar por número de registros no exige leer todo el archivo | El encabezado declara el número de registros |
+| NR-002a | No-riesgo | Clasificar por bytes no exige abrir el archivo, y un archivo mal clasificado solo cambia de carril | SUP-07 |
 
 **A5. Confirmación**
 | Tipo | Qué se prueba | Umbral |
@@ -439,7 +441,7 @@ Descartes: B — ata la recepción a la disponibilidad de la ECD (ASR-D01). C �
 **Estado:** Propuesta · **Fecha:** 2026-11-04 · **Iteración ADD:** 1 · **Confianza:** Media — SUP-02 y el ritmo de drenaje tras una caída larga no se han confirmado con BCR
 
 #### Contexto
-ASR-D01 exige que la falla o la lentitud de STM, ANTA, MAMC o RNIC no lleguen al acuse ni provoquen rechazos (C1), y BCR plantea una caída de 12 horas con 500 000 declaraciones acumuladas. ASR-I01 exige integrar una versión nueva del contrato de API de un externo con ≤ 4 h-persona. Consultar por registro genera más de 1 300 llamadas por segundo con un masivo, y R-4 deja los externos fuera del control de BCR. ADR-001 sacó el enriquecimiento del camino del acuse. ¿Cómo se consulta a los sistemas externos sin que su falla, su lentitud o sus cambios se propaguen al resto de Orquídea?
+ASR-D01 exige que la falla o la lentitud de STM, ANTA, MAMC o RNIC no lleguen al acuse ni provoquen rechazos (C1), y BCR plantea una caída de 12 horas con 500 000 declaraciones acumuladas. ASR-I01 exige integrar una versión nueva del contrato de API de un externo con ≤ 4 h-persona. Consultar por registro genera más de 1 300 llamadas por segundo con un masivo, y R-4 deja los externos fuera del control de BCR. Con SUP-06, RNIC se consulta al registrar al actor y no por declaración; STM, ANTA y MAMC sí se consultan por declaración. ADR-001 sacó el enriquecimiento del camino del acuse. ¿Cómo se consulta a los sistemas externos sin que su falla, su lentitud o sus cambios se propaguen al resto de Orquídea?
 
 #### Decisión
 Pondremos cada sistema externo detrás de un adaptador propio con una interfaz común de consulta, timeout y circuit breaker. Un orquestador de enriquecimiento pide a cada adaptador lo que la declaración necesita, consulta primero una caché de referencia con vigencia y deduplica las consultas de un mismo archivo. Si el circuito está abierto, la declaración queda pendiente de enriquecimiento en un tópico durable, y un gestor la reanuda con tasa limitada cuando el externo vuelve. Lo hacemos porque contiene la falla en el adaptador (ASR-D01) y deja cada cambio de contrato en un solo lugar (ASR-I01).
@@ -545,7 +547,8 @@ Descartes: B — el commit en dos fases suma latencia en el pico (ASR-E01) y un 
 | ID | Tipo | Descripción | Supuesto del que depende |
 |---|---|---|---|
 | TO-007a | Trade-off | Outbox: corrección ▲ (ASR-D03), escrituras en el pico ▼ (ASR-E01) | La purga del outbox corre fuera del camino crítico |
-| S-007a | Sensibilidad | El plazo de ASR-D02 depende del tiempo de detección y rebalanceo del log | La sesión de consumidor vence en pocos segundos |
+| S-007a | Sensibilidad | El plazo de ASR-D02 depende del tiempo de detección y rebalanceo del log | SUP-08 |
+| R-007a | Riesgo | Con el tiempo de sesión por defecto del log, de decenas de segundos, el solo rebalanceo supera los 10 s de ASR-D02 | SUP-08 |
 
 **A5. Confirmación**
 | Tipo | Qué se prueba | Umbral |
@@ -873,10 +876,10 @@ Descartes: B — cada área nueva modifica el flujo principal (ASR-I02). C — c
 | DG-SEQ-008 | secuencia | ¿Puede un remitente ver o corregir una operación que reportó otro? | ASR-S03 | ADR-010 | EL-01, EL-14, EL-13, EL-15 | CN-23, CN-22 | «tactic» {id = SEG-03, variante = acl}, «tactic» {id = SEG-02, variante = ligada-al-dispositivo} | Dos modelos de autorización (R-010a) | 0 accesos efectivos a operaciones ajenas | sí — acceso cruzado negado y auditado | funcional |
 | DG-SEQ-009 | secuencia | ¿Cómo se detecta que alguien alteró la auditoría? | ASR-S04 | ADR-011 | EL-02, EL-12, EL-15 | CN-24, CN-25 | «tactic» {id = SEG-18, variante = cadena-hash} | Orden global solo en las anclas | 100 % de las alteraciones detectadas | sí — registro alterado: cadena rota | información |
 | DG-CMP-004 | componentes | ¿Cómo recibe un área nueva los datos sin tocar el flujo principal? | ASR-I02 | ADR-012 | EL-13, EL-04, EL-17, EL-20 | CN-17, CN-20, CN-21 | «tactic» {id = INT-04, variante = cdm}, «tactic» {id = MOD-04, variante = pub-sub} | Datos con retraso en las áreas (TO-012a) | 0 funciones del flujo principal modificadas | no aplica | funcional |
-| DG-DEP-001 | despliegue | ¿Dónde corre cada etapa, qué carril se despliega aparte y por dónde entra el remitente? | ASR-L01, ASR-L04, ASR-S03 | ADR-001, ADR-010 | EL-01, EL-02, EL-03, EL-04, EL-05, EL-06, EL-13, EL-14, EL-16 | CN-01, CN-05, CN-06, CN-07, CN-23 | «tactic» {id = EST-07}, «tactic» {id = SEG-02, variante = ligada-al-dispositivo} | Dos carriles que dimensionar; certificados de cliente | dos carriles con despliegue propio | no aplica | despliegue |
+| DG-DEP-001 | despliegue | ¿Dónde corre cada etapa, qué carril se despliega aparte y por dónde entra el remitente? | ASR-L01, ASR-L04, ASR-S03 | ADR-001, ADR-010 | EL-01, EL-02, EL-04, EL-05, EL-06, EL-09, EL-10, EL-13, EL-18 | CN-01, CN-05, CN-06, CN-07, CN-23 | «tactic» {id = EST-07}, «tactic» {id = SEG-02, variante = ligada-al-dispositivo} | Dos carriles que dimensionar; certificados de cliente | dos carriles con despliegue propio | no aplica | despliegue |
 
 ## 7. Abierto
 **Preguntas:** ¿Qué pasa con el sexto archivo masivo cuando ya hay cinco en proceso (R-002a)? ¿A qué ritmo deben drenarse los pendientes cuando un sistema externo vuelve tras horas (R-006b)? ¿Cada cuánto publica la ECD su lista de revocación, y en cuánto tiempo hay que detectar un archivo aceptado dentro de la ventana (R-005a)? ¿S01 aplica también a los masivos que reciben acuse de custodia? ¿Qué ve cada área de BCR según su rol (R-010a)?
-**Supuestos:** SUP-01 verificar 50 MB en streaming cabe en 1 s. SUP-02 los externos no aceptan lotes y las tasas cambian por publicación. SUP-03 la ECD publica su lista al menos una vez al día. SUP-04 las reglas probables se expresan sin código nuevo. SUP-05 bloques de 1 000 registros. SUP-06 la identidad se valida al registrar al actor.
-**Riesgos abiertos:** R-002a saturación con más de 5 masivos. R-004a firma envuelta si el parser construye el árbol completo. R-005a ventana de revocación. R-006b estallido al drenar 500 000 pendientes.
+**Supuestos:** SUP-01 verificar 50 MB en streaming cabe en 1 s. SUP-02 los externos no aceptan lotes y las tasas cambian por publicación. SUP-03 la ECD publica su lista al menos una vez al día. SUP-04 las reglas probables se expresan sin código nuevo. SUP-05 bloques de 1 000 registros. SUP-06 la identidad se valida al registrar al actor. SUP-07 el tamaño en bytes predice el número de registros. SUP-08 la sesión del consumidor del log se configura en pocos segundos.
+**Riesgos abiertos:** R-002a saturación con más de 5 masivos. R-007a rebalanceo del log más lento que los 10 s de ASR-D02. Un solo nodo de base de datos es punto único de falla; su alta disponibilidad es infraestructura y no tiene ADR. R-004a firma envuelta si el parser construye el árbol completo. R-005a ventana de revocación. R-006b estallido al drenar 500 000 pendientes.
 **Fuera de alcance:** Disponibilidad física — la topología activo-activo entre zonas que aprobó BCR es infraestructura y no tiene ADR de software. Funcional — la notificación por webhooks y la consulta de resultados no las mueve ningún ASR.

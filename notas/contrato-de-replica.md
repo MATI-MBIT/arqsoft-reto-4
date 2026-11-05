@@ -80,6 +80,8 @@ minuto) y el del B, 20 (1 200 por minuto).
 | ASR-S03 | Security · Resistance | High | No es de tiempo | HU-09 |
 | ASR-S06 | Security · Resistance | Critical | No es de tiempo | HU-02 |
 | ASR-D04 | Availability · Prevention | High | Sí: 1 000 ms | HU-11 |
+
+Ojo con D01 y D04: su medida es la latencia del acuse en un ambiente degradado. En Helix, el deslizador de `Availability` se llama `Detection Time` y la mostraría como tiempo de detección. Al sincronizar hay que decidir si se carga ahí, con la aclaración en el ambiente, o como `Performance · Latency`.
 | ASR-L03 | Performance · Latency | Medium | No: 300 000 ms supera el techo de 60 000 ms | HU-04 |
 | ASR-D02 | Availability · Recovery | Medium | Sí: 10 000 ms | HU-07 |
 | ASR-L05 | Performance · Latency | Medium | Sí: 30 000 ms | HU-03 |
