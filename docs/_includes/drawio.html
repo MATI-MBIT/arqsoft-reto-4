@@ -1,0 +1,12 @@
+{%- comment -%}
+Muestra una página de un archivo draw.io con el visor de diagrams.net.
+Parámetros:
+  xml  — el contenido del .drawio (capturado con include_relative)
+  page — índice de la página dentro del archivo, desde 0
+{%- endcomment -%}
+{%- capture drawio_cfg -%}
+{"highlight":"#0000ff","nav":true,"resize":true,"page":{{ include.page | default: 0 }},"toolbar":"zoom lightbox","edit":"_blank","xml":{{ include.xml | jsonify }}}
+{%- endcapture -%}
+<div class="drawio-vista" style="border:1px solid #e1e4e8;border-radius:4px;margin:1rem 0;overflow:auto;background:#fff">
+<div class="mxgraph" style="max-width:100%" data-mxgraph="{{ drawio_cfg | escape }}"></div>
+</div>

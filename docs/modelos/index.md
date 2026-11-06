@@ -10,17 +10,17 @@ Esta sección reúne los diagramas que hacen visibles las decisiones de arquitec
 
 Los diagramas se centran en los tres ASR críticos: ningún archivo se pierde ni se rechaza por la caída de un sistema externo (ASR-D01, el foco), el aislamiento de carga entre archivos masivos y pequeños (ASR-L04) y ningún archivo aceptado sin validación criptográfica completa (ASR-S06).
 
-Cada vista es un archivo de draw.io. La primera página es el diagrama global de la vista, y las demás, hasta tres, detallan lo que el global no alcanza a mostrar.
+Cada vista tiene su página, donde los diagramas se dibujan en el navegador, y su archivo de draw.io. El primer diagrama de cada vista es el global, y los demás, hasta tres, detallan lo que el global no alcanza a mostrar.
 
 ## Las cinco vistas
 
-| Vista | Archivo | Global | Detalle | Qué responde |
+| Vista | Diagramas | Global | Detalle | Qué responde |
 |---|---|---|---|---|
-| Contexto | [`vista-contexto.drawio`](drawio/vista-contexto.drawio) | DG-CMP-001 | — | Quién envía, quién recibe y de qué terceros depende Orquídea |
-| Componentes | [`vista-componentes.drawio`](drawio/vista-componentes.drawio) | DG-CMP-002 | DG-CST-001 · DG-CST-002 · DG-CST-003 | Qué componentes tiene Orquídea, y cómo están construidos por dentro la recepción, el verificador criptográfico y el reprocesador nocturno |
-| Concurrencia | [`vista-concurrencia.drawio`](drawio/vista-concurrencia.drawio) | DG-CON-001 | DG-SEQ-001 · DG-SEQ-002 · DG-SEQ-003 | Qué corre en paralelo, qué se sincroniza y cómo recorre cada componente clave su operación crítica, con su camino de fallo |
-| Información | [`vista-informacion.drawio`](drawio/vista-informacion.drawio) | DG-CLS-001 | DG-STM-001 · DG-STM-002 · DG-STM-003 | Qué guarda Orquídea por archivo, y por qué estados pasan el archivo, la declaración pendiente y cada tercero en el monitor |
-| Despliegue | [`vista-despliegue.drawio`](drawio/vista-despliegue.drawio) | DG-DEP-001 | DG-DEP-002 | Dónde corre cada parte en producción, y cómo se monta el experimento local en Docker |
+| [Contexto](vista-contexto.md) | [Ver](vista-contexto.md) · [`.drawio`](drawio/vista-contexto.drawio) | DG-CMP-001 | — | Quién envía, quién recibe y de qué terceros depende Orquídea |
+| [Componentes](vista-componentes.md) | [Ver](vista-componentes.md) · [`.drawio`](drawio/vista-componentes.drawio) | DG-CMP-002 | DG-CST-001 · DG-CST-002 · DG-CST-003 | Qué componentes tiene Orquídea, y cómo están construidos por dentro la recepción, el verificador criptográfico y el reprocesador nocturno |
+| [Concurrencia](vista-concurrencia.md) | [Ver](vista-concurrencia.md) · [`.drawio`](drawio/vista-concurrencia.drawio) | DG-CON-001 | DG-SEQ-001 · DG-SEQ-002 · DG-SEQ-003 | Qué corre en paralelo, qué se sincroniza y cómo recorre cada componente clave su operación crítica, con su camino de fallo |
+| [Información](vista-informacion.md) | [Ver](vista-informacion.md) · [`.drawio`](drawio/vista-informacion.drawio) | DG-CLS-001 | DG-STM-001 · DG-STM-002 · DG-STM-003 | Qué guarda Orquídea por archivo, y por qué estados pasan el archivo, la declaración pendiente y cada tercero en el monitor |
+| [Despliegue](vista-despliegue.md) | [Ver](vista-despliegue.md) · [`.drawio`](drawio/vista-despliegue.drawio) | DG-DEP-001 | DG-DEP-002 | Dónde corre cada parte en producción, y cómo se monta el experimento local en Docker |
 
 ## Componentes clave
 
