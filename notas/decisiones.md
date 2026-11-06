@@ -73,3 +73,21 @@ esperan una cifra de BCR:
 - Puerta 4: creados 7 / declarados 7. El script reporta además que el plan declara 6 `.drawio` (la regla de un solo `.drawio` por entrega, reemplazada por el pedido de un archivo por vista).
 - El `modelo.json` vivió en el scratchpad y no se versiona: tras la entrega manda cada `.drawio`.
 - Pendiente: el §6 «Plan de diagramas» de `adrs-orquidea.md` sigue con los IDs anteriores; actualizarlo es decisión del equipo.
+
+### 2026-11-06 · Reunión técnica con David (BCR): tres ASR críticos y simplificación
+
+- Criterio (Carlos): dejar priorizados solo tres ASR para simplificar arquitectura, tácticas y experimento. Foco en disponibilidad.
+- Críticos: D01 (foco), L04 y S06. M01 baja a alta. El resto queda documentado sin táctica ni experimento propios.
+- Decisiones con Nicolás sobre las contradicciones entre el prompt de la reunión, el correo de David (3-nov) y el repo:
+  - Terceros: se mantienen los nombres del enunciado (STM, ANTA, MAMC, RNIC y ECD). Registraduría≈RNIC, Relaciones Exteriores≈MAMC, tasas≈STM.
+  - L04 conserva la medida del correo (+10 % de p99). Los 1 s, 3 s, 30 s y 5 min siguen en sus ASR y el experimento los reporta como referencia.
+  - D01 cambia de medida: «0 archivos sin desenlace al cierre de la primera ventana tras el regreso del externo». Revierte la reformulación del 4-nov porque la respuesta ahora exige reproceso nocturno y notificación, lo que cierra la trampa de los pendientes eternos.
+  - Vistas: cuatro (componentes, concurrencia, información, despliegue) más la de contexto, que BCR exigió. La vista de desarrollo sale porque era de M01.
+- Masivos: el prompt decía «más de 10 000 registros, ≤ 5 min». El correo no trae esa cifra; se usa la del enunciado (hasta 100 000, ≤ 5 min) y el vocabulario del repo (masivo = 5 001 a 100 000).
+- mTLS: fuera del alcance de S06 y del experimento; el ADR-13 de BCR sigue aprobado.
+- ADR: el registro se rehízo con 7 ADR (001 a 007) solo para D01, L04 y S06. Los demás salieron de la iteración y quedan en el historial de git. Lint adr-log/v2: 0 errores, 1 aviso (W08 en la vista general).
+- Experimento: diseño en `docs/experiments.md`, con plazo de envío el sábado 7-nov-2026.
+- ADR sin catálogos (Nicolás): el registro ya no lleva catálogo de elementos, de conectores, plan de diagramas ni «A7. Evidencia visual», porque sesgan los diagramas. Los ADR quedan agrupados por ASR. El lint de `decidir-adrs-arquitectura` da 13 errores de contrato `adr-log/v2` por esa razón, y se acepta.
+- Vistas recreadas desde cero por un agente sin el contexto del diseño anterior, que solo leyó los ADR, las fichas de los tres ASR críticos y el experimento. Hay 5 archivos y 15 páginas: contexto (1), componentes (4), concurrencia (4), información (4) y despliegue (2). Se eclosionaron Recepción, el Verificador criptográfico y el Reprocesador nocturno. Salieron vista-funcional, vista-dinamica-concurrencia y vista-desarrollo.
+- Lint de los diagramas (`lint_diagrama`, plugin arquitectura 1.20.0) sobre la copia combinada: 1 ERROR que no se resolvió al agotar el tope (B6 en DG-CMP-002: una arista pasa sobre la insignia ASR-S06 de la caché de revocación; la página tiene 23 cruces). Por archivo, la vista de componentes suma 3 AP-23, porque sus secuencias internas viven en la vista de concurrencia. La puerta 3 dio entre 16 y 21 puntos por página. La puerta 4 no corre en modo draw.io con varios archivos: se verificó a mano (5 creados / 5 declarados).
+- Una sola caja externa para STM, ANTA, MAMC y RNIC en el contexto y en la vista general. Revisar si BCR exige verlos por separado.

@@ -20,10 +20,10 @@ Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dic
 
 | # | ID | Atributo | Qué exige | Amb. | Prioridad | Impacto | Origen |
 |---|---|---|---|---|---|---|---|
-| 1 | [ASR-L04](#asr-l04) | Latencia | **Aislamiento de carga entre archivos masivos y pequeños.** Mientras 5 archivos masivos se procesan, cada archivo pequeño debe resolverse casi igual de rápido que sin ellos: su p99 sube como máximo 10 % | A | Crítica | Alto | `enunciado` · BCR |
-| 2 | [ASR-D01](#asr-d01) | Disponibilidad · enmascaramiento | **Aislamiento de fallas de los sistemas externos.** Si STM, ANTA, MAMC, RNIC o la ECD se cae o se pone lento, el remitente sigue recibiendo su acuse en p99 ≤ 1 s, y ningún archivo se rechaza por esa falla | C1 | Crítica | Alto | `enunciado` |
-| 3 | [ASR-S06](#asr-s06) | Seguridad · prevención | **Ningún archivo se acepta sin validación criptográfica completa.** Un archivo puede acusarse antes de verificar su firma, estampa y certificado, pero no puede quedar aceptado hasta que esa verificación termine bien: 0 casos | A, C1 | Crítica | Alto | `enunciado` |
-| 4 | [ASR-M01](#asr-m01) | Modificabilidad · adaptativo | **Despliegue de una regla cambiaria nueva en ≤ 4 h-persona.** Cuando la Junta cambia la Circular con una regla sobre datos que ya llegan, implementarla, probarla y ponerla en producción cuesta ≤ 4 h-persona, sin detener el flujo | Despliegue | Crítica | Alto | `enunciado` · BCR |
+| 1 | [ASR-D01](#asr-d01) | Disponibilidad · recuperación | **Ningún archivo se pierde ni se rechaza por la caída de un sistema externo.** Si STM, ANTA, MAMC, RNIC o la ECD se cae o se pone lento durante horas, cada archivo acusado en ese lapso termina procesado en una ventana de reproceso o notificado al remitente como pendiente: 0 archivos sin desenlace | C1 | Crítica | Alto | `enunciado` · BCR |
+| 2 | [ASR-L04](#asr-l04) | Latencia | **Aislamiento de carga entre archivos masivos y pequeños.** Mientras 5 archivos masivos se procesan, cada archivo pequeño debe resolverse casi igual de rápido que sin ellos: su p99 sube como máximo 10 % | A | Crítica | Alto | `enunciado` · BCR |
+| 3 | [ASR-S06](#asr-s06) | Seguridad · prevención | **Ningún archivo se acepta sin validación criptográfica completa.** Un archivo puede acusarse antes de verificar su firma, su firmante, su estampa y la cadena y revocación de su certificado, pero no puede quedar aceptado hasta que esa verificación termine bien: 0 casos | A, C1 | Crítica | Alto | `enunciado` |
+| 4 | [ASR-M01](#asr-m01) | Modificabilidad · adaptativo | **Despliegue de una regla cambiaria nueva en ≤ 4 h-persona.** Cuando la Junta cambia la Circular con una regla sobre datos que ya llegan, implementarla, probarla y ponerla en producción cuesta ≤ 4 h-persona, sin detener el flujo | Despliegue | Alta | Alto | `enunciado` · BCR |
 | 5 | [ASR-S01](#asr-s01) | Seguridad · prevención | **Validación criptográfica en ≤ 200 ms.** Desde que llega el último byte, el sistema sabe en p99 ≤ 200 ms si la firma, la estampa y el certificado del archivo son válidos y vigentes | A | Alta | Alto | `enunciado` |
 | 6 | [ASR-E01](#asr-e01) | Escalabilidad | **Carga pico de archivos pequeños con p99 ≤ 5 s.** En cierres de mercado y vencimientos, con 1 200 archivos pequeños por minuto durante 45 minutos y 5 archivos masivos en paralelo, cada archivo pequeño se resuelve en p99 ≤ 5 s | B | Alta | Alto | `enunciado` |
 | 7 | [ASR-I01](#asr-i01) | Interoperabilidad | **Nueva versión del contrato de API de un sistema externo en ≤ 4 h-persona.** Cuando STM, ANTA, MAMC o RNIC publica una versión nueva de su contrato de API, integrarla en producción cuesta ≤ 4 h-persona, y sus datos se interpretan con el significado que él les da | Desarrollo | Alta | Alto | `enunciado` · BCR |
@@ -40,17 +40,17 @@ Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dic
 
 **Por qué este orden.** La prioridad es exposición al riesgo: qué tan probable es no cumplir, multiplicado por cuánto le duele a BCR. El impacto es la dificultad de diseño: cuánto pesa el requisito en la estructura.
 
-Los cuatro primeros son **críticos**: cada uno cubre una de las cuatro tensiones del problema (carga de archivos masivos contra pequeños, dependencia de sistemas externos, archivos aceptados sin verificar y cambios de la Circular), y son los que guían la primera iteración del diseño. Los tres siguientes, S01, E01 e I01, completan los seis que BCR priorizó en su respuesta.
+Los tres primeros son **críticos**, y son los únicos que se desarrollan con táctica, decisión de arquitectura, vistas y experimento. BCR y el equipo los acotaron a tres en la reunión técnica del 6 de noviembre de 2026, para que la arquitectura y la experimentación quedaran centradas en ellos. La disponibilidad es el foco. Los demás ASR siguen documentados con su ficha, sin desarrollo propio.
 
-- **L04 va primero** porque es el reto tal como lo escribe el enunciado: procesar pequeños y masivos «sin generar encolamientos ni bloqueos mutuos».
-- **D01** depende de cuatro sistemas y una ECD que BCR no controla; el informe ya calificó ese riesgo con probabilidad alta.
-- **S06** protege lo que el enunciado exige del 100 % de los archivos: que ninguno sin verificar termine aceptado. BCR aprobó dos casos en que el acuse sale antes de verificar, y en ellos el riesgo es real. BCR no lo listó entre sus seis: entra como crítico en lugar de S01 porque mide lo que S01 solo cronometra.
-- **M01** ataca el problema que el enunciado describe con «altos costos y largos tiempos de puesta en producción»: cada cambio de la Circular.
-- **S01** encabeza los altos: mide cuánto tarda la verificación, y es el de mayor riesgo de alcanzabilidad, porque verificar un archivo de 50 MB en 200 ms es lo primero que BCR cuestiona. Lo que esa verificación protege ya lo mide S06.
-- **E01** va después porque el pico son 20 archivos por segundo, y el informe concluye que esa tasa no es la presión real.
-- **I01** comparte el problema de M01, y los contratos de API de los sistemas externos cambian con menos frecuencia que la Circular `[SUPUESTO → BCR]`.
+- **D01 va primero** porque Orquídea depende de cuatro sistemas y una ECD que BCR no controla, y sus caídas pueden durar horas. La información es reportable a otras entidades: ningún archivo puede perderse ni descartarse por una falla ajena.
+- **L04** es el reto tal como lo escribe el enunciado: procesar pequeños y masivos «sin generar encolamientos ni bloqueos mutuos». En la reunión se cerró como un requisito de latencia, no de disponibilidad: una ráfaga masiva de un remitente grande no puede degradar la respuesta a los demás.
+- **S06** protege lo que el enunciado exige del 100 % de los archivos: que ninguno sin verificar termine aceptado. Es lo que sostiene el no repudio, porque el remitente no puede negar un envío cuya firma, firmante y estampa se verificaron.
+- **M01** fue crítico hasta el 6 de noviembre y ahora es alto: sigue entre los seis que BCR priorizó, pero no tiene táctica ni experimento en esta iteración.
+- **S01, E01 e I01** completan los seis que BCR priorizó. S01 cronometra la verificación que S06 protege. E01 cuenta con un pico de 20 archivos por segundo, y el informe concluye que esa tasa no es la presión real. I01 comparte el problema de M01.
 
 Del 8 al 11 son requisitos explícitos del enunciado que BCR no listó y que pesan en la estructura. Del 12 al 17 completan el alcance. BCR evalúa tres de ellos (M02, S04 e I02) con su propia inspección de código en la Fase 4 de la hoja de ruta.
+
+Los plazos de procesamiento del enunciado (pequeños en 3 s, medianos en 30 s y masivos en 5 min) no son críticos, pero el experimento de L04 los mide como referencia, porque se obtienen de la misma prueba.
 
 ### De qué historia de usuario sale cada ASR
 
@@ -58,8 +58,8 @@ Cada escenario de calidad cuelga de una [historia de usuario](requirements.md): 
 
 | ASR | Historia |
 |---|---|
-| [ASR-L04](#asr-l04) | [HU-03](requirements.md) |
 | [ASR-D01](#asr-d01) | [HU-06](requirements.md) |
+| [ASR-L04](#asr-l04) | [HU-03](requirements.md) |
 | [ASR-S06](#asr-s06) | [HU-02](requirements.md) |
 | [ASR-M01](#asr-m01) | [HU-11](requirements.md) |
 | [ASR-S01](#asr-s01) | [HU-02](requirements.md) |
@@ -86,7 +86,7 @@ Cada escenario de calidad cuelga de una [historia de usuario](requirements.md): 
 | Medianos (51 a 5 000) | `[PREGUNTA → BCR]` ¿cuántos por minuto? | `[PREGUNTA → BCR]` | Como A | Como A | Como A |
 | Masivos (hasta 100 000, hasta 50 MB) | 5 concurrentes (BCR, tabla de ASR) | 5 concurrentes (BCR, ADR-02) | Como A | Como A | Como A |
 | Patrón de arribo | Estocástico `[SUPUESTO → BCR]` | Ráfaga en los cierres de mercado diario y los vencimientos regulatorios `[SUPUESTO → BCR]` | — | — | — |
-| Estado | Sin fallas; externos y ECD disponibles; sin pendientes | Sin fallas | STM, ANTA, MAMC, RNIC o la ECD caído o con latencia extrema, por horas (respuesta de BCR) | Un nodo interno de procesamiento deja de funcionar con archivos en curso | Se activa o se revierte una regla, un XSD o el contrato de API de un sistema externo |
+| Estado | Sin fallas; externos y ECD disponibles; sin pendientes | Sin fallas | STM, ANTA, MAMC, RNIC o la ECD caído o con latencia extrema, por horas: 2, 5, 10, 20 h o más (respuesta de BCR y reunión del 6-nov) | Un nodo interno de procesamiento deja de funcionar con archivos en curso | Se activa o se revierte una regla, un XSD o el contrato de API de un sistema externo |
 | Alcance | Dentro | Dentro | Dentro | Dentro: la falla de software. La redundancia física queda fuera | Dentro |
 
 La caída de un sistema externo puede durar horas: BCR plantea un caso de 12 horas con 500 000 declaraciones acumuladas.
@@ -128,11 +128,11 @@ El eje es el flujo de datos del dominio; el stakeholder va como columna auxiliar
 | **S** Suplantación | Un archivo con firma inválida o certificado revocado que llega a resultado definitivo | Tercero con certificado robado | Prevención | A, C1 | **[ASR-S06](#asr-s06)** |
 | **S** Suplantación | Un archivo aceptado con un certificado revocado después de la última actualización de la información de revocación | Tercero con certificado robado | Detección | A | Pendiente: sin umbral `[PREGUNTA → BCR]` |
 | **S** Suplantación | El mismo caso, ya detectado | Tercero con certificado robado | Reacción | A | Pendiente: sin umbral |
-| **S** Suplantación | Un firmante distinto del remitente autenticado | IMC contra IMC | Prevención | A | Descartada: es una regla de la verificación de S01 |
+| **S** Suplantación | Un firmante distinto del remitente autenticado | IMC contra IMC | Prevención | A | **[ASR-S06](#asr-s06)**: el firmante es parte de la verificación completa |
 | **T** Manipulación | El contenido firmado de un archivo (firma envuelta) | Tercero | Prevención | A | **[ASR-S06](#asr-s06)**: lo verificado tiene que ser lo que se procesa |
 | **T** Manipulación | La auditoría ya escrita | Interno, por abuso o **mal uso** | Detección | A | **[ASR-S04](#asr-s04)** |
 | **T** Manipulación | Las declaraciones que reportó otro remitente | IMC contra IMC | Prevención | A | **[ASR-S03](#asr-s03)** |
-| **R** Repudio | El envío de un archivo que el remitente niega | IMC | Detección | A | Descartada: la firma y la estampa dan el no repudio, y S04 conserva la evidencia |
+| **R** Repudio | El envío de un archivo que el remitente niega | IMC | Prevención | A, C1 | **[ASR-S06](#asr-s06)**: nada se acepta sin firma, firmante y estampa verificadas, y esa verificación es la evidencia. S04 la protege contra alteraciones |
 | **R** Repudio | El acuse o el resultado que BCR niega haber emitido | IMC contra BCR | Prevención | A | Descartada: un acuse y una respuesta firmados por BCR son funcionales |
 | **I** Divulgación | La consulta de resultados y declaraciones | IMC contra IMC | Prevención | A | **[ASR-S03](#asr-s03)** |
 | **I** Divulgación | La entrega a las áreas internas | Funcionario de BCR, **mal uso** | Prevención | A | Descartada: `[PREGUNTA → BCR]` ¿qué ve cada área por su rol? |
@@ -157,19 +157,63 @@ El eje es el flujo de datos del dominio; el stakeholder va como columna auxiliar
 
 Cada ficha trae, debajo de la tabla, un diagrama de secuencia con Orquídea como caja negra. La banda azul encierra lo que se mide: el estímulo, la respuesta y los instantes t0 y t1 entre los que corre la medida. La banda roja dice qué familia de soluciones descarta el número, que es lo que hace del requisito un ASR. Lo que queda fuera de las dos bandas pasa en el escenario pero no entra en la medida. El diagrama no muestra componentes internos: esos los decide el diseño, no el requisito.
 
+### ASR-D01 — Ningún archivo se pierde ni se rechaza por la caída de un sistema externo {#asr-d01}
+
+| Parte | Descripción |
+|---|---|
+| **Fuente** | STM, ANTA, MAMC, RNIC o la ECD: sistemas que BCR no controla |
+| **Estímulo** | Uno de ellos deja de responder o responde con lentitud extrema durante horas (2, 5, 10, 20 h o más) mientras siguen llegando archivos con arribo estocástico |
+| **Artefacto** | La recepción, el acuse y la resolución de los archivos cuyas declaraciones necesitan al sistema caído |
+| **Ambiente** | C1: un sistema externo caído o lento, con la carga de A (400 archivos pequeños por minuto y 5 archivos masivos) |
+| **Respuesta** | El archivo se recibe y se acusa siempre. Lo que no se pudo procesar por la falla queda pendiente y se reprocesa en una ventana nocturna a hora fija `[PREGUNTA → BCR]`. Si el sistema sigue caído en esa ventana, se reintenta en la del día siguiente, y lo que siga sin procesar se notifica al remitente. Si el remitente reenvía el mismo archivo, se rechaza como duplicado sin tocar el original |
+| **Medida** | 0 archivos acusados durante la caída que terminen perdidos o rechazados por la falla: al cierre de la primera ventana de reproceso posterior al regreso del sistema externo, cada uno tiene resultado definitivo o fue notificado al remitente como pendiente. Se cuenta por conciliación entre los archivos acusados y los resueltos o notificados, en C1 |
+| **Por qué es ASR** | La recepción no puede depender en línea de ningún sistema ajeno, y lo que queda pendiente tiene que sobrevivir horas o días con un desenlace garantizado. Con «se reintenta en el momento» bastaría un reintento en línea; con caídas de 20 h y la obligación de no perder nada, hay que decidir dónde espera el trabajo, cuándo se reprocesa y cómo se avisa. Nota de trampa: la medida se cumple notificando todo como pendiente y no reprocesando nunca; la respuesta exige reprocesar en cada ventana, y cuántos días se reintenta antes de dejar de hacerlo es `[PREGUNTA → BCR]`. El acuse en p99 ≤ 1 s con el externo caído lo mide [L01](#asr-l01), que aplica igual en C1. Detectar a tiempo que un externo cayó es la rama de detección, sin umbral todavía (sección 6) |
+| **Cómo se verifica** | Un sistema externo simulado con una tabla de personas ficticias. Se cae a mitad de una carga A, se envían archivos válidos y archivos con una cédula que no corresponde al nombre, y se dispara la ventana de reproceso con el externo arriba y otra vez con el externo caído. Se concilian acusados contra resueltos y notificados, y se comprueba que la cédula que no corresponde termina rechazada por la regla y no por la caída |
+| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Disponibilidad: «continuar operando sin rechazar archivos»; reto: «sin detener la recepción ni el procesamiento local») · BCR, respuesta del 3-nov: «operabilidad sin rechazo (0 perdidos)» · reunión del 6-nov: ventana nocturna, reintento al día siguiente y notificación |
+
+La llave que identifica un archivo duplicado se propuso en la reunión como entidad + fecha + lote + consecutivo `[SUPUESTO → BCR]`: falta confirmar que el XSD trae esos cuatro campos.
+
+```mermaid
+sequenceDiagram
+    box rgb(240,240,240) Fuera de BCR
+    participant X as FUENTE · STM, ANTA, MAMC, RNIC o ECD
+    end
+    participant O as Orquídea
+    participant R as Remitente
+    Note over X,R: AMBIENTE C1 · 400 archivos pequeños/min y 5 archivos masivos · un sistema externo caído o lento durante horas
+    X--xO: ESTÍMULO · deja de responder, o tarda horas en hacerlo
+    rect rgb(222, 236, 255)
+    R->>O: Envía un archivo firmado
+    O-->>R: Acuse de recibo, sin esperar al sistema externo
+    Note over O: ARTEFACTO · recepción, acuse y resolución<br/>lo que necesita al externo queda pendiente
+    loop Cada noche, a la hora fija de la ventana de reproceso
+        alt El sistema externo volvió
+            O-->>R: RESPUESTA · resultado definitivo
+        else Sigue caído
+            Note over O: Se reintenta en la ventana del día siguiente
+            O-->>R: RESPUESTA · notificación de pendiente
+        end
+    end
+    Note over O,R: MEDIDA · 0 archivos acusados sin resultado definitivo ni notificación,<br/>al cierre de la primera ventana tras el regreso del externo
+    end
+    rect rgb(255, 228, 225)
+    Note over X,R: LO QUE EL ASR DESCARTA · rechazar el archivo o dejarlo esperando sin desenlace.<br/>La información es reportable a otras entidades y no puede perderse
+    end
+```
+
 ### ASR-L04 — Aislamiento de carga entre archivos masivos y pequeños {#asr-l04}
 
 | Parte | Descripción |
 |---|---|
-| **Fuente** | Varios remitentes que envían a la vez archivos pequeños y masivos |
+| **Fuente** | Varios remitentes que envían a la vez archivos pequeños y masivos; entre ellos, un remitente grande que envía una ráfaga de masivos |
 | **Estímulo** | Llegan archivos pequeños (1 a 50 registros) con arribo estocástico mientras 5 archivos masivos de hasta 100 000 registros están en proceso |
 | **Artefacto** | El procesamiento completo de los archivos pequeños: verificación, validación, enriquecimiento, transformación y persistencia |
 | **Ambiente** | A: 400 archivos pequeños por minuto y 5 archivos masivos concurrentes, sin fallas |
-| **Respuesta** | Los archivos pequeños se procesan sin esperar a que avancen los archivos masivos |
+| **Respuesta** | Los archivos pequeños se procesan sin competir por recursos con los masivos ni esperar a que avancen |
 | **Medida** | p99 de los archivos pequeños con 5 archivos masivos ≤ 1,10 × su p99 sin archivos masivos, del último byte recibido al resultado definitivo disponible para el remitente, en A |
-| **Por qué es ASR** | Hay que decidir si archivos de tamaños distintos comparten capacidad y orden de atención. Con un margen de +100 % bastaría una prioridad sobre un camino compartido; con +10 %, el aislamiento tiene que sostenerse por construcción. Nota de trampa: la medida es relativa y se cumple aunque el p99 sin archivos masivos ya sea malo; ese piso lo pone E01 |
+| **Por qué es ASR** | Hay que decidir si archivos de tamaños distintos comparten capacidad y orden de atención, y dónde se decide a qué flujo va cada uno. Con un margen de +100 % bastaría una prioridad sobre un camino compartido; con +10 %, el aislamiento tiene que sostenerse por construcción. Nota de trampa: la medida es relativa y se cumple aunque el p99 sin archivos masivos ya sea malo; ese piso lo dan los 3 s del enunciado para pequeños, que el experimento reporta junto con los 30 s de medianos y los 5 min de masivos |
 | **Cómo se verifica** | Prueba de carga en A con el mismo generador, una vez sin archivos masivos y otra con 5, comparando los dos p99. Después se suben los archivos masivos por encima de 5 hasta encontrar el quiebre |
-| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Latencia: «jamás encolará ni degradará la latencia de los archivos de pocos registros») · BCR fijó N = 5 y el margen de 10 % |
+| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Latencia: «jamás encolará ni degradará la latencia de los archivos de pocos registros») · BCR fijó N = 5 y el margen de 10 % en su respuesta del 3-nov · la reunión del 6-nov lo cerró como latencia |
 
 ```mermaid
 sequenceDiagram
@@ -192,68 +236,29 @@ sequenceDiagram
     end
 ```
 
-### ASR-D01 — Aislamiento de fallas de los sistemas externos {#asr-d01}
-
-| Parte | Descripción |
-|---|---|
-| **Fuente** | STM, ANTA, MAMC, RNIC o la ECD: sistemas que BCR no controla |
-| **Estímulo** | Uno de ellos deja de responder o responde con lentitud extrema, durante horas, mientras siguen llegando archivos |
-| **Artefacto** | La recepción y el acuse de archivos |
-| **Ambiente** | C1: un sistema externo caído o lento, con la carga de A |
-| **Respuesta** | Ningún archivo se rechaza por la falla del sistema externo: se recibe y se acusa como siempre, y las declaraciones que dependen del sistema externo quedan pendientes de enriquecimiento hasta que vuelva |
-| **Medida** | p99 ≤ 1 s del último byte recibido al acuse, con el sistema externo caído o lento, en C1: el mismo umbral de A ([L01](#asr-l01)) |
-| **Por qué es ASR** | Si el acuse esperara la respuesta de un sistema externo, su caída o su lentitud le llegarían al remitente. Con este número, la recepción no puede depender en línea de ningún sistema ajeno, y la lentitud queda medida sin tener que definir cuándo un sistema externo cuenta como caído. Nota de trampa: la medida se cumple aunque las declaraciones pendientes nunca se completen; cuánto tardan cuando el sistema externo vuelve se le pregunta a BCR (sección 6) |
-| **Cómo se verifica** | Cortar cada sistema externo y la ECD a mitad de una carga A, y luego agregarles latencia. Se compara el p99 del acuse con el de A y se cuentan los archivos rechazados por esa causa |
-| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Disponibilidad: «continuar operando sin rechazar archivos»; reto: «sin detener la recepción ni el procesamiento local») |
-
-```mermaid
-sequenceDiagram
-    box rgb(240,240,240) Fuera de BCR
-    participant X as FUENTE · STM, ANTA, MAMC, RNIC o ECD
-    end
-    participant O as Orquídea
-    participant R as Remitente
-    Note over X,R: AMBIENTE C1 · 400 archivos pequeños/min y 5 archivos masivos · un sistema externo caído o lento durante horas
-    X--xO: ESTÍMULO · deja de responder, o tarda horas en hacerlo
-    rect rgb(222, 236, 255)
-    R->>O: Envía un archivo firmado
-    Note over O,R: t0 · último byte recibido
-    Note over O: ARTEFACTO · recepción y acuse
-    O-->>R: RESPUESTA · acuse de recibo, sin esperar al sistema externo
-    Note over O,R: t1 · acuse entregado
-    Note over O,R: MEDIDA · p99 de t1 − t0 ≤ 1 s, igual que con todo sano
-    end
-    Note over O: Lo que necesita al sistema externo queda pendiente de enriquecimiento.<br/>Ningún archivo se rechaza por la falla
-    X->>O: Horas después, el sistema externo vuelve
-    O-->>R: Resultado definitivo, fuera de esta medida
-    rect rgb(255, 228, 225)
-    Note over X,R: LO QUE EL ASR DESCARTA · un acuse que espera la respuesta del sistema externo.<br/>Con el sistema externo caído, el remitente pasaría horas sin acuse
-    end
-```
-
 ### ASR-S06 — Ningún archivo se acepta sin validación criptográfica completa {#asr-s06}
 
 | Parte | Descripción |
 |---|---|
-| **Fuente** | Un remitente cuyo archivo trae una firma, una estampa o un certificado inválido, o que no se pudo verificar |
-| **Estímulo** | El archivo llega y su verificación criptográfica falla o queda incompleta, por ejemplo porque la ECD está caída y la información de revocación venció |
+| **Fuente** | Un tercero que suplanta a un remitente, o un remitente cuyo archivo trae una firma, un firmante, una estampa o un certificado inválido, o que no se pudo verificar |
+| **Estímulo** | El archivo llega con arribo estocástico y su verificación criptográfica falla o queda incompleta: firma alterada, firmante distinto del remitente, certificado vencido, revocado o sin cadena hasta una raíz aceptada, estampa con la hora desfasada o demasiado antigua, o la ECD caída con la información de revocación vencida |
 | **Artefacto** | El paso de un archivo con acuse a resultado definitivo |
 | **Ambiente** | A: 400 archivos pequeños por minuto y 5 archivos masivos · C1: la ECD caída, con la carga de A |
-| **Respuesta** | El archivo puede acusarse, pero no recibe aceptación total ni parcial hasta que su verificación termine bien; si falla, se rechaza |
-| **Medida** | 0 archivos con aceptación total o parcial sin firma, estampa y revocación verificadas, contados en el registro de resultados, en A y en C1 |
-| **Por qué es ASR** | El enunciado pide verificar el 100 % de los archivos, y BCR aprobó dos casos en que el acuse sale antes de verificar: el masivo con acuse de custodia y la ECD caída con la información de revocación vencida. Hay que decidir dónde espera un archivo hasta que su verificación cierre, y cómo se garantiza que lo verificado sea lo mismo que se procesa. S01 mide cuánto tarda el control; esta medida, lo que el control protege |
-| **Cómo se verifica** | Enviar archivos con firma alterada, estampa inválida, certificado revocado y firma envuelta, y otros con la ECD caída y sin información de revocación vigente; se cuentan los que llegan a aceptación |
-| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Seguridad: «el 100 % de los archivos deben contar con validación criptográfica») |
+| **Respuesta** | El archivo puede acusarse, pero no recibe aceptación total ni parcial hasta que su verificación termine bien; si falla, se rechaza con la causa. Lo verificado queda como evidencia que el remitente no puede negar |
+| **Medida** | 0 archivos con aceptación total o parcial sin firma, firmante, estampa, cadena y revocación del certificado verificadas, contados en el registro de resultados, en A y en C1 |
+| **Por qué es ASR** | El enunciado pide verificar el 100 % de los archivos y garantizar el no repudio, y BCR aprobó dos casos en que el acuse sale antes de verificar: el masivo con acuse de custodia y la ECD caída con la información de revocación vencida. Hay que decidir dónde espera un archivo hasta que su verificación cierre, cómo se garantiza que lo verificado sea lo mismo que se procesa y cómo se conserva la evidencia. Nota de trampa: la medida se cumple rechazando todo; el desfase de reloj y la antigüedad máxima de la estampa que se toleran son `[PREGUNTA → BCR]`. S01 mide cuánto tarda el control; esta medida, lo que el control protege |
+| **Cómo se verifica** | Enviar un catálogo de archivos con firma alterada, firma envuelta, firmante distinto, certificado revocado, certificado fuera de la cadena aceptada, estampa desfasada y estampa vencida, y otros con la ECD caída y sin información de revocación vigente; se cuentan los que llegan a aceptación. La autenticación del canal (TLS mutuo) queda fuera: solo cuenta la firma del archivo |
+| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Seguridad: «el 100 % de los archivos deben contar con validación criptográfica»; reto: «garantizar el no repudio mediante la firma y el estampado digital») · reunión del 6-nov: firmante, cadena hasta la raíz y estampa con desfase |
 
 ```mermaid
 sequenceDiagram
-    participant R as FUENTE · remitente
+    participant R as FUENTE · remitente o suplantador
     participant O as Orquídea
     box rgb(240,240,240) Fuera de BCR
     participant E as ECD
     end
     Note over R,E: AMBIENTE A, y C1 con la ECD caída · 400 archivos pequeños/min y 5 archivos masivos
-    R->>O: ESTÍMULO · archivo con firma, estampa o certificado inválido, o que no se puede verificar
+    R->>O: ESTÍMULO · archivo con firma, firmante, estampa o certificado inválido, o que no se puede verificar
     O-->>R: Acuse de recibo, que puede salir antes de verificar
     E--xO: Caída, y la información de revocación ya venció
     rect rgb(222, 236, 255)
@@ -263,10 +268,10 @@ sequenceDiagram
     else La verificación sigue incompleta
         Note over O: RESPUESTA · el archivo espera, sin resultado definitivo
     end
-    Note over R,O: MEDIDA · 0 archivos aceptados sin firma, estampa y revocación verificadas
+    Note over R,O: MEDIDA · 0 archivos aceptados sin firma, firmante, estampa,<br/>cadena y revocación verificadas
     end
     rect rgb(255, 228, 225)
-    Note over R,E: LO QUE EL ASR DESCARTA · dar por bueno un archivo porque ya se acusó.<br/>Un certificado robado o revocado terminaría en el registro oficial
+    Note over R,E: LO QUE EL ASR DESCARTA · dar por bueno un archivo porque ya se acusó.<br/>Un certificado robado o revocado terminaría en el registro oficial, y el remitente podría negar el envío
     end
 ```
 
@@ -284,7 +289,7 @@ sequenceDiagram
 | **Quién lo hace** | El equipo de TI de BCR, que conoce Orquídea `[SUPUESTO → BCR]` ¿lo hace el equipo propio o un tercero? |
 | **Por qué es ASR** | Decide dónde vive la regla, si se expresa como dato o como código, y cómo se fija la que aplica a cada archivo. Si la Circular cambiara una vez por década, encapsular las reglas sería esfuerzo perdido. Una regla que pide un dato nuevo de un sistema externo es otro cambio, más grande: suma la integración de I01. Nota de trampa: las 4 h se cumplen regando un cambio barato por varias funciones; va como pregunta al panel |
 | **Cómo se verifica** | Juicio de expertos, con el protocolo de abajo: es el ASR de modificabilidad que se valida. Complemento: activar una regla nueva con tráfico de A y contar las h-persona invertidas y las funciones tocadas |
-| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Modificabilidad e Interoperabilidad) |
+| **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` (Modificabilidad e Interoperabilidad) · fue crítico hasta la reunión del 6-nov |
 
 ```mermaid
 sequenceDiagram
@@ -773,7 +778,7 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 
 | Candidato | Origen | Salió por | Razón en una frase | Va a |
 |---|---|---|---|---|
-| «Con un sistema externo caído, 0 archivos rechazados» como medida | informe | Se cumple sin lograr el objetivo | Se cumple dejando las declaraciones pendientes para siempre, y no mide la lentitud del sistema externo | Respuesta de [D01](#asr-d01) |
+| «Con un sistema externo caído, 0 archivos rechazados», sin plazo | informe | Se cumple sin lograr el objetivo | Se cumple dejando las declaraciones pendientes para siempre. La medida de D01 la cierra con el reproceso nocturno y la notificación acordados el 6-nov | Medida de [D01](#asr-d01) |
 | Cualquier regla cambiaria en 4 h-persona | informe | Cambio sin acotar | Una regla que pide un dato nuevo de un sistema externo no cabe en 4 h; se acota a reglas sobre datos que ya llegan | [M01](#asr-m01) |
 | Reemplazar un sistema externo por otro proveedor en 4 h-persona | informe | Cambio sin acotar | El enunciado pide adaptar o reemplazar el conector, no cambiar de proveedor | [I01](#asr-i01) |
 | Pérdida cero en el pico sin fallas | `enunciado` | Lo cubre otro ASR | Sin fallas, solo se pierde si se descarta carga; D03 lo mide en el peor caso, una falla durante el pico | [D03](#asr-d03) |
@@ -781,7 +786,7 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 | Disponibilidad del 99,99 % | `enunciado` | No diseñable | Es la meta de negocio; la persiguen D01, D02, D03 y D04 | Motivador |
 | Cifrado en tránsito y en reposo | `enunciado` | Es infraestructura o configuración | Se cumple con configuración y práctica estándar, y no descarta ninguna familia de solución | Restricción |
 | Protección contra ataques XML | `enunciado` | Práctica estándar | Endurecer el parser es práctica estándar; la parte estructural, que lo verificado sea lo procesado, va en S06 | Restricción · [S06](#asr-s06) |
-| Firmante distinto del remitente | informe | Funcional | Comparar dos identidades es una regla de la verificación de S01 | Funcional |
+| Autenticación del canal con TLS mutuo | BCR (ADR-13) | Fuera de alcance | En la reunión del 6-nov la seguridad crítica quedó en la firma del archivo, no en el canal | Restricción |
 | 0 s de indisponibilidad dentro de las medidas de M01, M02 e I01 | informe | Otro atributo | Es una medida de ejecución dentro de un ASR de modificabilidad | [D04](#asr-d04) |
 | «Sin pérdida» dentro de E01 y «sin pérdida ni duplicados» dentro de D02 | `enunciado` · informe | Dos medidas | Cada ASR lleva una sola medida | [D03](#asr-d03) |
 | «Vuelve a producir resultados» como medida de D02 | informe | Se cumple sin lograr el objetivo | Se cumple con los elementos sanos aunque lo afectado siga detenido | Medida de [D02](#asr-d02) |
@@ -805,8 +810,12 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 **Preguntas**
 
 - `[PREGUNTA → BCR]` ¿A partir de qué latencia un sistema externo cuenta como «extrema»? De eso depende cuándo dejan de aplicar los plazos de procesamiento, como aceptó BCR.
-- `[PREGUNTA → BCR]` Cuando un sistema externo vuelve tras una caída larga, ¿en cuánto tiempo deben completarse las declaraciones que quedaron pendientes, y sin afectar el tráfico nuevo?
-- `[PREGUNTA → BCR]` S06 no está entre los seis ASR que BCR priorizó, y aquí reemplaza a S01 entre los críticos. ¿BCR acepta el cambio? S01 conserva sus 200 ms.
+- `[PREGUNTA → BCR]` ¿A qué hora corre la ventana nocturna de reproceso?
+- `[PREGUNTA → BCR]` ¿Cuántos días se reintenta un archivo pendiente, y qué pasa con él si el sistema externo sigue caído varios días: se notifica cada día, se rechaza con causa o queda a cargo de un operador?
+- `[PREGUNTA → BCR]` ¿En cuánto tiempo hay que detectar que un sistema externo cayó o se puso lento, y qué tasa de falsas alarmas se tolera? Es la rama de detección de la disponibilidad, que no tiene ASR por falta de cifra.
+- `[PREGUNTA → BCR]` ¿Qué desfase de reloj y qué antigüedad máxima de la estampa se toleran antes de rechazar un archivo?
+- `[PREGUNTA → BCR]` ¿El XSD trae entidad, fecha, lote y consecutivo, para usarlos como llave de un archivo duplicado?
+- `[PREGUNTA → equipo]` En la reunión del 6-nov el ASR de seguridad crítico quedó como «ningún archivo se acepta sin validación criptográfica completa», que es S06. Confirmar con BCR por escrito que S06 reemplaza a S01 entre los críticos; S01 conserva sus 200 ms como alto.
 - `[PREGUNTA → BCR]` Los «5 segundos de respuesta» del pico, ¿son de procesamiento completo, como los 3 s de A, o del acuse?
 - `[PREGUNTA → BCR]` ¿Cada cuánto debe verificarse la integridad de la auditoría?
 - `[PREGUNTA → BCR]` ¿Cuántos archivos medianos llegan por minuto, en A y en B?

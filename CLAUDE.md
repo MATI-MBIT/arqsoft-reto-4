@@ -58,9 +58,13 @@ front matter la clave `helix_section`:
 | `requirements.md` | `Requirements & Quality` | Insumo | Hecho |
 | `glossary.md` | `Objective → Glossary` | Insumo | Hecho |
 | `quality-attributes.md` | `Requirements & Quality → Quality Scenarios` | Sale de los insumos | Hecho |
-| `experiments.md` | `Experiments` | Valida decisiones | Pendiente |
+| `experiments.md` | `Experiments` | Valida decisiones | Propuesta (diseño, sin correr) |
 | `results.md` | `Experiments → Results & analysis` | Resultados | Pendiente |
 | `modelos/` | No se carga en Helix | ADR (`adrs-orquidea.md`), vistas, draw.io y PNG | Hecho (ADR en Propuesta) |
+
+**ASR críticos (reunión con BCR del 6-nov-2026):** solo tres, D01 (foco), L04 y S06.
+Solo ellos llevan táctica, ADR, vistas y experimento; los demás quedan documentados
+sin desarrollo. M01 bajó a alta.
 
 ## La regla de flujo
 

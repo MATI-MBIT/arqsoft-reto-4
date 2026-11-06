@@ -23,3 +23,4 @@ Circular Reglamentaria Externa termina en un redespliegue largo.
 | [Historias de usuario](requirements.md) | Lo que cada stakeholder necesita, en épicas y funcionalidades |
 | [Los ASR de Orquídea](quality-attributes.md) | Los requisitos que deciden la arquitectura, ordenados por importancia |
 | [Vistas de arquitectura](modelos/index.md) | Las decisiones de arquitectura (ADR) y los diagramas que las hacen visibles |
+| [Experimento](experiments.md) | Cómo se prueban en local los tres ASR críticos, y con qué criterio de éxito |
