@@ -163,7 +163,7 @@ Cada ficha trae, debajo de la tabla, un diagrama de secuencia con Orquídea como
 |---|---|
 | **Fuente** | Los sistemas externos que BCR no controla: el Sistema de Tasas de Mercado (STM), la Agencia Nacional Tributaria y Aduanera (ANTA), el Ministerio de Asuntos Migratorios y Consulares (MAMC), el Registro Nacional de Identificación Ciudadana (RNIC) y la entidad de certificación digital (ECD) |
 | **Estímulo** | Uno de ellos deja de responder, o responde con latencia extrema, durante horas |
-| **Artefacto** | La validación y el enriquecimiento de las declaraciones |
+| **Artefacto** | El procesamiento de los archivos que necesitan datos del sistema caído, de la recepción al resultado definitivo |
 | **Ambiente** | C1: un sistema externo caído, con la carga de A |
 | **Respuesta** | Sigue recibiendo y acusando. Lo que necesita al externo queda pendiente y se reprocesa cada noche hasta que vuelva; si no vuelve en los días de reintento, se notifica al remitente |
 | **Medida** | 0 archivos válidos rechazados o sin resultado definitivo al cierre de la primera ventana nocturna tras el regreso del externo |
@@ -183,7 +183,7 @@ sequenceDiagram
     rect rgb(222, 236, 255)
     R->>O: Envía un archivo válido
     O-->>R: Acuse, sin esperar al externo
-    Note over O: ARTEFACTO · validación y enriquecimiento<br/>lo que necesita al externo queda pendiente
+    Note over O: ARTEFACTO · procesamiento de los archivos que necesitan al externo<br/>lo que falta queda pendiente
     loop Cada noche, en la ventana de reproceso
         alt El externo volvió
             O-->>R: RESPUESTA · resultado definitivo
