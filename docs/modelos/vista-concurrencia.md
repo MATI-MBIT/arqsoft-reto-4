@@ -12,27 +12,27 @@ Cada diagrama se dibuja en el navegador a partir del archivo [`vista-concurrenci
 
 {% capture vista %}{% include_relative drawio/vista-concurrencia.drawio %}{% endcapture %}
 
-## DG-CON-001 · Procesos, colas y estado compartido
+## DG-CON-001 · Concurrencia de carriles y reproceso
 
-Los procesos que corren a la vez, una cola durable y un pool de trabajadores por carril (bulkhead, L04), la cola de pendientes del reprocesador y el estado compartido que se sincroniza: el resultado y el estado de los terceros (D01).
+La recepción, los tópicos de cada carril y de pendientes, un pool de trabajadores por carril y el reprocesador. Todos escriben el resultado, que es único por archivo y declaración (L04, D01).
 
 {% include drawio.html xml=vista page=0 %}
 
 ## DG-SEQ-001 · Recepción (secuencia interna)
 
-Desde el último byte del archivo hasta el acuse: llave de idempotencia, rechazo del duplicado y enrutamiento por tamaño, sin esperar a ningún tercero (D01, L04).
+Del último byte al acuse: verificar, registrar la llave, anexar la evidencia y enrutar, con los caminos de firma inválida y archivo duplicado (D01, L04).
 
 {% include drawio.html xml=vista page=1 %}
 
-## DG-SEQ-002 · Verificador criptográfico (secuencia interna)
+## DG-SEQ-002 · Integración con terceros (secuencia interna)
 
-La verificación completa y el camino de fallo cuando la ECD está caída: el archivo queda en verificación pendiente, nunca aceptado sin verificar, y la evidencia queda firmada (S06).
+Enriquecer una declaración con el tercero disponible o caído, y con respuesta o timeout. En los dos caminos de fallo la declaración queda pendiente, nunca rechazada (D01).
 
 {% include drawio.html xml=vista page=2 %}
 
-## DG-SEQ-003 · Reprocesador nocturno (secuencia interna)
+## DG-SEQ-003 · Verificador criptográfico (secuencia interna)
 
-La corrida de la ventana nocturna con el timeout de cada adaptador, la reprogramación al día siguiente y la notificación al agotar los reintentos (D01).
+La firma inválida se rechaza con su causa. Con la revocación vencida, si la ECD responde se refresca, y si está caída el archivo queda en verificación pendiente, sin aceptarse (S06).
 
 {% include drawio.html xml=vista page=3 %}
 

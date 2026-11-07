@@ -14,25 +14,25 @@ Cada diagrama se dibuja en el navegador a partir del archivo [`vista-informacion
 
 ## DG-CLS-001 · Modelo de información
 
-El archivo con su llave única, sus declaraciones, lo pendiente por tercero, el resultado, la entrada de evidencia de solo anexar, la información de revocación y el estado de cada tercero (D01, S06).
+El remitente, el archivo con su llave única, la verificación criptográfica y su evidencia, las declaraciones, lo pendiente por tercero, el estado de cada tercero y los resultados (D01, S06).
 
 {% include drawio.html xml=vista page=0 %}
 
-## DG-STM-001 · Ciclo de vida del archivo (estados)
+## DG-STM-001 · Ciclo de vida del archivo
 
-De custodiado a registrado, verificado o en verificación pendiente, y de ahí a resultado, rechazo, rechazo por duplicado o notificación. Ningún camino llega al resultado sin pasar por la verificación (D01, S06).
+De recibido a verificado, en verificación pendiente o rechazado, y de ahí a resuelto. Ningún camino llega a resuelto sin pasar por verificado (S06, D01).
 
 {% include drawio.html xml=vista page=1 %}
 
-## DG-STM-002 · Declaración pendiente (estados)
+## DG-STM-002 · Ciclo de vida de la declaración pendiente
 
-Una declaración que espera a un tercero caído: degradación con gracia, timeout, reintento en la ventana nocturna y notificación al agotar los días (D01).
+Una declaración que espera a un tercero caído: se reprograma en cada ventana, se notifica al agotar los días de reintento y se enriquece cuando el tercero vuelve (D01).
 
 {% include drawio.html xml=vista page=2 %}
 
-## DG-STM-003 · Estado de un tercero en el monitor (estados)
+## DG-STM-003 · Estado de un tercero en el monitor
 
-Cómo el monitor lleva a cada tercero entre disponible, sospechoso, degradado, caído, recuperando y sin datos, con un solo aviso por caída (D01).
+Cómo el ping/echo y el timeout llevan a un tercero de disponible a caído, y cómo su regreso habilita el reproceso (D01).
 
 {% include drawio.html xml=vista page=3 %}
 

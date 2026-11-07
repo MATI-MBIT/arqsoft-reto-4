@@ -14,13 +14,13 @@ Cada diagrama se dibuja en el navegador a partir del archivo [`vista-despliegue.
 
 ## DG-DEP-001 · Despliegue objetivo
 
-Los nodos de producción, con los carriles A y B en nodos separados, la cola durable, el registro de evidencia y los protocolos hacia cada sistema externo (L04, D01, S06).
+Un nodo para la recepción, uno por carril y uno de soporte, más el nodo de datos con Kafka y PostgreSQL, con las réplicas y el protocolo de cada ruta (L04, D01, S06).
 
 {% include drawio.html xml=vista page=0 %}
 
 ## DG-DEP-002 · Despliegue del experimento local
 
-Los contenedores del experimento: recepción, Kafka, carriles, monitor, reprocesador, simuladores de terceros y de la ECD, Toxiproxy para inyectar caídas, PostgreSQL y el generador de carga. Ver la página de [experimentos](../experiments.md).
+Un equipo con Docker Compose y los once contenedores del experimento, incluidos los simuladores del RNIC y de la ECD y Toxiproxy para inyectar caídas. Ver la página de [experimentos](../experiments.md).
 
 {% include drawio.html xml=vista page=1 %}
 

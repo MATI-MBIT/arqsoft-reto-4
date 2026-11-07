@@ -83,8 +83,8 @@ Para verificar: `grep -c ASR docs/*.md` debe dar cero en todo salvo
 Con la skill `arquitectura:definir-asrs-software`. Lo que se fijó para este
 reto:
 
-- **Una sola medida por ASR, sin hermanos** (Nicolás, 2026-11-04). La trampa
-  de cada medida queda como nota en «Por qué es ASR».
+- **Una sola medida por ASR, sin hermanos** (Nicolás, 2026-11-04). Las fichas
+  no llevan «Por qué es ASR» (Nicolás, 2026-11-06).
 - **ASR atómicos en disponibilidad y seguridad** (Nicolás, 2026-11-06): cada
   uno es de un solo tipo, con las familias del ArquiBook (disponibilidad:
   detección, recuperación o prevención; seguridad: prevención, detección,

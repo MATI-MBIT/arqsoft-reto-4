@@ -40,7 +40,7 @@ La reunión técnica del 6 de noviembre de 2026 acotó el diseño a tres ASR cr�
 
 | ASR | Atributo | Fuente | Estímulo | Artefacto | Ambiente | Respuesta | Medida | Prioridad | Impacto |
 |---|---|---|---|---|---|---|---|---|---|
-| ASR-D01 | Disponibilidad · recuperación | STM, ANTA, MAMC, RNIC o la ECD | Uno deja de responder, o responde con latencia extrema | Orquídea, todo el sistema | C1 - Sistema externo degradado, con la carga de A | Sigue recibiendo y acusando; lo pendiente se reprocesa cada noche hasta que el externo vuelva; si no vuelve en los días de reintento, se notifica y sigue pendiente | 0 archivos válidos sin aceptar al cierre de la primera ventana nocturna tras el regreso del externo | Crítica | Alto |
+| ASR-D01 | Disponibilidad · recuperación | STM, ANTA, MAMC, RNIC o la ECD | Uno deja de responder, o responde con latencia extrema | Orquídea, todo el sistema | C1 - Sistema externo degradado, con la carga de A | Sigue recibiendo y acusando; lo pendiente se reprocesa cada noche hasta que el externo vuelva; si no vuelve en los días de reintento, se notifica y sigue pendiente | 100 % de los archivos válidos procesados dentro de los días de reintento | Crítica | Alto |
 | ASR-L04 | Latencia | Remitentes de archivos pequeños | Envían pequeños, con arribo estocástico, mientras 5 masivos están en proceso | Servicio de procesamiento de archivos | A - Operación normal: 400 pequeños/min y 5 masivos, sin fallas | Cada pequeño se resuelve sin esperar a los masivos | p99 ≤ 3 s por archivo pequeño | Crítica | Alto |
 | ASR-S06 | Seguridad · prevención | Un remitente, o un tercero que lo suplanta | Envía un archivo cuya firma, firmante, cadena, estampa o revocación no es válida o no se puede verificar | Servicio de verificación criptográfica | Carga de A, con la ECD disponible (A) o caída (C1) | Puede acusarse, pero no se acepta hasta verificarse; si falla, se rechaza con la causa | 0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas | Crítica | Alto |
 
@@ -78,7 +78,7 @@ Cuatro decisiones, en el orden del ciclo de una falla: separar la recepción del
 
 ##### Contexto
 
-ASR-D01 exige que, con un sistema externo caído, todo archivo válido termine aceptado tras la primera ventana nocturna posterior a su regreso, y R-13 prohíbe descartar archivos. ASR-L04 exige p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso. Hoy todo pasa por un flujo síncrono: un tercero caído detiene la respuesta, y validar cien mil registros no cabe en el tiempo de un acuse. ¿Qué estilo separa la recepción del procesamiento, para que recibir y acusar no dependan del tamaño del archivo ni de los terceros?
+ASR-D01 exige que, con un sistema externo caído, el 100 % de los archivos válidos se procese dentro de los días de reintento, y R-13 prohíbe descartar archivos. ASR-L04 exige p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso. Hoy todo pasa por un flujo síncrono: un tercero caído detiene la respuesta, y validar cien mil registros no cabe en el tiempo de un acuse. ¿Qué estilo separa la recepción del procesamiento, para que recibir y acusar no dependan del tamaño del archivo ni de los terceros?
 
 ##### Decisión
 
@@ -100,7 +100,7 @@ Adoptaremos un pipeline de etapas asíncronas comunicadas por una cola durable. 
 
 | ASR | Atributo | Medida | Efecto esperado | Rol |
 |---|---|---|---|---|
-| ASR-D01 | Disponibilidad | 0 archivos válidos sin aceptar tras la ventana | contribuye | primario |
+| ASR-D01 | Disponibilidad | 100 % de los válidos procesados dentro de los días de reintento | contribuye | primario |
 | ASR-L04 | Latencia | p99 ≤ 3 s por pequeño | contribuye | primario |
 
 **A2. Tácticas**
@@ -166,7 +166,7 @@ Un monitor de terceros sondeará a cada uno con ping/echo a un periodo fijo y pu
 
 | ASR | Atributo | Medida | Efecto esperado | Rol |
 |---|---|---|---|---|
-| ASR-D01 | Disponibilidad | 0 archivos válidos sin aceptar tras la ventana | contribuye | primario |
+| ASR-D01 | Disponibilidad | 100 % de los válidos procesados dentro de los días de reintento | contribuye | primario |
 
 **A2. Tácticas**
 
@@ -211,7 +211,7 @@ Descartes: B: no sabe cuándo volvió el tercero sin arriesgar declaraciones rea
 
 ##### Contexto
 
-ASR-D01 exige que todo archivo válido recibido durante la caída de un tercero quede aceptado al cierre de la primera ventana nocturna tras su regreso. Las caídas pueden durar horas, R-13 prohíbe descartar, y BCR pregunta qué evita el estallido cuando un tercero vuelve con 500 000 declaraciones acumuladas (C-04). ADR-001 sacó el enriquecimiento del camino del acuse, y ADR-002 dice cuándo un tercero cayó y cuándo volvió. ¿Dónde espera lo que necesita al tercero caído, y cuándo y cómo se reprocesa?
+ASR-D01 exige que el 100 % de los archivos válidos recibidos durante la caída de un tercero se procese dentro de los días de reintento. Las caídas pueden durar horas, R-13 prohíbe descartar, y BCR pregunta qué evita el estallido cuando un tercero vuelve con 500 000 declaraciones acumuladas (C-04). ADR-001 sacó el enriquecimiento del camino del acuse, y ADR-002 dice cuándo un tercero cayó y cuándo volvió. ¿Dónde espera lo que necesita al tercero caído, y cuándo y cómo se reprocesa?
 
 ##### Decisión
 
@@ -227,13 +227,13 @@ Cuando ADR-002 marca al tercero caído, o su adaptador vence el timeout, la decl
 
 ##### Anexo de trazabilidad
 
-**Y-statement:** En el contexto de terceros que caen durante horas y de la detección de ADR-002, frente a ASR-D01, decidimos pendientes durables con una ventana nocturna de reproceso, reintento diario y notificación sin abandonar el archivo, y descartamos el drenaje inmediato al volver el tercero y el reintento síncrono, para lograr que todo archivo válido termine aceptado sin estallido, aceptando que lo pendiente espere hasta la noche.
+**Y-statement:** En el contexto de terceros que caen durante horas y de la detección de ADR-002, frente a ASR-D01, decidimos pendientes durables con una ventana nocturna de reproceso, reintento diario y notificación sin abandonar el archivo, y descartamos el drenaje inmediato al volver el tercero y el reintento síncrono, para lograr que el 100 % de los archivos válidos se procese dentro de los días de reintento, sin estallido, aceptando que lo pendiente espere hasta la noche.
 
 **A1. ASRs atendidos**
 
 | ASR | Atributo | Medida | Efecto esperado | Rol |
 |---|---|---|---|---|
-| ASR-D01 | Disponibilidad | 0 archivos válidos sin aceptar tras la ventana | satisface | primario |
+| ASR-D01 | Disponibilidad | 100 % de los válidos procesados dentro de los días de reintento | satisface | primario |
 
 **A2. Tácticas**
 
@@ -266,7 +266,7 @@ Descartes: B: gana en inmediatez, pero no da desenlace a lo que sigue pendiente 
 
 | Tipo | Qué se prueba | Umbral |
 |---|---|---|
-| Inyección de fallas | Caer el tercero simulado, enviar archivos válidos, disparar la ventana con el tercero caído y de vuelta, agotar los reintentos y restablecerlo | 0 archivos válidos sin aceptar al cierre de la primera ventana tras el regreso, también los notificados |
+| Inyección de fallas | Caer el tercero simulado, enviar archivos válidos, disparar la ventana con el tercero caído y de vuelta, agotar los reintentos y restablecerlo | 100 % de los archivos válidos procesados dentro de los días de reintento; los notificados, al volver el tercero |
 
 **A6. Relaciones:** reemplaza: — · refina: ADR-001 · depende-de: ADR-002, ADR-004 · conflicto-con: —
 
@@ -297,7 +297,7 @@ Registraremos la llave del archivo, con restricción de unicidad, en la misma tr
 
 | ASR | Atributo | Medida | Efecto esperado | Rol |
 |---|---|---|---|---|
-| ASR-D01 | Disponibilidad | 0 archivos válidos sin aceptar tras la ventana | contribuye | primario |
+| ASR-D01 | Disponibilidad | 100 % de los válidos procesados dentro de los días de reintento | contribuye | primario |
 
 **A2. Tácticas**
 
@@ -479,7 +479,7 @@ Descartes: B: deja a un remitente de masivos sin acuse mientras se verifica. C, 
 
 ##### Contexto
 
-ASR-S06 exige comprobar la revocación antes de aceptar, y ASR-D01 cuenta a la ECD entre los sistemas cuya caída no puede dejar archivos válidos sin aceptar. Consultar a la ECD en línea por cada archivo ata la recepción a su disponibilidad. ADR-006 retiene el resultado hasta verificar, y ADR-003 ya reprocesa lo pendiente cada noche. ¿Cómo se comprueba la revocación sin depender en línea de la ECD, y qué pasa con un archivo cuya revocación no se pudo comprobar?
+ASR-S06 exige comprobar la revocación antes de aceptar, y ASR-D01 cuenta a la ECD entre los sistemas cuya caída no puede dejar archivos válidos sin procesar. Consultar a la ECD en línea por cada archivo ata la recepción a su disponibilidad. ADR-006 retiene el resultado hasta verificar, y ADR-003 ya reprocesa lo pendiente cada noche. ¿Cómo se comprueba la revocación sin depender en línea de la ECD, y qué pasa con un archivo cuya revocación no se pudo comprobar?
 
 ##### Decisión
 
@@ -501,7 +501,7 @@ Mantendremos localmente la lista de revocación de la ECD y las respuestas OCSP 
 | ASR | Atributo | Medida | Efecto esperado | Rol |
 |---|---|---|---|---|
 | ASR-S06 | Seguridad | 0 archivos aceptados sin verificación completa | contribuye | primario |
-| ASR-D01 | Disponibilidad | 0 archivos válidos sin aceptar tras la ventana | contribuye | afectado |
+| ASR-D01 | Disponibilidad | 100 % de los válidos procesados dentro de los días de reintento | contribuye | afectado |
 
 **A2. Tácticas**
 

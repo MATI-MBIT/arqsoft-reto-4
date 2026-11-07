@@ -14,7 +14,7 @@ El experimento no tiene que cumplir los ASR. Si una medida no se alcanza, se rep
 
 | ASR | Hipótesis (la medida del ASR) | Decisiones que se prueban | Escenarios |
 |---|---|---|---|
-| ASR-D01 · disponibilidad, recuperación | Con un sistema externo caído, 0 archivos válidos sin aceptar al cierre de la primera ventana nocturna tras su regreso | [ADR-001 a ADR-004](modelos/adrs-orquidea.md) | D-1 a D-5 |
+| ASR-D01 · disponibilidad, recuperación | Con un sistema externo caído, 100 % de los archivos válidos procesados dentro de los días de reintento | [ADR-001 a ADR-004](modelos/adrs-orquidea.md) | D-1 a D-5 |
 | ASR-L04 · latencia | Con 5 masivos en proceso, p99 ≤ 3 s por archivo pequeño | [ADR-005](modelos/adrs-orquidea.md) | L-1 a L-4 |
 | ASR-S06 · seguridad, prevención | 0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas | [ADR-006, ADR-007 y ADR-008](modelos/adrs-orquidea.md) | S-1 a S-3 |
 
@@ -53,7 +53,7 @@ Cada archivo deja en `postgres` sus marcas de tiempo, con el reloj del equipo: e
 
 ## 3. ASR-D01 · Ningún archivo se rechaza por la caída de un sistema externo
 
-**Hipótesis.** Con el RNIC simulado caído durante la carga, todo archivo válido queda aceptado al cierre de la primera ventana nocturna tras su regreso.
+**Hipótesis.** Con el RNIC simulado caído durante la carga, el 100 % de los archivos válidos se procesa dentro de los días de reintento.
 
 **Tácticas que se prueban.** Pipeline asíncrono con acuse temprano (ADR-001). Detección: monitor con ping/echo a cada tercero y timeout por llamada (ADR-002). Recuperación: pendientes durables, reintento diferido a la ventana nocturna y degradación con gracia (ADR-003). Llave de idempotencia en transacción local (ADR-004).
 
@@ -71,13 +71,13 @@ Las caídas de horas se comprimen: una «noche» dura lo que tarde la prueba en 
 
 | Métrica | Cómo se calcula |
 |---|---|
-| **Archivos válidos sin aceptar** (la medida) | Válidos enviados − aceptados al cierre de la primera ventana tras el regreso, por conciliación |
+| **Archivos válidos procesados** (la medida) | Válidos procesados dentro de los días de reintento ÷ válidos enviados, por conciliación |
 | Rechazos por la caída | Rechazos cuya causa es la falta de respuesta del externo |
 | Duplicados | Archivos con la misma llave aceptados más de una vez; resultados escritos dos veces |
 | Pendientes y ventana | Mensajes en `pendientes`; duración de cada ventana |
 | Detección de la caída y del regreso | De la caída (o del regreso) en `toxiproxy` al cambio de estado en el monitor; también, cuántas declaraciones alcanzan a llamar al tercero caído antes de que se detecte |
 
-**Criterio.** Éxito: 0 archivos válidos sin aceptar en D-1 a D-4. Fracaso: un solo archivo válido rechazado, perdido o sin aceptar tras la ventana. Se reportan además los duplicados de D-5, la profundidad de pendientes, la duración de la ventana y el tiempo de detección.
+**Criterio.** Éxito: 100 % de los archivos válidos procesados dentro de los días de reintento en D-1, D-2 y D-4. Fracaso: un solo archivo válido rechazado, perdido o sin procesar en ese plazo. En D-3 el RNIC sigue caído más allá de los días de reintento: queda fuera de la medida, y se reporta que lo notificado se procesa al volver. Se reportan además los duplicados de D-5, la profundidad de pendientes, la duración de la ventana y el tiempo de detección.
 
 ## 4. ASR-L04 · Aislamiento de carga entre archivos masivos y pequeños
 

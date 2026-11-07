@@ -14,25 +14,25 @@ Cada diagrama se dibuja en el navegador a partir del archivo [`vista-componentes
 
 ## DG-CMP-002 · Vista general de Orquídea
 
-El sistema completo en una página: la recepción, la cola durable, los carriles A y B, el verificador criptográfico, el monitor de terceros, el reprocesador nocturno y el registro de evidencia. Muestra el pipeline asíncrono (D01, L04) y la caché de revocación (S06).
+El sistema en una página, con cuatro paquetes: recepción y verificación, mensajería (el bus con sus tópicos), procesamiento por carriles y disponibilidad ante terceros. Cada componente lleva la marca de su táctica, y cada sistema externo su protocolo.
 
 {% include drawio.html xml=vista page=0 %}
 
 ## DG-CST-001 · Recepción (caja blanca)
 
-Cómo acusa la recepción sin llamar a terceros, cómo rechaza un archivo duplicado con la llave en una transacción local y cómo enruta por tamaño al carril A o al B (D01, L04).
+Cómo la recepción registra la llave única del archivo, anexa la evidencia, clasifica por tamaño y publica en el carril, y acusa sin esperar a terceros (D01, L04, S06).
 
 {% include drawio.html xml=vista page=1 %}
 
-## DG-CST-002 · Verificador criptográfico (caja blanca)
+## DG-CST-002 · Integración con terceros (caja blanca)
 
-Las partes que verifican firma, firmante, cadena, estampa y revocación, y la degradación a verificación pendiente cuando la ECD no responde (S06).
+Dónde la caída de un tercero se vuelve pendiente y no rechazo: el orquestador, el timeout de cada adaptador y la degradación con gracia (D01).
 
 {% include drawio.html xml=vista page=2 %}
 
-## DG-CST-003 · Reprocesador nocturno (caja blanca)
+## DG-CST-003 · Verificador criptográfico (caja blanca)
 
-Cómo toma lo pendiente en la ventana nocturna, lo reprograma para el día siguiente si el tercero sigue caído y notifica al remitente al agotar los días de reintento (D01).
+Las partes que verifican la firma, el firmante, la cadena, la estampa y la revocación, con la caché local y la verificación pendiente cuando la ECD no responde (S06).
 
 {% include drawio.html xml=vista page=3 %}
 

@@ -10,7 +10,9 @@ Un ASR, o requisito arquitectónicamente significativo, es el que obligaría a r
 
 Los de Orquídea salen del enunciado del curso, del informe de consultoría del Grupo 1 y de la respuesta que BCR envió el 3 de noviembre de 2026. El enunciado manda, y la respuesta de BCR es vinculante donde fija una cifra. Las decisiones de arquitectura (ADR) que BCR aprobó responden a estos requisitos, no al revés.
 
-Cada ASR tiene una sola medida y ninguno nombra componentes ni tecnologías. En disponibilidad y seguridad, además, cada ASR es de un solo tipo, con las familias del ArquiBook: en disponibilidad, detección, recuperación o prevención; en seguridad, prevención (resistir), detección, reacción o recuperación. El artefacto es la parte de Orquídea que recibe el estímulo: uno de sus servicios (recepción y acuse, verificación criptográfica, procesamiento de archivos, reglas cambiarias, validación de estructura, integración con los sistemas externos, consulta, entrega a las áreas o registro de auditoría) o todo el sistema. Cuando una medida se puede cumplir sin lograr lo que pide, la ficha lo advierte en una «nota de trampa».
+Cada ASR tiene una sola medida y no nombra componentes ni tecnologías. En disponibilidad y seguridad, además, cada uno es de un solo tipo, según las familias del ArquiBook: en disponibilidad, detección, recuperación o prevención; en seguridad, prevención, detección, reacción o recuperación.
+
+El artefacto es la parte de Orquídea que recibe el estímulo: todo el sistema o uno de sus servicios. Los servicios son recepción y acuse, verificación criptográfica, procesamiento de archivos, reglas cambiarias, validación de estructura, integración con los sistemas externos, consulta, entrega a las áreas y registro de auditoría.
 
 Cuatro grupos de siglas se repiten en la página. BCR es la entidad que opera Orquídea. Los remitentes son los intermediarios del mercado cambiario (IMC) y los titulares de cuentas de compensación. STM, ANTA, MAMC y RNIC son los cuatro sistemas externos que aportan tasas, datos tributarios y aduaneros, datos migratorios e identidad. La ECD es la entidad de certificación digital que emite los certificados y las estampas cronológicas.
 
@@ -20,7 +22,7 @@ Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dic
 
 | # | ID | Atributo | Qué exige | Amb. | Prioridad | Impacto | Origen |
 |---|---|---|---|---|---|---|---|
-| 1 | [ASR-D01](#asr-d01) | Disponibilidad · recuperación | **Ningún archivo se rechaza por la caída de un sistema externo.** 0 archivos válidos sin aceptar tras la ventana nocturna | C1 - Sistema externo degradado | Crítica | Alto | `enunciado` · BCR |
+| 1 | [ASR-D01](#asr-d01) | Disponibilidad · recuperación | **Ningún archivo se rechaza por la caída de un sistema externo.** 100 % de los válidos procesados dentro de los días de reintento | C1 - Sistema externo degradado | Crítica | Alto | `enunciado` · BCR |
 | 2 | [ASR-L04](#asr-l04) | Latencia | **Aislamiento de carga entre archivos masivos y pequeños.** p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso | A - Operación normal | Crítica | Alto | `enunciado` · BCR |
 | 3 | [ASR-S06](#asr-s06) | Seguridad · prevención | **Ningún archivo se acepta sin validación criptográfica completa.** 0 aceptados sin verificar | A - Operación normal, C1 - Sistema externo degradado | Crítica | Alto | `enunciado` |
 | 4 | [ASR-M01](#asr-m01) | Modificabilidad · adaptativo | **Regla cambiaria nueva en ≤ 4 h-persona.** Sin recompilar | Despliegue | Alta | Alto | `enunciado` · BCR |
@@ -46,7 +48,7 @@ Los tres primeros son **críticos**, y son los únicos que se desarrollan con t�
 - **L04** es el reto tal como lo escribe el enunciado: procesar pequeños y masivos «sin generar encolamientos ni bloqueos mutuos». En la reunión se cerró como un requisito de latencia, no de disponibilidad: los archivos masivos de un remitente grande no pueden degradar la respuesta a los demás.
 - **S06** protege lo que el enunciado exige del 100 % de los archivos: que ninguno sin verificar termine aceptado. Es lo que sostiene el no repudio, porque el remitente no puede negar un envío cuya firma, firmante y estampa se verificaron.
 - **M01** fue crítico hasta el 6 de noviembre y ahora es alto: sigue entre los seis que BCR priorizó, pero no tiene táctica ni experimento en esta iteración.
-- **S01, E01 e I01** completan los seis que BCR priorizó. S01 cronometra la verificación que S06 protege. E01 cuenta con un pico de 20 archivos por segundo, y el informe concluye que esa tasa no es la presión real. I01 comparte el problema de M01.
+- **S01, E01 e I01** completan los seis que BCR priorizó. S01 cronometra la verificación que S06 protege. E01 parte de un pico de 20 archivos por segundo, y el informe concluye que esa tasa no es la presión real. I01 comparte el problema de M01.
 
 Del 8 al 11 son requisitos explícitos del enunciado que BCR no listó y que pesan en la estructura. Del 12 al 17 completan el alcance. BCR evalúa tres de ellos (M02, S04 e I02) con su propia inspección de código en la Fase 4 de la hoja de ruta.
 
@@ -164,9 +166,9 @@ Cada ficha trae, debajo de la tabla, un diagrama de secuencia con Orquídea como
 | **Fuente** | Los sistemas externos que BCR no controla: el Sistema de Tasas de Mercado (STM), la Agencia Nacional Tributaria y Aduanera (ANTA), el Ministerio de Asuntos Migratorios y Consulares (MAMC), el Registro Nacional de Identificación Ciudadana (RNIC) y la entidad de certificación digital (ECD) |
 | **Estímulo** | Uno de ellos deja de responder, o responde con latencia extrema |
 | **Artefacto** | Orquídea, todo el sistema |
-| **Ambiente** | C1 - Sistema externo degradado: un sistema externo caído, con la carga de A |
-| **Respuesta** | Sigue recibiendo y acusando. Si alguno de los externos está caído o degradado, lo que lo necesita se reprocesa por lotes en la noche; si no vuelve en los días de reintento, se notifica al remitente y el archivo sigue pendiente hasta que el externo vuelva |
-| **Medida** | 100% de los archivos validos procesados, durante los días de reintento |
+| **Ambiente** | C1 - Sistema externo degradado, con la carga de A |
+| **Respuesta** | Sigue recibiendo y acusando. Lo que necesita al externo caído se reprocesa por lotes en la ventana nocturna; si el externo no vuelve en los días de reintento, se notifica al remitente y el archivo sigue pendiente hasta que vuelva |
+| **Medida** | 100 % de los archivos válidos procesados dentro de los días de reintento |
 | **Cómo se verifica** | Se cae un externo simulado a mitad de una carga A y se envían archivos válidos y otros que una regla debe rechazar. Tras la ventana nocturna con el externo de vuelta, se concilian los válidos contra los aceptados |
 | **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` («continuar operando sin rechazar archivos») · BCR: respuesta del 3-nov y reunión del 6-nov |
 
@@ -207,7 +209,6 @@ sequenceDiagram
 | **Ambiente** | A - Operación normal: 400 pequeños por minuto y 5 masivos concurrentes, sin fallas |
 | **Respuesta** | Cada archivo pequeño se resuelve sin esperar a los masivos |
 | **Medida** | p99 ≤ 3 s por archivo pequeño |
-| **Por qué es ASR** | Obliga a decidir si pequeños y masivos comparten capacidad. En una misma fila, un pequeño que espera detrás de 5 archivos de 100 000 registros no cabe en 3 s. Nota de trampa: se cumple sobredimensionando una fila compartida; por eso la verificación compara además contra la corrida sin masivos |
 | **Cómo se verifica** | Con 5 masivos en proceso se envían pequeños y se toma el tiempo de cada uno desde que termina de llegar hasta que su resultado está disponible; el p99 tiene que dar ≤ 3 s. Complemento: la misma carga sin masivos, para comprobar el margen de 10 % que propuso BCR. Luego se suben los masivos hasta encontrar el quiebre |
 | **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` · BCR |
 
@@ -239,10 +240,9 @@ sequenceDiagram
 | **Fuente** | Un remitente, o un tercero que lo suplanta |
 | **Estímulo** | Envía un archivo cuya firma no es válida o no se puede verificar |
 | **Artefacto** | El servicio de verificación criptográfica |
-| **Ambiente** | Carga de A - Operación normal, con la ECD disponible (A) o caída (C1 - Sistema externo degradado) |
+| **Ambiente** | A - Operación normal, con la ECD disponible, o C1 - Sistema externo degradado, con la ECD caída; en ambos, la carga de A |
 | **Respuesta** | El archivo puede acusarse, pero no se acepta hasta verificarse; si falla, se rechaza con la causa |
 | **Medida** | 0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas |
-| **Por qué es ASR** | BCR aprobó acusar antes de verificar: el masivo con acuse de custodia y la ECD caída. Hay que decidir dónde espera el archivo y cómo se garantiza que lo verificado es lo que se procesa. El no repudio sale de esta medida y de [S04](#asr-s04). El desfase y la antigüedad de la estampa son `[PREGUNTA → BCR]`. Nota de trampa: se cumple rechazando todo |
 | **Cómo se verifica** | Un catálogo con firma alterada, firmante distinto, certificado revocado o fuera de la cadena, estampa desfasada o vencida, y la ECD caída; se cuentan los aceptados. El TLS mutuo queda fuera |
 | **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` («el 100 % de los archivos deben contar con validación criptográfica»; no repudio) · reunión del 6-nov |
 
@@ -283,8 +283,7 @@ sequenceDiagram
 | **Medida** | ≤ 4 h-persona desde la especificación aprobada hasta producción |
 | **De dónde sale el número** | Del enunciado; BCR precisó que son h-persona con desarrollo y pruebas, sin la aprobación regulatoria |
 | **Quién lo hace** | El equipo de TI de BCR `[SUPUESTO → BCR]` |
-| **Por qué es ASR** | Decide dónde vive la regla y si es dato o código. Si la Circular cambiara una vez por década, encapsularla sería esfuerzo perdido; la frecuencia es `[PREGUNTA → BCR]`. Nota de trampa: las 4 h se cumplen regando un cambio barato por varias funciones |
-| **Cómo se verifica** | Juicio de expertos, con el protocolo al final de las fichas. Complemento: activar una regla con tráfico A y contar h-persona y funciones tocadas |
+| **Cómo se verifica** | Juicio de expertos, con el protocolo al final de las fichas. Complemento: activar una regla con la carga de A y contar las h-persona y las funciones modificadas |
 | **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` · fue crítico hasta el 6-nov |
 
 ```mermaid
@@ -316,11 +315,10 @@ sequenceDiagram
 | **Fuente** | Un remitente |
 | **Estímulo** | Envía un archivo firmado de hasta 50 MB, con arribo estocástico |
 | **Artefacto** | El servicio de verificación criptográfica |
-| **Ambiente** | A - Operación normal, sin fallas |
+| **Ambiente** | A - Operación normal |
 | **Respuesta** | Determina si la firma, la estampa y el certificado son válidos y vigentes |
 | **Medida** | p99 ≤ 200 ms del último byte al resultado de la validación |
-| **Por qué es ASR** | Pasan todos los archivos. Con 2 s cabría consultar a la ECD en línea; con 200 ms no, y un archivo de 50 MB no puede cargarse entero. Con la ECD caída no aplica. Lo que el control protege lo mide [S06](#asr-s06) |
-| **Cómo se verifica** | Benchmark con archivos de 1 registro a 50 MB y certificados vigentes, vencidos y revocados; p99 por tamaño |
+| **Cómo se verifica** | Prueba de rendimiento (benchmark) con archivos de 1 registro a 50 MB y certificados vigentes, vencidos y revocados; p99 por tamaño |
 | **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` («… en menos de 200 milisegundos») |
 
 ```mermaid
@@ -351,10 +349,9 @@ sequenceDiagram
 | **Fuente** | Los remitentes, en cierres de mercado y vencimientos |
 | **Estímulo** | Envían 1 200 archivos pequeños por minuto durante 45 min, en ráfaga `[SUPUESTO → BCR]` |
 | **Artefacto** | El servicio de procesamiento de archivos |
-| **Ambiente** | B - Carga pico: pico de 45 min con 5 masivos, sin fallas |
+| **Ambiente** | B - Carga pico: 45 min con 5 masivos, sin fallas |
 | **Respuesta** | Cada archivo pequeño se resuelve sin que el retraso se acumule |
 | **Medida** | p99 ≤ 5 s del último byte al resultado definitivo, en cada minuto de la ventana |
-| **Por qué es ASR** | La capacidad se triplica 45 min sin quedar fija el resto del día. Con 5 min, una cola absorbería el pico; con 5 s, no. Si los 5 s son de procesamiento o de acuse es `[PREGUNTA → BCR]` |
 | **Cómo se verifica** | Carga sostenida de 45 min con 5 masivos; p99 por minuto |
 | **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` (Escalabilidad) |
 
@@ -392,7 +389,6 @@ sequenceDiagram
 | **Medida** | ≤ 4 h-persona desde que se recibe el contrato hasta producción |
 | **De dónde sale el número** | Del enunciado («adaptación y reemplazo de conectores… máximo 4 horas»); BCR precisó h-persona. Distancias que cierra: sintáctica y semántica en datos |
 | **Quién lo hace** | El equipo de TI de BCR `[SUPUESTO → BCR]` |
-| **Por qué es ASR** | Cuatro terceros cambian su contrato por su cuenta: hay que decidir dónde se traduce sin que el cambio llegue al resto del flujo. Nota de trampa: las 4 h se cumplen integrando rápido y mal |
 | **Cómo se verifica** | Juicio de expertos, con el protocolo al final de las fichas. Complemento: cambiar el contrato de ANTA en un simulador y medir las h-persona |
 | **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` (Modificabilidad e Interoperabilidad) |
 
@@ -427,11 +423,10 @@ sequenceDiagram
 | **Fuente** | Un nodo interno de procesamiento |
 | **Estímulo** | Falla con archivos acusados en curso |
 | **Artefacto** | El servicio de procesamiento de archivos |
-| **Ambiente** | C2 - Falla interna sobre B - Carga pico: la falla ocurre en el pico |
+| **Ambiente** | C2 - Falla interna, durante B - Carga pico |
 | **Respuesta** | Cada declaración acusada termina con un solo resultado definitivo |
 | **Medida** | 0 declaraciones acusadas sin exactamente un resultado definitivo, por conciliación |
-| **Por qué es ASR** | Un acuse es una promesa: hay que decidir cuándo el archivo queda a salvo y cómo no aplicar dos veces lo que se reprocesa |
-| **Cómo se verifica** | Matar nodos durante la prueba de E01 y conciliar las declaraciones acusadas contra las resueltas |
+| **Cómo se verifica** | Detener nodos durante la prueba de E01 y conciliar las declaraciones acusadas contra las resueltas |
 | **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` («sin pérdida de mensajes») |
 
 ```mermaid
@@ -459,11 +454,10 @@ sequenceDiagram
 | **Fuente** | Un remitente |
 | **Estímulo** | Termina de enviar un archivo de hasta 50 MB |
 | **Artefacto** | El servicio de recepción y acuse |
-| **Ambiente** | A - Operación normal, sin fallas |
+| **Ambiente** | A - Operación normal |
 | **Respuesta** | Entrega un acuse que confirma el inicio del procesamiento |
 | **Medida** | p99 ≤ 1 s del último byte al acuse. El percentil es `[SUPUESTO → BCR]` |
-| **Por qué es ASR** | En un segundo no cabe validar 100 000 registros: el acuse tiene que separarse del procesamiento. Un masivo cuya verificación no quepa recibe acuse de custodia (BCR) |
-| **Cómo se verifica** | Carga A con mezcla de tamaños; p99 del acuse por tamaño |
+| **Cómo se verifica** | Carga de A con archivos de todos los tamaños; p99 del acuse por tamaño |
 | **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` (Latencia) · BCR: t0 en el último byte |
 
 ```mermaid
@@ -492,10 +486,9 @@ sequenceDiagram
 | **Fuente** | Un remitente autenticado |
 | **Estímulo** | Intenta consultar, corregir o anular operaciones que reportó otro remitente |
 | **Artefacto** | El servicio de consulta, corrección y anulación |
-| **Ambiente** | A - Operación normal, sin fallas |
+| **Ambiente** | A - Operación normal |
 | **Respuesta** | Solo accede a lo que reportó él; lo demás se niega |
 | **Medida** | 0 accesos efectivos a operaciones de otro remitente, sobre el catálogo de pruebas |
-| **Por qué es ASR** | El límite no es el declarante sino quién reportó, y la identidad sale de la autenticación y el certificado, no de un campo del archivo. Se cuenta el acceso que ocurrió, no el intento |
 | **Cómo se verifica** | Pruebas de acceso cruzado por todas las vías; se cuentan los accesos efectivos |
 | **Prioridad · Impacto · Origen** | Alta · Medio · `enunciado` («aislamiento estricto de datos entre declarantes») |
 
@@ -524,11 +517,10 @@ sequenceDiagram
 | **Fuente** | El equipo de TI de BCR |
 | **Estímulo** | Activa o revierte una regla, un XSD o un contrato de API con archivos en curso |
 | **Artefacto** | El servicio de recepción y acuse |
-| **Ambiente** | E - Cambio en producción: cambio en producción con la carga de A |
+| **Ambiente** | E - Cambio en producción, con la carga de A |
 | **Respuesta** | Sigue recibiendo y acusando durante el cambio |
 | **Medida** | p99 ≤ 1 s del último byte al acuse mientras dura el cambio |
-| **Por qué es ASR** | Las dos versiones conviven mientras hay archivos en curso, y una ventana de mantenimiento no cabe en el 99,99 %. Nota de trampa: se cumple aunque un archivo se evalúe con dos versiones; BCR fijó la vigente a la hora de ingesta, y la prueba lo cuenta |
-| **Cómo se verifica** | Activar y revertir con tráfico A; comparar el p99 del acuse y contar los archivos evaluados con dos versiones |
+| **Cómo se verifica** | Activar y revertir con la carga de A; comparar el p99 del acuse y contar los archivos evaluados con dos versiones |
 | **Prioridad · Impacto · Origen** | Alta · Medio · `enunciado` («no debe generar tiempo de inactividad») |
 
 ```mermaid
@@ -560,11 +552,10 @@ sequenceDiagram
 | **Fuente** | Un remitente |
 | **Estímulo** | Envía un archivo de 100 000 registros con otros 4 masivos en proceso |
 | **Artefacto** | El servicio de procesamiento de archivos |
-| **Ambiente** | A - Operación normal, sin fallas |
+| **Ambiente** | A - Operación normal |
 | **Respuesta** | El archivo llega a resultado definitivo |
 | **Medida** | ≤ 5 min del último byte al resultado definitivo, para cada uno de los 5 masivos |
-| **Por qué es ASR** | Son unos 333 registros por segundo por archivo: hay que procesar en paralelo. Con 50 min bastaría en secuencia. Es un máximo y no un percentil, porque la muestra es de cinco |
-| **Cómo se verifica** | 5 masivos de 100 000 registros en paralelo sobre la carga de A - Operación normal |
+| **Cómo se verifica** | 5 masivos de 100 000 registros en paralelo, sobre la carga de A |
 | **Prioridad · Impacto · Origen** | Media · Alto · `enunciado` (Latencia) |
 
 ```mermaid
@@ -592,11 +583,10 @@ sequenceDiagram
 | **Fuente** | Un nodo interno de procesamiento |
 | **Estímulo** | Falla con declaraciones en curso |
 | **Artefacto** | El servicio de procesamiento de archivos |
-| **Ambiente** | C2 - Falla interna: falla interna con la carga de A |
+| **Ambiente** | C2 - Falla interna, con la carga de A |
 | **Respuesta** | Las declaraciones vuelven a avanzar sin intervención |
 | **Medida** | ≤ 10 s desde la falla hasta que avanza la última declaración afectada |
-| **Por qué es ASR** | El estado en curso tiene que vivir donde otro nodo lo retome. Con 10 min alcanzaría un reinicio manual. Que no se pierda ni se duplique nada lo mide [D03](#asr-d03) |
-| **Cómo se verifica** | Matar un nodo en carga A y medir cuándo avanza la última declaración marcada |
+| **Cómo se verifica** | Detener un nodo durante la carga de A y medir cuándo avanza la última declaración afectada |
 | **Prioridad · Impacto · Origen** | Media · Medio · `enunciado` («recuperarse de fallos de nodos internos en menos de 10 segundos») |
 
 ```mermaid
@@ -629,8 +619,7 @@ sequenceDiagram
 | **Ambiente** | A - Operación normal, con 5 masivos en proceso |
 | **Respuesta** | El archivo llega a resultado definitivo |
 | **Medida** | p99 ≤ 30 s del último byte al resultado definitivo. El percentil es `[SUPUESTO → BCR]` |
-| **Por qué es ASR** | Hay que decidir con qué carga va: con los masivos se pasa de 30 s, y con los pequeños puede degradarlos |
-| **Cómo se verifica** | Medianos de 5 000 registros con 5 masivos sobre la carga de A - Operación normal |
+| **Cómo se verifica** | Medianos de 5 000 registros con 5 masivos, sobre la carga de A |
 | **Prioridad · Impacto · Origen** | Media · Medio · `enunciado` (Latencia) |
 
 ```mermaid
@@ -665,7 +654,6 @@ sequenceDiagram
 | **Medida** | ≤ 4 h-persona desde el XSD aprobado hasta producción |
 | **De dónde sale el número** | Del enunciado; BCR precisó h-persona con desarrollo y pruebas |
 | **Quién lo hace** | El equipo de TI de BCR `[SUPUESTO → BCR]` |
-| **Por qué es ASR** | Cada archivo tiene que identificar su versión, y la transformación al modelo canónico tiene que separar lo que depende del esquema. Nota de trampa: se cumple regando el cambio por varias funciones |
 | **Cómo se verifica** | BCR lo evalúa en la Fase 4 con inspección del código |
 | **Prioridad · Impacto · Origen** | Media · Medio · `enunciado` · secundario para BCR |
 
@@ -698,10 +686,9 @@ sequenceDiagram
 | **Fuente** | Alguien con acceso al almacenamiento |
 | **Estímulo** | Modifica, borra o reordena registros de auditoría ya escritos |
 | **Artefacto** | El registro de auditoría |
-| **Ambiente** | A - Operación normal, sin fallas |
+| **Ambiente** | A - Operación normal |
 | **Respuesta** | La verificación de integridad señala la alteración y dónde ocurrió |
 | **Medida** | 100 % de las alteraciones del catálogo detectadas en la verificación siguiente |
-| **Por qué es ASR** | La evidencia tiene que encadenarse para que una alteración se note sin depender de quien administra el almacenamiento. Nota de trampa: se cumple verificando una vez al año; la frecuencia es `[PREGUNTA → BCR]` |
 | **Cómo se verifica** | Alterar, borrar y reordenar registros de prueba y correr la verificación. BCR inspecciona en la Fase 4 |
 | **Prioridad · Impacto · Origen** | Media · Medio · `enunciado` («asegurar una auditoría inmutable») · secundario para BCR |
 
@@ -735,7 +722,6 @@ sequenceDiagram
 | **Medida** | 0 funciones del flujo principal modificadas para integrarla |
 | **De dónde sale el número** | Del informe de consultoría; BCR lo aceptó como secundario |
 | **Quién lo hace** | El equipo de TI de BCR `[SUPUESTO → BCR]` |
-| **Por qué es ASR** | Prueba si la entrega se alimenta de lo ya registrado o depende del flujo de procesamiento. Nota de trampa: se cumple metiendo toda la lógica en la entrega |
 | **Cómo se verifica** | BCR lo evalúa en la Fase 4 con inspección del código |
 | **Prioridad · Impacto · Origen** | Baja · Bajo · informe · secundario para BCR |
 

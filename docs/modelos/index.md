@@ -6,7 +6,7 @@ has_children: true
 
 # Vistas de arquitectura de Orquídea, centradas en los tres ASR críticos
 
-Esta sección reúne los diagramas que hacen visibles las decisiones de arquitectura de Orquídea. Las decisiones están en los [ADR](adrs-orquidea.md), agrupadas por ASR, y los requisitos, en la [página de ASR](../quality-attributes.md).
+Esta sección reúne los diagramas que hacen visibles las decisiones de arquitectura de Orquídea. Las decisiones están en los [ocho ADR](adrs-orquidea.md), agrupados por ASR, y los requisitos, en la [página de ASR](../quality-attributes.md).
 
 Los diagramas se centran en los tres ASR críticos: ningún archivo se rechaza por la caída de un sistema externo (ASR-D01, el foco), el aislamiento de carga entre archivos masivos y pequeños (ASR-L04) y ningún archivo aceptado sin validación criptográfica completa (ASR-S06).
 
@@ -28,35 +28,35 @@ Tres componentes se abren de caja negra a caja blanca, porque están en el camin
 
 | Componente | Caja blanca | Secuencia interna | Por qué es clave |
 |---|---|---|---|
-| Recepción | DG-CST-001 | DG-SEQ-001 | Acusa sin llamar a terceros, rechaza el duplicado y enruta por tamaño: D01 y L04 |
-| Verificador criptográfico | DG-CST-002 | DG-SEQ-002 | Verifica firma, firmante, cadena, estampa y revocación, y degrada a verificación pendiente si la ECD cae: S06 |
-| Reprocesador nocturno | DG-CST-003 | DG-SEQ-003 | Reprocesa lo pendiente en la ventana nocturna, lo reprograma o lo notifica al agotar los días: D01 |
+| Recepción | DG-CST-001 | DG-SEQ-001 | Acusa sin esperar a terceros, registra la llave única del archivo, anexa la evidencia y enruta por tamaño: D01, L04 y S06 |
+| Integración con terceros | DG-CST-002 | DG-SEQ-002 | Es donde la caída o la lentitud de un tercero se vuelve pendiente y no rechazo, con el timeout y la degradación con gracia: D01 |
+| Verificador criptográfico | DG-CST-003 | DG-SEQ-003 | Verifica firma, firmante, cadena, estampa y revocación, y deja el archivo en verificación pendiente si la ECD cae: S06 |
 
-El monitor de terceros, los adaptadores, los carriles y el registro de evidencia quedan como caja negra. Sus tácticas se ven en la vista general, en las máquinas de estado y en la vista de concurrencia.
+El monitor de terceros, el reprocesador nocturno, los carriles y el registro de evidencia quedan como caja negra. Su comportamiento se ve en la vista general, en la vista de concurrencia y en las máquinas de estado.
 
 ## Dónde se ve cada táctica
 
-| ASR | Táctica | Diagrama principal | También en |
-|---|---|---|---|
-| D01 | DIS-03 Monitor | DG-STM-003 | DG-CMP-002, DG-CON-001 |
-| D01 | DIS-04 Timeout en cada adaptador | DG-STM-002 | DG-CMP-002, DG-SEQ-003 |
-| D01 | DIS-12 Reintento diferido a la ventana nocturna | DG-CST-003 | DG-SEQ-003, DG-STM-002, DG-CON-001, DG-CMP-002 |
-| D01 | DIS-14 Degradación con gracia (acusar sin el tercero) | DG-STM-002 | DG-CMP-002 |
-| D01 | DIS-17 Llave del archivo en una transacción local | DG-CST-001 | DG-SEQ-001, DG-STM-001, DG-CLS-001 |
-| D01 · L04 | ESC-05 y EST-07 Pipeline asíncrono sobre una cola durable | DG-CMP-002 | DG-CON-001 |
-| L04 | DIS-22 Bulkhead (un pool por carril) | DG-CON-001 | DG-DEP-001 |
-| L04 | LAT-03 Enrutar por tamaño al recibir | DG-CST-001 | DG-SEQ-001 |
-| S06 | SEG-02 Autenticar (firma y firmante) | DG-CST-002 | DG-SEQ-002, DG-CMP-002 |
-| S06 | SEG-08 Validar la entrada (parser seguro) | DG-CST-002 | DG-SEQ-002 |
-| S06 | SEG-11 Verificar integridad | DG-CST-001 | — |
-| S06 | DIS-14 Degradación (verificación pendiente) | DG-CST-002 | DG-SEQ-002, DG-STM-001 |
-| S06 | LAT-10 Revocación en caché local | DG-CMP-002 | DG-CLS-001 |
-| S06 | SEG-18 Registro de evidencia firmado | DG-SEQ-002 | DG-CLS-001, DG-CMP-002, DG-DEP-001 |
+| ASR | ADR | Táctica | Diagrama principal | También en |
+|---|---|---|---|---|
+| D01 · L04 | ADR-001 | EST-07 Pipe and Filter · ESC-05 Asincronía y colas | DG-CMP-002 | DG-CST-001 |
+| D01 | ADR-002 | DIS-01 Ping / echo · DIS-03 Monitor | DG-STM-003 | DG-CMP-002, DG-DEP-002 |
+| D01 | ADR-002 | DIS-04 Excepción / timeout | DG-CST-002 | DG-SEQ-002, DG-STM-003 |
+| D01 | ADR-003 | DIS-12 Reintento (diferido a la ventana nocturna) | DG-STM-002 | DG-CMP-002, DG-CON-001 |
+| D01 | ADR-003 | DIS-14 Degradación con gracia (acusar sin el tercero) | DG-CST-002 | DG-SEQ-002 |
+| D01 | ADR-004 | DIS-17 Transacciones (llave del archivo) | DG-CST-001 | DG-SEQ-001, DG-STM-001 |
+| L04 | ADR-005 | DIS-22 Bulkhead | DG-CON-001 | DG-CMP-002, DG-DEP-001 |
+| L04 | ADR-005 | LAT-03 Priorizar eventos (enrutar por tamaño) | DG-CST-001 | — |
+| L04 | ADR-005 | LAT-12 Programar los recursos | DG-CON-001 | — |
+| S06 | ADR-006 | SEG-02 Autenticar actores · SEG-11 Verificar integridad · SEG-08 Validar la entrada | DG-CST-003 | DG-STM-001 |
+| S06 | ADR-007 | LAT-10 Mantener múltiples copias de datos · DIS-14 Degradación con gracia | DG-CST-003 | DG-SEQ-003 |
+| S06 | ADR-008 | SEG-18 Registro de auditoría | DG-CMP-002 | — |
 
-Cada táctica lleva su precio anotado en una nota de la misma página.
+Cada táctica lleva su precio anotado en una nota o una restricción sobre su elemento.
 
 ## Lo que estos diagramas todavía no muestran
 
-- Los parámetros que BCR no ha fijado van como `TBD` visible: hora de la ventana nocturna, días de reintento, umbral entre carriles, periodo de sondeo, timeout, desfase y antigüedad de la estampa, refresco de la caché, tamaño de los pools y réplicas.
-- STM, ANTA, MAMC y RNIC aparecen como una sola caja externa en el contexto y en la vista general, para que se lean; los cuatro tienen el mismo comportamiento ante una caída.
+- Los parámetros que BCR no ha fijado van como `TBD` visible: hora de la ventana nocturna, días de reintento, umbral entre carriles, timeout de los adaptadores, periodo de sondeo, refresco de la caché de revocación, tamaño de los pools y réplicas.
+- STM, ANTA, MAMC y RNIC aparecen como una sola caja externa, porque los cuatro se comportan igual ante una caída.
+- En la vista general, los carriles A y B se dibujan como un solo procesador con dos instancias aisladas; el aislamiento se ve en la concurrencia y en el despliegue.
+- El monitor de terceros, el reprocesador nocturno y el registro de evidencia no tienen caja blanca propia: el tope es de tres por vista.
 - Los ASR no críticos no tienen diagrama propio.
