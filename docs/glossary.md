@@ -50,6 +50,8 @@ helix_section: "Objective → Glossary"
 
 **No repudio.** La garantía de que un remitente no puede negar haber enviado un archivo que firmó.
 
+**Archivo válido.** Un archivo que se habría aceptado si todos los sistemas externos hubieran respondido. Sirve para distinguir el archivo que una regla rechaza del que solo espera a un sistema caído.
+
 **Archivo duplicado.** Un archivo que repite uno ya recibido del mismo remitente. Se rechaza como duplicado y el original sigue su curso. Un archivo con otras declaraciones no es duplicado.
 
 **Ventana de reproceso.** La corrida nocturna, a hora fija, que vuelve a procesar lo que quedó pendiente porque un sistema externo no respondía. Si el sistema sigue caído, lo pendiente pasa a la ventana del día siguiente.

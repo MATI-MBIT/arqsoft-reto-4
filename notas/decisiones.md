@@ -109,4 +109,5 @@ esperan una cifra de BCR:
 - Insumos al día: medidas nuevas de D01 (0 archivos válidos sin aceptar) y L04 (p99 ≤ 3 s), estímulo de D01 sin duración, artefactos como servicios.
 - Tácticas contrastadas con el ArquiBook (caps. 8, 13 y 15, leídos en el navegador): todas las elegidas están en el árbol del libro. Se agregó LAT-12 «Programar los recursos» a ADR-004, y R-002b nombra la verificación de sanidad (DIS-07). El libro llama «recuperación» a la familia que la página de ASR rotula «corrección».
 - Lint adr-log/v2: 13 errores, todos de estructura (secciones de catálogos y plan de diagramas que el equipo quitó, y los ADR en §2 en vez de §4). Se aceptan.
-
+- Familias de tácticas (Nicolás): «corrección» pasa a «recuperación», como en el ArquiBook (cap. 13). En seguridad, la fila de STRIDE vuelve a «Reacción» (cap. 15). La convención queda en CLAUDE.md.
+- `requirements.md` (Nicolás): HU-06, HU-03 y HU-02 son las tres historias centrales, con criterios completos alineados con los escenarios y los ADR (archivo válido, ventana nocturna, notificación al agotar los días, duplicado; pequeños sin esperar a los masivos; verificación completa, verificación pendiente y evidencia). Las demás quedan con uno o dos criterios. El glosario suma «Archivo válido». La página sigue sin nombrar ASR ni umbrales.
