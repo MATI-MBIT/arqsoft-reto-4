@@ -14,7 +14,7 @@ El experimento no tiene que cumplir los ASR. Si una medida no se alcanza, se rep
 
 | ASR | Hipótesis | Decisiones que se prueban |
 |---|---|---|
-| ASR-D01 | Con un sistema externo caído durante la carga, ningún archivo acusado se pierde ni se rechaza por la caída, y al cierre de la primera ventana de reproceso posterior a su regreso cada uno tiene resultado definitivo o fue notificado | [ADR-001, ADR-003 y ADR-004](modelos/adrs-orquidea.md) |
+| ASR-D01 | Con un sistema externo caído durante la carga, ningún archivo acusado se pierde ni se rechaza por la caída, y al cierre de la primera ventana de reproceso posterior a su regreso cada uno tiene resultado definitivo; solo se notifica lo que agotó los días de reintento | [ADR-001, ADR-003 y ADR-004](modelos/adrs-orquidea.md) |
 | ASR-L04 | Con 5 archivos masivos en proceso, el p99 de los archivos pequeños sube como máximo 10 % frente al p99 sin masivos | [ADR-002](modelos/adrs-orquidea.md) |
 | ASR-S06 | Ningún archivo con firma, firmante, estampa, cadena o revocación inválida, o sin poder verificarse, llega a aceptación | [ADR-005, ADR-006 y ADR-007](modelos/adrs-orquidea.md) |
 
@@ -92,7 +92,7 @@ Cada archivo deja sus marcas de tiempo en `postgres`, con el mismo reloj del equ
 |---|---|---|
 | p50, p95 y p99 del resultado definitivo de los pequeños | Del t0 al resultado, por archivo | L-1 a L-4, S-1 |
 | Razón de aislamiento | p99 de L-2 ÷ p99 de L-1 | L-2, L-3, L-4 |
-| Archivos sin desenlace | Acusados − (resueltos + notificados + rechazados por una causa que no es la caída), por conciliación | D-1 a D-6 |
+| Archivos sin desenlace | Acusados − (resueltos + notificados tras agotar los reintentos + rechazados por una causa que no es la caída), por conciliación | D-1 a D-6 |
 | Archivos rechazados por la caída | Rechazos cuya causa es la falta de respuesta del sistema externo | D-1 a D-4, D-6 |
 | Duplicados | Archivos con la misma llave aceptados más de una vez, y resultados escritos dos veces | D-5, D-1 |
 | Profundidad de pendientes y duración de la ventana | Mensajes en el tópico `pendientes`; del inicio al fin de cada ventana | D-1 a D-3 |

@@ -37,9 +37,9 @@ En la reunión técnica del 6 de noviembre de 2026, BCR y el equipo acotaron el 
 
 | ASR | Atributo | Fuente | Estímulo | Artefacto | Ambiente | Respuesta | Medida | Prioridad | Impacto |
 |---|---|---|---|---|---|---|---|---|---|
-| ASR-D01 | Disponibilidad · recuperación | STM, ANTA, MAMC, RNIC o la ECD | Uno deja de responder o responde con lentitud extrema durante horas (2, 5, 10, 20 h o más), con arribo estocástico de archivos | Recepción, acuse y resolución de los archivos que necesitan al sistema caído | C1: un sistema externo caído o lento, con la carga de A (400 pequeños/min y 5 masivos) | Se recibe y se acusa siempre; lo pendiente se reprocesa en la ventana nocturna; si sigue caído, se reintenta al día siguiente; lo que siga sin procesar se notifica; un reenvío igual se rechaza como duplicado | 0 archivos acusados durante la caída sin resultado definitivo ni notificación al cierre de la primera ventana posterior al regreso del externo, por conciliación, en C1 | Crítica | Alto |
-| ASR-L04 | Latencia | Remitentes de archivos pequeños y masivos | Llegan pequeños con arribo estocástico mientras 5 masivos están en proceso | Procesamiento completo de los archivos pequeños | A: 400 pequeños/min y 5 masivos | Los pequeños se procesan sin competir con los masivos | p99 de pequeños con 5 masivos ≤ 1,10 × p99 sin masivos, del último byte al resultado definitivo, en A | Crítica | Alto |
-| ASR-S06 | Seguridad · prevención | Suplantador o remitente con un archivo inválido o sin poder verificarse | La verificación de firma, firmante, estampa, cadena o revocación falla o queda incompleta | Paso de un archivo con acuse a resultado definitivo | A, y C1 con la ECD caída | No se acepta hasta verificar; si falla, se rechaza con la causa; lo verificado queda como evidencia | 0 archivos aceptados sin firma, firmante, estampa, cadena y revocación verificadas, en A y C1 | Crítica | Alto |
+| ASR-D01 | Disponibilidad · recuperación | STM, ANTA, MAMC, RNIC o la ECD | Uno deja de responder o responde con lentitud extrema durante horas (2, 5, 10, 20 h o más), con arribo estocástico de archivos | Recepción, acuse y resolución de los archivos que necesitan al sistema caído | C1: un sistema externo caído o lento, con la carga de A (400 pequeños/min y 5 masivos) | Se recibe y se acusa siempre; lo pendiente se reprocesa en la ventana nocturna; si sigue caído, se reintenta al día siguiente; lo que siga sin procesar al agotar los días de reintento se notifica | 0 archivos acusados durante la caída sin resultado definitivo al cierre de la primera ventana posterior al regreso del externo; la notificación solo cuenta al agotar los días de reintento; por conciliación, en C1 | Crítica | Alto |
+| ASR-L04 | Latencia | Remitentes de archivos pequeños, mientras otros tienen masivos en proceso | Llegan pequeños con arribo estocástico mientras 5 masivos están en proceso | Procesamiento completo de los archivos pequeños | A: 400 pequeños/min y 5 masivos | Cada pequeño llega a resultado definitivo casi tan rápido como sin masivos | p99 de pequeños con 5 masivos ≤ 1,10 × p99 sin masivos, del último byte al resultado definitivo, en A | Crítica | Alto |
+| ASR-S06 | Seguridad · prevención | Remitente, o tercero que lo suplanta, con un archivo cuya verificación no termina bien | Llega un archivo cuya verificación de firma, firmante, cadena, estampa o revocación falla o no puede completarse | Emisión del resultado definitivo | Carga de A, con la ECD disponible (A) o caída (C1) | No se acepta hasta verificar; si falla, se rechaza con la causa | 0 archivos aceptados sin firma, firmante, estampa, cadena y revocación verificadas, en A y C1 | Crítica | Alto |
 
 ### 1.3 Restricciones, concerns y supuestos
 
@@ -214,7 +214,7 @@ Descartes: B — mejor en inmediatez, pero no da desenlace a lo que sigue pendie
 
 ##### Contexto
 
-ASR-D01 pide que, si el remitente reenvía el mismo archivo mientras el original está pendiente, el reenvío se rechace como duplicado sin tocar el original, y que el reproceso nocturno no aplique dos veces una declaración. ADR-001 dejó una cola con entrega al menos una vez, y ADR-003 reprocesa lo pendiente cada noche. En la reunión se propuso la llave entidad + fecha + lote + consecutivo. ¿Cómo se reconoce un archivo ya recibido y se evita aplicar dos veces lo que se reprocesa?
+La historia HU-06 pide que, si el remitente reenvía el mismo archivo mientras el original está pendiente, el reenvío se rechace como duplicado sin tocar el original, y el reproceso nocturno de ASR-D01 no puede aplicar dos veces una declaración. ADR-001 dejó una cola con entrega al menos una vez, y ADR-003 reprocesa lo pendiente cada noche. En la reunión se propuso la llave entidad + fecha + lote + consecutivo. ¿Cómo se reconoce un archivo ya recibido y se evita aplicar dos veces lo que se reprocesa?
 
 ##### Decisión
 
@@ -484,7 +484,7 @@ Descartes: B — ata la recepción a la disponibilidad de la ECD (ASR-D01). C �
 
 ##### Contexto
 
-ASR-S06 exige que lo verificado quede como evidencia que el remitente no pueda negar: el no repudio que pide el enunciado. En la reunión del 6-nov se fijó la táctica del curso «recuperarse de un ataque → registro de auditoría / no repudio», con la verificación de integridad como complemento. ADR-005 verifica la firma, pero si el resultado solo queda en el repositorio transaccional, quien lo administra puede cambiarlo. ¿Dónde y cómo se conserva la prueba de que un archivo firmado por un remitente llegó y se verificó?
+El enunciado pide garantizar el no repudio. ASR-S06 lo sostiene, porque nada se acepta sin verificación completa, pero esa verificación solo sirve de prueba si queda como evidencia que el remitente no pueda negar. En la reunión del 6-nov se fijó la táctica del curso «recuperarse de un ataque → registro de auditoría / no repudio», con la verificación de integridad como complemento. ADR-005 verifica la firma, pero si el resultado solo queda en el repositorio transaccional, quien lo administra puede cambiarlo. ¿Dónde y cómo se conserva la prueba de que un archivo firmado por un remitente llegó y se verificó?
 
 ##### Decisión
 
