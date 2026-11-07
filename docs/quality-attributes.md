@@ -165,7 +165,7 @@ Cada ficha trae, debajo de la tabla, un diagrama de secuencia con Orquídea como
 | **Estímulo** | Uno de ellos deja de responder, o responde con latencia extrema |
 | **Artefacto** | Orquídea, todo el sistema |
 | **Ambiente** | C1 - Sistema externo degradado: un sistema externo caído, con la carga de A |
-| **Respuesta** | Sigue recibiendo y acusando. si alguno de los externo esta caido o degradado, se reprocesa batch en la noche; si no vuelve en los días de reintento, se notifica al remitente |
+| **Respuesta** | Sigue recibiendo y acusando. Si alguno de los externos está caído o degradado, lo que lo necesita se reprocesa por lotes en la noche; si no vuelve en los días de reintento, se notifica al remitente y el archivo sigue pendiente hasta que el externo vuelva |
 | **Medida** | 100% de los archivos validos procesados, durante los días de reintento |
 | **Cómo se verifica** | Se cae un externo simulado a mitad de una carga A y se envían archivos válidos y otros que una regla debe rechazar. Tras la ventana nocturna con el externo de vuelta, se concilian los válidos contra los aceptados |
 | **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` («continuar operando sin rechazar archivos») · BCR: respuesta del 3-nov y reunión del 6-nov |
@@ -187,7 +187,7 @@ sequenceDiagram
         alt El externo volvió
             O-->>R: RESPUESTA · resultado definitivo
         else Sigue caído al agotar los días de reintento
-            O-->>R: RESPUESTA · notificación
+            O-->>R: RESPUESTA · notificación; el archivo sigue pendiente
         end
     end
     Note over O,R: MEDIDA · 100% de los archivos validos procesados, <br/> durante los días de reintento
@@ -807,7 +807,7 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 
 - `[PREGUNTA → BCR]` ¿A partir de qué latencia un sistema externo cuenta como «extrema»? De eso depende cuándo dejan de aplicar los plazos de procesamiento, como aceptó BCR.
 - `[PREGUNTA → BCR]` ¿A qué hora corre la ventana nocturna de reproceso?
-- `[PREGUNTA → BCR]` ¿Cuántos días se reintenta un archivo pendiente, y qué pasa con él si el sistema externo sigue caído varios días: se notifica cada día, se rechaza con causa o queda a cargo de un operador?
+- `[PREGUNTA → BCR]` ¿Cuántos días se reintenta un archivo pendiente antes de notificar al remitente? Tras la notificación, el archivo sigue pendiente y se reprocesa cuando el externo vuelve (equipo, 6-nov).
 - `[PREGUNTA → BCR]` ¿En cuánto tiempo hay que detectar que un sistema externo cayó o se puso lento, y qué tasa de falsas alarmas se tolera? Es la rama de detección de la disponibilidad, que no tiene ASR por falta de cifra.
 - `[PREGUNTA → BCR]` ¿Qué desfase de reloj y qué antigüedad máxima de la estampa se toleran antes de rechazar un archivo?
 - `[PREGUNTA → BCR]` ¿El XSD trae entidad, fecha, lote y consecutivo, para usarlos como llave de un archivo duplicado?

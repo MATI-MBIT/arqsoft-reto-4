@@ -39,7 +39,7 @@ La reunión técnica del 6 de noviembre de 2026 acotó el diseño a tres ASR cr�
 
 | ASR | Atributo | Fuente | Estímulo | Artefacto | Ambiente | Respuesta | Medida | Prioridad | Impacto |
 |---|---|---|---|---|---|---|---|---|---|
-| ASR-D01 | Disponibilidad · recuperación | STM, ANTA, MAMC, RNIC o la ECD | Uno deja de responder, o responde con latencia extrema | Orquídea, todo el sistema | C1 - Sistema externo degradado, con la carga de A | Sigue recibiendo y acusando; lo pendiente se reprocesa cada noche hasta que el externo vuelva; si no vuelve en los días de reintento, se notifica | 0 archivos válidos sin aceptar al cierre de la primera ventana nocturna tras el regreso del externo | Crítica | Alto |
+| ASR-D01 | Disponibilidad · recuperación | STM, ANTA, MAMC, RNIC o la ECD | Uno deja de responder, o responde con latencia extrema | Orquídea, todo el sistema | C1 - Sistema externo degradado, con la carga de A | Sigue recibiendo y acusando; lo pendiente se reprocesa cada noche hasta que el externo vuelva; si no vuelve en los días de reintento, se notifica y sigue pendiente | 0 archivos válidos sin aceptar al cierre de la primera ventana nocturna tras el regreso del externo | Crítica | Alto |
 | ASR-L04 | Latencia | Remitentes de archivos pequeños | Envían pequeños, con arribo estocástico, mientras 5 masivos están en proceso | Servicio de procesamiento de archivos | A - Operación normal: 400 pequeños/min y 5 masivos, sin fallas | Cada pequeño se resuelve sin esperar a los masivos | p99 ≤ 3 s por archivo pequeño | Crítica | Alto |
 | ASR-S06 | Seguridad · prevención | Un remitente, o un tercero que lo suplanta | Envía un archivo cuya firma, firmante, cadena, estampa o revocación no es válida o no se puede verificar | Servicio de verificación criptográfica | Carga de A, con la ECD disponible (A) o caída (C1) | Puede acusarse, pero no se acepta hasta verificarse; si falla, se rechaza con la causa | 0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas | Crítica | Alto |
 
@@ -147,7 +147,7 @@ ASR-D01 exige que todo archivo válido recibido durante la caída de STM, ANTA, 
 
 ##### Decisión
 
-Un monitor sondeará a cada tercero y publicará su estado. Antes de llamar, el orquestador consulta ese estado: si el tercero está caído, o si su adaptador vence el timeout, la declaración queda pendiente en un tópico durable. Un reprocesador corre cada noche a hora fija y reintenta todo lo pendiente; si el tercero sigue caído, lo reprograma para la noche siguiente, y al agotar los días de reintento lo manda a notificar. Lo hacemos porque cumple ASR-D01 sin perder nada, y porque reprocesar en una ventana fija, a ritmo propio, evita el estallido (C-04).
+Un monitor sondeará a cada tercero y publicará su estado. Antes de llamar, el orquestador consulta ese estado: si el tercero está caído, o si su adaptador vence el timeout, la declaración queda pendiente en un tópico durable. Un reprocesador corre cada noche a hora fija y reintenta todo lo pendiente; si el tercero sigue caído, lo reprograma para la noche siguiente, y al agotar los días de reintento lo manda a notificar, sin sacarlo de los pendientes: se sigue reprocesando hasta que el tercero vuelva. Lo hacemos porque cumple ASR-D01 sin perder nada, y porque reprocesar en una ventana fija, a ritmo propio, evita el estallido (C-04).
 
 ##### Consecuencias
 

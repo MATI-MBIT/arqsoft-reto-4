@@ -31,7 +31,7 @@ Todo corre en contenedores de Docker Compose sobre un solo equipo. El diagrama e
 | `carril-a` | Procesa archivos pequeños con su propio pool y su propio límite de CPU, sin componentes de arranque lento | ADR-004 |
 | `carril-b` | Procesa archivos masivos en modo batch, con su propio pool y su propio límite de CPU | ADR-004 |
 | `monitor-terceros` | Sondea al sistema externo simulado y publica su estado: disponible, degradado o caído | ADR-002 |
-| `reprocesador` | Corre la ventana de reproceso a una hora configurable o al llamar a un endpoint de prueba; reprograma lo que sigue pendiente y manda a notificar lo que agotó los reintentos | ADR-002, ADR-006 |
+| `reprocesador` | Corre la ventana de reproceso a una hora configurable o al llamar a un endpoint de prueba; reprograma lo que sigue pendiente y manda a notificar lo que agotó los reintentos, sin sacarlo de los pendientes | ADR-002, ADR-006 |
 | `tercero-rnic-sim` | RNIC simulado: una tabla de personas ficticias que cruza cédula contra nombre | — |
 | `toxiproxy` | Proxy entre los carriles y el sistema externo simulado, para cortarlo o agregarle latencia en mitad de la carga | — |
 | `ecd-sim` | Autoridad certificadora de prueba con su lista de revocación y su servicio de estampa cronológica | ADR-006 |
@@ -61,7 +61,7 @@ La disponibilidad va primero porque es el foco. Los tiempos de caída de horas s
 |---|---|---|---|
 | D-1 | Caída total y reproceso con el tercero de vuelta | Carga de 400 pequeños por minuto durante 20 min; a los 5 min `toxiproxy` corta el RNIC simulado. A los 15 min se restablece y se dispara la ventana | Archivos rechazados por la caída; pendientes antes de la ventana; resueltos al cierre de la ventana; cédulas que no corresponden, rechazadas por la regla |
 | D-2 | Tercero todavía caído en la ventana | Como D-1, pero la ventana se dispara con el RNIC aún caído; luego una segunda ventana con el RNIC arriba | Pendientes reprogramados para la ventana siguiente; resueltos en la segunda |
-| D-3 | Reintentos agotados | El RNIC sigue caído durante tantas ventanas como el máximo de días de reintento, fijado en 2 solo para la prueba `[SUPUESTO → BCR]` | Archivos notificados al remitente como pendientes; ninguno queda sin desenlace |
+| D-3 | Reintentos agotados | El RNIC sigue caído durante tantas ventanas como el máximo de días de reintento, fijado en 2 solo para la prueba `[SUPUESTO → BCR]` | Archivos notificados al remitente; siguen pendientes y, al restablecer el RNIC, quedan aceptados en la ventana siguiente |
 | D-4 | Latencia extrema | `toxiproxy` agrega al RNIC una latencia mayor que el timeout del adaptador | El monitor lo marca degradado o caído; las declaraciones quedan pendientes, sin rechazos ni hilos bloqueados |
 | D-5 | Reenvío del mismo archivo | Con archivos pendientes, el generador reenvía 50 de ellos con la misma llave, y 50 archivos nuevos | Los reenvíos se rechazan como duplicados; los nuevos se reciben; ningún original cambia |
 | D-6 | ECD caída con la información de revocación vencida | Se apaga `ecd-sim` y se fuerza el vencimiento de la lista en caché; luego se restablece y se dispara la ventana | Archivos en verificación pendiente, sin resultado; resueltos en la ventana |
@@ -92,7 +92,7 @@ Cada archivo deja sus marcas de tiempo en `postgres`, con el mismo reloj del equ
 |---|---|---|
 | p50, p95 y p99 del resultado definitivo de los pequeños | Del t0 al resultado, por archivo | L-1 a L-4, S-1 |
 | Razón de aislamiento | p99 de L-2 ÷ p99 de L-1 | L-2, L-3, L-4 |
-| Archivos válidos sin aceptar | Válidos enviados − aceptados al cierre de la primera ventana tras el regreso del externo, por conciliación; en D-3, los notificados tras agotar los reintentos | D-1 a D-6 |
+| Archivos válidos sin aceptar | Válidos enviados − aceptados al cierre de la primera ventana tras el regreso del externo, por conciliación (también los notificados de D-3) | D-1 a D-6 |
 | Archivos rechazados por la caída | Rechazos cuya causa es la falta de respuesta del sistema externo | D-1 a D-4, D-6 |
 | Duplicados | Archivos con la misma llave aceptados más de una vez, y resultados escritos dos veces | D-5, D-1 |
 | Profundidad de pendientes y duración de la ventana | Mensajes en el tópico `pendientes`; del inicio al fin de cada ventana | D-1 a D-3 |

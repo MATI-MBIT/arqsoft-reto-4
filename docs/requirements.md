@@ -144,7 +144,8 @@ Dicen qué tiene que pasar para dar la historia por cumplida, nunca en cuánto t
 - Lo que no se pudo procesar queda pendiente, sin perderse, y se reprocesa en una ventana nocturna a hora fija.
 - Si el sistema sigue caído en esa ventana, se reintenta en la del día siguiente.
 - Cuando el sistema vuelve, cada archivo válido pendiente queda aceptado en la primera ventana siguiente.
-- Si el sistema no vuelve en los días de reintento, se notifica al remitente.
+- Si el sistema no vuelve en los días de reintento, se notifica al remitente, y el archivo sigue pendiente.
+- Un archivo notificado se reprocesa cuando el sistema vuelve; el remitente no tiene que reenviarlo.
 - Un archivo que una regla rechaza se rechaza por la regla, no por la caída.
 - Si el remitente reenvía el mismo archivo, el reenvío se rechaza como duplicado y el original sigue su curso; un archivo distinto se recibe.
 
@@ -204,6 +205,5 @@ Dicen qué tiene que pasar para dar la historia por cumplida, nunca en cuánto t
 ## Preguntas abiertas
 
 - `[PREGUNTA → BCR]` ¿A qué hora corre la ventana nocturna, y cuántos días se reintenta antes de notificar?
-- `[PREGUNTA → BCR]` ¿Qué pasa con un archivo ya notificado si el sistema externo vuelve después: se reprocesa o el remitente lo reenvía?
 - `[PREGUNTA → BCR]` ¿Un titular de cuenta de compensación tiene las mismas historias que un IMC? Aquí se asume que sí.
 - `[PREGUNTA → BCR]` ¿Las correcciones y anulaciones pueden llegar antes que la declaración que modifican?
