@@ -151,7 +151,7 @@ El eje es el flujo de datos del dominio; el stakeholder va como columna auxiliar
 | RNIC · tercero fuera de control | **[ASR-I01](#asr-i01)** | **[ASR-I01](#asr-i01)**: tipo y número de documento | Fuera: [D01](#asr-d01) | Descartada: igual que STM | Descartada: igual que STM |
 | ECD · tercero fuera de control | Descartada: CRL, OCSP y estampa son estándares (RFC 5280, 6960 y 3161) | Descartada: igual | Fuera: [D01](#asr-d01) | Pendiente: la ventana de revocación (sección 6) | Descartada |
 | Remitentes · tercero bajo control | **[ASR-M02](#asr-m02)**: versión del XSD | Descartada: el significado lo valida la aplicación de reglas (M01) | Descartada: acuse, aviso y consulta son funcionales | Descartada | Descartada: el tope de 50 MB es una restricción (BCR) |
-| Áreas de BCR · propio | **[ASR-I02](#asr-i02)** | **[ASR-I02](#asr-i02)**: el dato significa lo mismo que en el registro | Descartada | Fuera: la frescura es desempeño; `[PREGUNTA → BCR]` ¿qué es «tiempo real»? | Descartada |
+| Áreas de BCR · propio | **[ASR-I02](#asr-i02)** | **[ASR-I02](#asr-i02)**: el dato significa lo mismo que en el registro | Descartada | Fuera: la frescura es desempeño | Descartada |
 
 ## 4. Fichas
 
@@ -162,12 +162,11 @@ Cada ficha trae, debajo de la tabla, un diagrama de secuencia con Orquídea como
 | Parte | Descripción |
 |---|---|
 | **Fuente** | Los sistemas externos que BCR no controla: el Sistema de Tasas de Mercado (STM), la Agencia Nacional Tributaria y Aduanera (ANTA), el Ministerio de Asuntos Migratorios y Consulares (MAMC), el Registro Nacional de Identificación Ciudadana (RNIC) y la entidad de certificación digital (ECD) |
-| **Estímulo** | Uno de ellos deja de responder, o responde con latencia extrema, durante horas |
+| **Estímulo** | Uno de ellos deja de responder, o responde con latencia extrema |
 | **Artefacto** | Orquídea, todo el sistema |
 | **Ambiente** | C1 - Sistema externo degradado: un sistema externo caído, con la carga de A |
-| **Respuesta** | Sigue recibiendo y acusando. Lo que necesita al externo queda pendiente y se reprocesa cada noche hasta que vuelva; si no vuelve en los días de reintento, se notifica al remitente |
-| **Medida** | 0 archivos válidos sin aceptar al cierre de la primera ventana nocturna tras el regreso del externo |
-| **Por qué es ASR** | La recepción no puede depender en línea de ningún externo, y lo pendiente tiene que sobrevivir horas o días. Con caídas de minutos bastaría reintentar en línea; con caídas de 20 h, no. Un archivo es válido si se habría aceptado con el externo disponible. Nota de trampa: la medida no cuenta cuánto espera lo pendiente hasta la noche; BCR lo aceptó |
+| **Respuesta** | Sigue recibiendo y acusando. si alguno de los externo esta caido o degradado, se reprocesa batch en la noche; si no vuelve en los días de reintento, se notifica al remitente |
+| **Medida** | 100% de los archivos validos procesados, durante los días de reintento |
 | **Cómo se verifica** | Se cae un externo simulado a mitad de una carga A y se envían archivos válidos y otros que una regla debe rechazar. Tras la ventana nocturna con el externo de vuelta, se concilian los válidos contra los aceptados |
 | **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` («continuar operando sin rechazar archivos») · BCR: respuesta del 3-nov y reunión del 6-nov |
 
@@ -191,7 +190,7 @@ sequenceDiagram
             O-->>R: RESPUESTA · notificación
         end
     end
-    Note over O,R: MEDIDA · 0 archivos válidos sin aceptar<br/>tras la primera ventana posterior al regreso del externo
+    Note over O,R: MEDIDA · 100% de los archivos validos procesados, <br/> durante los días de reintento
     end
     rect rgb(255, 228, 225)
     Note over X,R: LO QUE EL ASR DESCARTA · rechazar el archivo, o dejarlo pendiente sin desenlace
@@ -210,7 +209,7 @@ sequenceDiagram
 | **Medida** | p99 ≤ 3 s por archivo pequeño |
 | **Por qué es ASR** | Obliga a decidir si pequeños y masivos comparten capacidad. En una misma fila, un pequeño que espera detrás de 5 archivos de 100 000 registros no cabe en 3 s. Nota de trampa: se cumple sobredimensionando una fila compartida; por eso la verificación compara además contra la corrida sin masivos |
 | **Cómo se verifica** | Con 5 masivos en proceso se envían pequeños y se toma el tiempo de cada uno desde que termina de llegar hasta que su resultado está disponible; el p99 tiene que dar ≤ 3 s. Complemento: la misma carga sin masivos, para comprobar el margen de 10 % que propuso BCR. Luego se suben los masivos hasta encontrar el quiebre |
-| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` («jamás encolará ni degradará la latencia de los archivos de pocos registros»; pequeños en 3 s) · BCR: N = 5 |
+| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` · BCR |
 
 ```mermaid
 sequenceDiagram
@@ -238,7 +237,7 @@ sequenceDiagram
 | Parte | Descripción |
 |---|---|
 | **Fuente** | Un remitente, o un tercero que lo suplanta |
-| **Estímulo** | Envía un archivo cuya firma, firmante, cadena, estampa o revocación no es válida o no se puede verificar |
+| **Estímulo** | Envía un archivo cuya firma no es válida o no se puede verificar |
 | **Artefacto** | El servicio de verificación criptográfica |
 | **Ambiente** | Carga de A - Operación normal, con la ECD disponible (A) o caída (C1 - Sistema externo degradado) |
 | **Respuesta** | El archivo puede acusarse, pero no se acepta hasta verificarse; si falla, se rechaza con la causa |
