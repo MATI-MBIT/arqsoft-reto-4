@@ -1,0 +1,1347 @@
+<mxfile host="app.diagrams.net" pages="4">
+  <diagram id="dg-cmp-002" name="DG-CMP-002 · Vista general de Orquídea">
+    <mxGraphModel dx="680" dy="336" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="titulo" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#1F2A36;" value="&lt;b&gt;DG-CMP-002&lt;/b&gt; · Vista general: pipeline asíncrono por etapas con carriles aislados" vertex="1">
+          <mxGeometry height="24" width="2348" x="40" y="12" as="geometry" />
+        </mxCell>
+        <mxCell id="titulo__meta" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;fontColor=#5A6B7D;" value="componentes · ASR ASR-D01, ASR-L04, ASR-S06 · ADR ADR-001, ADR-002, ADR-003, ADR-004, ADR-005, ADR-006, ADR-007, ADR-008 · eclosionar: Recepción, Integración con terceros, Verificador criptográfico · alcance: sistema" vertex="1">
+          <mxGeometry height="14" width="2348" x="40" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="sys" parent="1" style="html=1;whiteSpace=wrap;verticalAlign=top;align=center;spacingTop=6;container=1;collapsible=0;recursiveResize=0;fillColor=none;strokeColor=#2B3642;fila=C6;" value="«subsystem»&lt;br&gt;&lt;b&gt;Orquídea&lt;/b&gt;" vertex="1">
+          <mxGeometry height="1141.2" width="1688.2" x="464.3" y="76" as="geometry" />
+        </mxCell>
+        <mxCell id="sys__ico" parent="sys" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="1660.2" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="p_int" parent="sys" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=8;container=1;collapsible=0;fillColor=none;strokeColor=#7A8794;fila=C7;" value="Disponibilidad ante terceros" vertex="1">
+          <mxGeometry height="367.2" width="828.8" x="32" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_integ" parent="p_int" style="html=1;whiteSpace=wrap;fontSize=12;verticalAlign=middle;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" value="«component»&lt;br&gt;&lt;b&gt;Integración con terceros&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = DIS-14, variante = fallback}&lt;/font&gt;" vertex="1">
+          <mxGeometry height="66" width="262.7" x="538.1" y="266.6" as="geometry" />
+        </mxCell>
+        <mxCell id="c_integ__ico" parent="c_integ" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="234.7" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="c_integ__asr0" connectable="0" parent="c_integ" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-D01" vertex="1">
+          <mxGeometry height="18" width="54" x="8" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="i_enr" parent="p_int" style="shape=providedRequiredInterface;html=1;verticalLabelPosition=bottom;sketch=0;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" value="IEnriquecer" vertex="1">
+          <mxGeometry height="20" width="20" x="425.7" y="289.6" as="geometry" />
+        </mxCell>
+        <mxCell id="c_mon" parent="p_int" style="html=1;whiteSpace=wrap;fontSize=12;verticalAlign=middle;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" value="«component»&lt;br&gt;&lt;b&gt;Monitor de terceros&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = DIS-01}&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{ping/echo: sondeo y T_echo = TBD · liveness}&lt;/font&gt;" vertex="1">
+          <mxGeometry height="79.2" width="293.3" x="34" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="c_mon__ico" parent="c_mon" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="265.3" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="c_mon__asr0" connectable="0" parent="c_mon" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-D01" vertex="1">
+          <mxGeometry height="18" width="54" x="8" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="c_rep" parent="p_int" style="html=1;whiteSpace=wrap;fontSize=12;verticalAlign=middle;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" value="«component»&lt;br&gt;&lt;b&gt;Reprocesador nocturno&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = DIS-12, variante = diferido-por-cola}&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{ventana = TBD · maxAttempts = TBD días}&lt;/font&gt;" vertex="1">
+          <mxGeometry height="79.2" width="305.3" x="28" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="c_rep__ico" parent="c_rep" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="277.3" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="c_rep__asr0" connectable="0" parent="c_rep" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-D01" vertex="1">
+          <mxGeometry height="18" width="54" x="8" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="c_rep__asr2" connectable="0" parent="c_rep" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#5B3F8C;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#5B3F8C;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-S06" vertex="1">
+          <mxGeometry height="18" width="53" x="66" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="nv3" parent="p_int" style="shape=note;html=1;size=12;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingRight=14;spacingTop=4;fillColor=#FFFDE7;strokeColor=#9A8B4F;fila=C11;" value="&lt;b&gt;ADR-003 · ventana nocturna&lt;/b&gt;: lo&lt;br&gt;pendiente espera a la&lt;br&gt;ventana (hora TBD) aunque el&lt;br&gt;tercero vuelva antes (SUP-10)" vertex="1">
+          <mxGeometry height="70.8" width="189" x="86.1" y="173.2" as="geometry" />
+        </mxCell>
+        <mxCell id="p_msg" parent="sys" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=8;container=1;collapsible=0;fillColor=none;strokeColor=#7A8794;fila=C7;" value="Mensajería" vertex="1">
+          <mxGeometry height="367.2" width="547.1" x="928.6999999999999" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c_bus" parent="p_msg" style="html=1;whiteSpace=wrap;fontSize=12;verticalAlign=middle;fillColor=#FFFFFF;strokeColor=#B8860B;fila=C3;" value="«bus de mensajes»&lt;br&gt;&lt;b&gt;Bus de mensajes&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = EST-07}&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;tópicos: carril-a · carril-b · pendientes · estado-terceros&lt;/font&gt;" vertex="1">
+          <mxGeometry height="79.2" width="330.6" x="188.6" y="92.2" as="geometry" />
+        </mxCell>
+        <mxCell id="c_bus__ico" parent="c_bus" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="302.6" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="c_bus__asr0" connectable="0" parent="c_bus" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#1F4E79;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#1F4E79;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-D01" vertex="1">
+          <mxGeometry height="18" width="54" x="8" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="c_bus__asr1" connectable="0" parent="c_bus" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#2C7873;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#2C7873;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-L04" vertex="1">
+          <mxGeometry height="18" width="53" x="66" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="i_pub" parent="p_msg" style="shape=providedRequiredInterface;html=1;verticalLabelPosition=bottom;sketch=0;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" value="IPublicarEvento" vertex="1">
+          <mxGeometry height="20" width="20" x="64.1" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i_sub" parent="p_msg" style="shape=providedRequiredInterface;html=1;verticalLabelPosition=bottom;sketch=0;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" value="ISuscribirEvento" vertex="1">
+          <mxGeometry height="20" width="20" x="64.1" y="135" as="geometry" />
+        </mxCell>
+        <mxCell id="p_can" parent="sys" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=8;container=1;collapsible=0;fillColor=none;strokeColor=#7A8794;fila=C7;" value="Recepción y verificación" vertex="1">
+          <mxGeometry height="600" width="946.5" x="32" y="509.2" as="geometry" />
+        </mxCell>
+        <mxCell id="c_rec" parent="p_can" style="html=1;whiteSpace=wrap;fontSize=12;verticalAlign=middle;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" value="«component»&lt;br&gt;&lt;b&gt;Recepción&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = ESC-05}&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{acuse, no resultado: ADR-001}&lt;/font&gt;" vertex="1">
+          <mxGeometry height="79.2" width="218.2" x="182.1" y="134.2" as="geometry" />
+        </mxCell>
+        <mxCell id="c_rec__ico" parent="c_rec" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="190.2" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="c_rec__asr0" connectable="0" parent="c_rec" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-D01" vertex="1">
+          <mxGeometry height="18" width="54" x="8" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="c_rec__asr1" connectable="0" parent="c_rec" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#2C7873;strokeColor=#2C7873;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-L04" vertex="1">
+          <mxGeometry height="18" width="53" x="66" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="c_rec__asr2" connectable="0" parent="c_rec" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#5B3F8C;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#5B3F8C;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-S06" vertex="1">
+          <mxGeometry height="18" width="53" x="123" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="i_rec" parent="p_can" style="shape=providedRequiredInterface;html=1;verticalLabelPosition=bottom;sketch=0;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" value="IRecibirArchivo" vertex="1">
+          <mxGeometry height="20" width="20" x="60.7" y="163.8" as="geometry" />
+        </mxCell>
+        <mxCell id="c_ver" parent="p_can" style="html=1;whiteSpace=wrap;fontSize=12;verticalAlign=middle;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" value="«component»&lt;br&gt;&lt;b&gt;Verificador criptográfico&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = SEG-02, variante = un-factor}&lt;/font&gt;" vertex="1">
+          <mxGeometry height="66" width="273.8" x="644.6" y="127.6" as="geometry" />
+        </mxCell>
+        <mxCell id="c_ver__ico" parent="c_ver" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="245.8" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="c_ver__asr0" connectable="0" parent="c_ver" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#1F4E79;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#1F4E79;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-D01" vertex="1">
+          <mxGeometry height="18" width="54" x="8" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="c_ver__asr2" connectable="0" parent="c_ver" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#5B3F8C;strokeColor=#5B3F8C;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-S06" vertex="1">
+          <mxGeometry height="18" width="53" x="66" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="i_ver" parent="p_can" style="shape=providedRequiredInterface;html=1;verticalLabelPosition=bottom;sketch=0;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" value="IVerificar" vertex="1">
+          <mxGeometry height="20" width="20" x="512.5" y="150.6" as="geometry" />
+        </mxCell>
+        <mxCell id="c_evi" parent="p_can" style="html=1;whiteSpace=wrap;fontSize=12;verticalAlign=middle;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" value="«almacén»&lt;br&gt;&lt;b&gt;Registro de evidencia&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = SEG-18, variante = firma}&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{solo anexar · provable}&lt;/font&gt;" vertex="1">
+          <mxGeometry height="79.2" width="254.7" x="644.6" y="320.4" as="geometry" />
+        </mxCell>
+        <mxCell id="c_evi__ico" parent="c_evi" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="226.7" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="c_evi__asr2" connectable="0" parent="c_evi" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#5B3F8C;strokeColor=#5B3F8C;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-S06" vertex="1">
+          <mxGeometry height="18" width="53" x="8" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="i_evi" parent="p_can" style="shape=providedRequiredInterface;html=1;verticalLabelPosition=bottom;sketch=0;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" value="IRegistrarEvidencia" vertex="1">
+          <mxGeometry height="20" width="20" x="512.5" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="nv4" parent="p_can" style="shape=note;html=1;size=12;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingRight=14;spacingTop=4;fillColor=#FFFDE7;strokeColor=#9A8B4F;fila=C11;" value="&lt;b&gt;ADR-006 · ADR-007&lt;/b&gt;: verificar 50 MB en&lt;br&gt;streaming sin medir (SUP-01); revocación&lt;br&gt;en caché: ventana hasta el refresco (TBD)" vertex="1">
+          <mxGeometry height="57.6" width="234.7" x="664.2" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="nv5" parent="p_can" style="shape=note;html=1;size=12;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingRight=14;spacingTop=4;fillColor=#FFFDE7;strokeColor=#9A8B4F;fila=C11;" value="&lt;b&gt;ADR-008&lt;/b&gt;: una escritura&lt;br&gt;y una firma de BCR&lt;br&gt;más por archivo; el&lt;br&gt;registro crece sin borrar" vertex="1">
+          <mxGeometry height="70.8" width="143.3" x="700.3" y="233.6" as="geometry" />
+        </mxCell>
+        <mxCell id="p_pro" parent="sys" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=8;container=1;collapsible=0;fillColor=none;strokeColor=#7A8794;fila=C7;" value="Procesamiento por carriles" vertex="1">
+          <mxGeometry height="600" width="605.7" x="1050.5" y="509.2" as="geometry" />
+        </mxCell>
+        <mxCell id="c_car" parent="p_pro" style="html=1;whiteSpace=wrap;fontSize=12;verticalAlign=middle;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" value="«component»&lt;br&gt;&lt;b&gt;Procesador de carril&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = DIS-22}&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{×2 aislados: A pequeños · B masivos}&lt;/font&gt;" vertex="1">
+          <mxGeometry height="79.2" width="251.9" x="269.5" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="c_car__ico" parent="c_car" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="223.9" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="c_car__asr0" connectable="0" parent="c_car" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#1F4E79;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#1F4E79;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-D01" vertex="1">
+          <mxGeometry height="18" width="54" x="8" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="c_car__asr1" connectable="0" parent="c_car" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#2C7873;strokeColor=#2C7873;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-L04" vertex="1">
+          <mxGeometry height="18" width="53" x="66" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="c_res" parent="p_pro" style="html=1;whiteSpace=wrap;fontSize=12;verticalAlign=middle;fillColor=#FFFFFF;strokeColor=#B8860B;fila=C3;" value="«component»&lt;br&gt;&lt;b&gt;Resultados y notificación&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{sin resultado definitivo si no está verificado}&lt;/font&gt;" vertex="1">
+          <mxGeometry height="66" width="280.6" x="297.1" y="293.2" as="geometry" />
+        </mxCell>
+        <mxCell id="c_res__ico" parent="c_res" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="252.6" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="c_res__asr0" connectable="0" parent="c_res" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#1F4E79;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#1F4E79;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-D01" vertex="1">
+          <mxGeometry height="18" width="54" x="8" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="c_res__asr2" connectable="0" parent="c_res" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#5B3F8C;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#5B3F8C;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-S06" vertex="1">
+          <mxGeometry height="18" width="53" x="66" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="i_res" parent="p_pro" style="shape=providedRequiredInterface;html=1;sketch=0;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;" value="IResultados" vertex="1">
+          <mxGeometry height="20" width="20" x="427.4" y="203.2" as="geometry" />
+        </mxCell>
+        <mxCell id="c_repo" parent="p_pro" style="html=1;whiteSpace=wrap;fontSize=12;verticalAlign=middle;fillColor=#FFFFFF;strokeColor=#B8860B;fila=C3;" value="«almacén»&lt;br&gt;&lt;b&gt;Repositorio de archivos&lt;/b&gt;" vertex="1">
+          <mxGeometry height="52.8" width="200.1" x="334.1" y="519.2" as="geometry" />
+        </mxCell>
+        <mxCell id="c_repo__ico" parent="c_repo" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="172.1" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="c_repo__asr0" connectable="0" parent="c_repo" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#1F4E79;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#1F4E79;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-D01" vertex="1">
+          <mxGeometry height="18" width="54" x="8" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="i_repo" parent="p_pro" style="shape=providedRequiredInterface;html=1;sketch=0;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;" value="IRepositorio" vertex="1">
+          <mxGeometry height="20" width="20" x="424.1" y="429.2" as="geometry" />
+        </mxCell>
+        <mxCell id="nv2" parent="p_pro" style="shape=note;html=1;size=12;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingRight=14;spacingTop=4;fillColor=#FFFDE7;strokeColor=#9A8B4F;fila=C11;" value="&lt;b&gt;ADR-005 · carriles aislados&lt;/b&gt;: capacidad&lt;br&gt;ociosa en B sin masivos (C-03);&lt;br&gt;umbral en bytes entre carriles TBD" vertex="1">
+          <mxGeometry height="57.6" width="225.5" x="28" y="64.8" as="geometry" />
+        </mxCell>
+        <mxCell id="r13" edge="1" parent="sys" source="c_car" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="p_msg" value="">
+          <mxGeometry relative="1" x="-0.1236" as="geometry">
+            <Array as="points">
+              <mxPoint x="1383" y="563.2" />
+              <mxPoint x="1383" y="252.2" />
+              <mxPoint x="1074.5" y="252.2" />
+              <mxPoint x="1074.5" y="205" />
+              <mxPoint x="1074.5" y="193.44" />
+              <mxPoint x="1042.9" y="190.60000000000002" />
+              <mxPoint x="1021.3" y="186.60000000000002" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="x_ter" parent="1" style="html=1;whiteSpace=wrap;fontSize=12;verticalAlign=middle;fillColor=#F2F2F2;strokeColor=#7A8794;fila=C5;" value="«external»&lt;br&gt;&lt;b&gt;STM · ANTA · MAMC · RNIC&lt;/b&gt;" vertex="1">
+          <mxGeometry height="52.8" width="218.9" x="40" y="316.2" as="geometry" />
+        </mxCell>
+        <mxCell id="x_ter__ico" parent="x_ter" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="190.9" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="x_ecd" parent="1" style="html=1;whiteSpace=wrap;fontSize=12;verticalAlign=middle;fillColor=#F2F2F2;strokeColor=#7A8794;fila=C5;" value="«external»&lt;br&gt;&lt;b&gt;ECD&lt;/b&gt;" vertex="1">
+          <mxGeometry height="52.8" width="150" x="108.9" y="719.4" as="geometry" />
+        </mxCell>
+        <mxCell id="x_ecd__ico" parent="x_ecd" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="122" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="a_rem" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#FFFFFF;strokeColor=#2B3642;fila=C4;" value="Remitente" vertex="1">
+          <mxGeometry height="60" width="30" x="2358" y="805.2" as="geometry" />
+        </mxCell>
+        <mxCell id="r0" edge="1" parent="1" source="c_bus" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=inverso;" target="i_pub" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1585.7" y="264.6" />
+              <mxPoint x="1539.7" y="264.6" />
+              <mxPoint x="1539.7" y="210" />
+              <mxPoint x="1481.3" y="210" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r1" edge="1" parent="1" source="c_bus" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=inverso;" target="i_sub" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1585.7" y="291" />
+              <mxPoint x="1481.3" y="291" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r2" edge="1" parent="1" source="c_integ" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=inverso;" target="i_enr" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1034.4" y="445.6" />
+              <mxPoint x="942" y="445.6" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r3" edge="1" parent="1" source="c_ver" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=inverso;" target="i_ver" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1141" y="745.8" />
+              <mxPoint x="1028.8" y="745.8" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r4" edge="1" parent="1" source="c_evi" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=inverso;" target="i_evi" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1141" y="945.2" />
+              <mxPoint x="1028.8" y="945.2" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r5" edge="1" parent="1" source="c_repo" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=inverso;" target="i_repo" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1948.9" y="1104.4" />
+              <mxPoint x="1948.9" y="1034.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r6" edge="1" parent="1" source="c_rec" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=inverso;" target="i_rec" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="678.4" y="759" />
+              <mxPoint x="577.1" y="759" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r7" edge="1" parent="1" source="c_res" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=inverso;" target="i_res" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1952.2" y="878.4" />
+              <mxPoint x="1952.2" y="808.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r8" edge="1" parent="1" source="a_rem" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_rec" value="HTTPS">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="2380.5" y="865.2" />
+              <mxPoint x="2380.5" y="1197.2" />
+              <mxPoint x="508.3" y="1197.2" />
+              <mxPoint x="508.3" y="759" />
+              <mxPoint x="557.1" y="759" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r9" edge="1" parent="1" source="c_rec" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_ver" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="896.7" y="745.8" />
+              <mxPoint x="1008.8" y="745.8" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r10" edge="1" parent="1" source="c_rec" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_evi" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="896.7" y="772.2" />
+              <mxPoint x="920.7" y="772.2" />
+              <mxPoint x="920.7" y="945.2" />
+              <mxPoint x="1008.8" y="945.2" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r11" edge="1" parent="1" source="c_rec" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_repo" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="842.1" y="798.6" />
+              <mxPoint x="842.1" y="1014.4" />
+              <mxPoint x="1938.9" y="1014.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r12" edge="1" parent="1" source="c_rec" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_pub" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="678.4" y="739.2" />
+              <mxPoint x="484.3" y="739.2" />
+              <mxPoint x="484.3" y="112" />
+              <mxPoint x="1481.3" y="112" />
+              <mxPoint x="1481.3" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r14" edge="1" parent="1" source="c_car" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_repo" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1868.3" y="718.4" />
+              <mxPoint x="1868.3" y="742.4" />
+              <mxPoint x="1786.9" y="742.4" />
+              <mxPoint x="1786.9" y="1002.4" />
+              <mxPoint x="1945.6" y="1002.4" />
+              <mxPoint x="1945.6" y="1014.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r15" edge="1" parent="1" source="c_car" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_enr" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1973.2" y="639.2" />
+              <mxPoint x="1973.2" y="134" />
+              <mxPoint x="942" y="134" />
+              <mxPoint x="942" y="435.6" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r16" edge="1" parent="1" source="c_car" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_res" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1952.2" y="718.4" />
+              <mxPoint x="1952.2" y="788.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r17" edge="1" parent="1" source="c_rep" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_sub" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="524.3" y="425.8" />
+              <mxPoint x="508.3" y="425.8" />
+              <mxPoint x="508.3" y="281" />
+              <mxPoint x="1461.3" y="281" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r18" edge="1" parent="1" source="c_rep" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_enr" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="829.6" y="445.6" />
+              <mxPoint x="922" y="445.6" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r19" edge="1" parent="1" source="c_rep" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_ver" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="600.7" y="485.2" />
+              <mxPoint x="600.7" y="537.2" />
+              <mxPoint x="1008.8" y="537.2" />
+              <mxPoint x="1008.8" y="735.8" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r20" edge="1" parent="1" source="c_rep" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_res" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="753.3" y="485.2" />
+              <mxPoint x="753.3" y="525.2" />
+              <mxPoint x="1454.8" y="525.2" />
+              <mxPoint x="1454.8" y="788.4" />
+              <mxPoint x="1942.2" y="788.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r21" edge="1" parent="1" source="c_integ" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_pub" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1231.5" y="412.6" />
+              <mxPoint x="1231.5" y="210" />
+              <mxPoint x="1461.3" y="210" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r22" edge="1" parent="1" source="c_integ" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_sub" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1297.1" y="429.1" />
+              <mxPoint x="1313.1" y="429.1" />
+              <mxPoint x="1313.1" y="291" />
+              <mxPoint x="1461.3" y="291" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r23" edge="1" parent="1" source="c_mon" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_pub" value="">
+          <mxGeometry relative="1" x="0.0615" as="geometry">
+            <Array as="points">
+              <mxPoint x="685.33" y="200" />
+              <mxPoint x="685.33" y="178" />
+              <mxPoint x="1460.06" y="183.22" />
+              <mxPoint x="1461.3" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r24" edge="1" parent="1" source="c_ver" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_pub" value="">
+          <mxGeometry relative="1" x="-0.0007" as="geometry">
+            <Array as="points">
+              <mxPoint x="1346.4" y="778.8" />
+              <mxPoint x="1346.4" y="793.2" />
+              <mxPoint x="1406.8" y="793.2" />
+              <mxPoint x="1406.8" y="200" />
+              <mxPoint x="1461.3" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r25" edge="1" parent="1" source="c_res" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;flujo=directo;" target="i_repo" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1952.2" y="944.4" />
+              <mxPoint x="1952.2" y="1014.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r26" edge="1" parent="1" source="c_res" style="endArrow=open;endSize=10;dashed=1;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" target="a_rem" value="resultado definitivo · notificación">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="2092.5" y="894.9" />
+              <mxPoint x="2365.5" y="894.9" />
+              <mxPoint x="2365.5" y="865.2" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r27" edge="1" parent="1" source="c_integ" style="endArrow=open;endSize=10;dashed=1;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" target="x_ter" value="API · protocolo TBD">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-205.4" as="offset" />
+            <Array as="points">
+              <mxPoint x="1100.1" y="478.6" />
+              <mxPoint x="1100.1" y="489.2" />
+              <mxPoint x="204.2" y="489.2" />
+              <mxPoint x="204.2" y="369" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r28" edge="1" parent="1" source="c_mon" style="endArrow=open;endSize=10;dashed=1;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" target="x_ter" value="sondeo · protocolo TBD">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="530.4" y="259.4" />
+              <mxPoint x="270.9" y="259.4" />
+              <mxPoint x="270.9" y="329.4" />
+              <mxPoint x="258.9" y="329.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r29" edge="1" parent="1" source="c_ver" style="endArrow=open;endSize=10;dashed=1;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" target="x_ecd" value="CRL · OCSP · estado">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="1209.4" y="712.8" />
+              <mxPoint x="1209.4" y="695.4" />
+              <mxPoint x="221.4" y="695.4" />
+              <mxPoint x="221.4" y="719.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nv2__a0" edge="1" parent="1" source="nv2" style="endArrow=none;dashed=1;html=1;strokeColor=#9A8B4F;dashPattern=2 3;" target="c_car" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1768.3" y="678.8" />
+              <mxPoint x="1784.3" y="678.8" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nv3__a0" edge="1" parent="1" source="nv3" style="endArrow=none;dashed=1;html=1;strokeColor=#9A8B4F;dashPattern=2 3;" target="c_rep" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="677" y="390" />
+              <mxPoint x="677" y="406" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nv4__a0" edge="1" parent="1" source="nv4" style="endArrow=none;dashed=1;html=1;strokeColor=#9A8B4F;dashPattern=2 3;" target="c_ver" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1277.9" y="696.8" />
+              <mxPoint x="1277.9" y="712.8" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nv5__a0" edge="1" parent="1" source="nv5" style="endArrow=none;dashed=1;html=1;strokeColor=#9A8B4F;dashPattern=2 3;" target="c_evi" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1268.3" y="889.6" />
+              <mxPoint x="1268.3" y="905.6" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leyenda__lg" connectable="0" parent="1" style="text;rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9AA5B1;align=left;verticalAlign=top;spacingLeft=42;spacingTop=2;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" value="&lt;b&gt;Convenciones&lt;/b&gt;&lt;br&gt;relleno ámbar: artefacto de un ASR (ahí se aplica la táctica o se hace el cambio)&lt;br&gt;borde ámbar: participa en la respuesta, pero no se modifica&lt;br&gt;blanco: fuera del alcance de los ASR de esta página&lt;br&gt;gris: sistema fuera de nuestro control&lt;br&gt;marco: la frontera del sistema&lt;br&gt;carpeta o marco gris: agrupa, no es un elemento&lt;br&gt;azul: punto de contacto (interfaz, puerto o evento)&lt;br&gt;nota: la decisión, atada con punteada a su elemento&lt;br&gt;bola dentro del semicírculo: ensamble entre quien &lt;b&gt;provee&lt;/b&gt; la interfaz y quien la &lt;b&gt;requiere&lt;/b&gt;&lt;br&gt;«external»: sistema fuera de nuestro control&lt;br&gt;«subsystem»: la frontera del sistema; fuera de ella, los externos y los actores&lt;br&gt;«tactic» {id = …}: el elemento aplica esa táctica del catálogo" vertex="1">
+          <mxGeometry height="190" width="560" x="40" y="1242.2" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m0" connectable="0" parent="leyenda__lg" style="text;html=1;fillColor=#FFF4D6;strokeColor=#B8860B;" value="" vertex="1">
+          <mxGeometry height="14" width="24" x="10" y="22.2" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m1" connectable="0" parent="leyenda__lg" style="text;html=1;fillColor=#FFFFFF;strokeColor=#B8860B;" value="" vertex="1">
+          <mxGeometry height="14" width="24" x="10" y="35.4" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m2" connectable="0" parent="leyenda__lg" style="text;html=1;fillColor=#FFFFFF;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="14" width="24" x="10" y="48.6" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m3" connectable="0" parent="leyenda__lg" style="text;html=1;fillColor=#F2F2F2;strokeColor=#7A8794;" value="" vertex="1">
+          <mxGeometry height="14" width="24" x="10" y="61.8" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m4" connectable="0" parent="leyenda__lg" style="text;html=1;fillColor=none;strokeColor=#2B3642;" value="" vertex="1">
+          <mxGeometry height="14" width="24" x="10" y="75" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m5" connectable="0" parent="leyenda__lg" style="text;html=1;fillColor=none;strokeColor=#7A8794;" value="" vertex="1">
+          <mxGeometry height="14" width="24" x="10" y="88.2" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m6" connectable="0" parent="leyenda__lg" style="text;html=1;fillColor=#E8F0FA;strokeColor=#3D6A9E;" value="" vertex="1">
+          <mxGeometry height="14" width="24" x="10" y="101.4" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m7" connectable="0" parent="leyenda__lg" style="text;html=1;fillColor=#FFFDE7;strokeColor=#9A8B4F;" value="" vertex="1">
+          <mxGeometry height="14" width="24" x="10" y="114.6" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv" connectable="0" parent="1" style="text;rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9AA5B1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=2;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" value="&lt;b&gt;Convención ASR&lt;/b&gt; · cada elemento lleva la insignia de los ASR en cuyo alcance está" vertex="1">
+          <mxGeometry height="168" width="560" x="40" y="1450.2" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__b0" connectable="0" parent="leyenda__cv" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-D01" vertex="1">
+          <mxGeometry height="18" width="54" x="12" y="27" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__t0" connectable="0" parent="leyenda__cv" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" value="Ningún archivo se rechaza por la caída&lt;br&gt;de un externo" vertex="1">
+          <mxGeometry height="34" width="207" x="72" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__b1" connectable="0" parent="leyenda__cv" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#2C7873;strokeColor=#2C7873;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-L04" vertex="1">
+          <mxGeometry height="18" width="54" x="287" y="27" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__t1" connectable="0" parent="leyenda__cv" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" value="Aislamiento entre masivos y pequeños" vertex="1">
+          <mxGeometry height="20" width="207" x="347" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__b2" connectable="0" parent="leyenda__cv" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#5B3F8C;strokeColor=#5B3F8C;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-S06" vertex="1">
+          <mxGeometry height="18" width="54" x="12" y="65" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__t2" connectable="0" parent="leyenda__cv" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" value="Ningún archivo se acepta sin&lt;br&gt;verificación completa" vertex="1">
+          <mxGeometry height="34" width="207" x="72" y="64" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fa" connectable="0" parent="leyenda__cv" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-D01" vertex="1">
+          <mxGeometry height="18" width="54" x="12" y="115" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fat" connectable="0" parent="leyenda__cv" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" value="&lt;b&gt;relleno&lt;/b&gt;: artefacto del ASR (ahí se aplica la táctica o se hace el cambio)" vertex="1">
+          <mxGeometry height="20" width="500" x="72" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fp" connectable="0" parent="leyenda__cv" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#1F4E79;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#1F4E79;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" value="ASR-D01" vertex="1">
+          <mxGeometry height="18" width="54" x="12" y="139" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fpt" connectable="0" parent="leyenda__cv" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" value="&lt;b&gt;contorno punteado&lt;/b&gt;: participa en la respuesta, pero no se modifica" vertex="1">
+          <mxGeometry height="20" width="500" x="72" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__traz" connectable="0" parent="1" style="text;rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9AA5B1;align=left;verticalAlign=top;spacingLeft=8;spacingRight=8;spacingTop=4;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" value="&lt;b style=&quot;font-size:13px&quot;&gt;Trazabilidad ASR → elementos de la arquitectura&lt;/b&gt; &amp;nbsp;(★ priorizado)&lt;table style=&quot;border-collapse:collapse;table-layout:fixed;width:1120px;margin-top:6px;font-size:11px&quot;&gt;&lt;tr&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:73px&quot;&gt;ASR&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:98px&quot;&gt;Atributo&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:263px&quot;&gt;Alcance · artefacto (relleno)&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:208px&quot;&gt;Participa sin modificarse (contorno)&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:208px&quot;&gt;Táctica principal&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:198px&quot;&gt;Medida&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top;white-space:nowrap&quot;&gt;&lt;span style=&quot;background:#1F4E79;color:#fff;font-weight:bold;padding:1px 5px;border-radius:4px&quot;&gt;ASR-D01&lt;/span&gt; ★&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Disponibilidad · recuperación&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Integración con terceros · Monitor de terceros · Reprocesador nocturno · Recepción&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Bus de mensajes · Procesador de carril · Resultados y notificación · Repositorio de archivos · Verificador criptográfico&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Monitor, pendientes durables y ventana nocturna&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;100 % de los archivos válidos procesados dentro de los días de reintento&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top;white-space:nowrap&quot;&gt;&lt;span style=&quot;background:#2C7873;color:#fff;font-weight:bold;padding:1px 5px;border-radius:4px&quot;&gt;ASR-L04&lt;/span&gt; ★&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Latencia&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Procesador de carril · Recepción&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Bus de mensajes&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Dos carriles aislados con enrutador por tamaño&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top;white-space:nowrap&quot;&gt;&lt;span style=&quot;background:#5B3F8C;color:#fff;font-weight:bold;padding:1px 5px;border-radius:4px&quot;&gt;ASR-S06&lt;/span&gt; ★&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Seguridad · prevención&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Verificador criptográfico · Registro de evidencia&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Reprocesador nocturno · Resultados y notificación · Recepción&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Verificación completa con resultado retenido&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" vertex="1">
+          <mxGeometry height="196" width="1150" x="630" y="1242.2" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="dg-cst-001" name="DG-CST-001 · Recepción (caja blanca)">
+    <mxGraphModel grid="0" page="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="titulo" value="&lt;b&gt;DG-CST-001&lt;/b&gt; · Caja blanca de Recepción: custodia, llave única, enrutado y acuse" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#1F2A36;" vertex="1" parent="1">
+          <mxGeometry x="40" y="12" width="1474.4" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="titulo__meta" value="caja blanca · refina: Recepción · ASR ASR-D01, ASR-L04, ASR-S06 · ADR ADR-001, ADR-004, ADR-005, ADR-008" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;fontColor=#5A6B7D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="38" width="1474.4" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="c_rec" value="«component»&lt;br&gt;&lt;b&gt;Recepción&lt;/b&gt;" style="html=1;whiteSpace=wrap;verticalAlign=top;align=center;spacingTop=6;container=1;collapsible=0;recursiveResize=0;fillColor=#FFFFFF;strokeColor=#2B3642;fila=C4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="84" width="1474.4" height="502.8" as="geometry" />
+        </mxCell>
+        <mxCell id="c_rec__ico" value="" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" vertex="1" parent="c_rec">
+          <mxGeometry x="1446.4" y="8" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="r_rcp" value="«boundary»&lt;br&gt;receptor : ReceptorArchivo&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = ESC-05}&lt;/font&gt;" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" vertex="1" parent="c_rec">
+          <mxGeometry x="1142.1" y="104.4" width="172.1" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="r_txm" value="«control»&lt;br&gt;transactionManager : RegistroDeArchivo&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = DIS-17, variante = local}&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{unique (entidad, fecha, lote, consecutivo)}&lt;/font&gt;" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" vertex="1" parent="c_rec">
+          <mxGeometry x="1156.7" y="248.8" width="246.2" height="77.2" as="geometry" />
+        </mxCell>
+        <mxCell id="r_evi" value="«control»&lt;br&gt;evidencia : AnexadorEvidencia" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFFFFF;strokeColor=#B8860B;fila=C3;" vertex="1" parent="c_rec">
+          <mxGeometry x="108.2" y="262" width="193.7" height="50.8" as="geometry" />
+        </mxCell>
+        <mxCell id="r_cla" value="«control»&lt;br&gt;clasificador : EnrutadorPorTamano&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = LAT-03}&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{umbral = TBD bytes}&lt;/font&gt;" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" vertex="1" parent="c_rec">
+          <mxGeometry x="500.5" y="248.8" width="215.3" height="77.2" as="geometry" />
+        </mxCell>
+        <mxCell id="r_pub" value="«adapter»&lt;br&gt;publicador : PublicadorCarril" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFFFFF;strokeColor=#B8860B;fila=C3;" vertex="1" parent="c_rec">
+          <mxGeometry x="518" y="383" width="180.2" height="50.8" as="geometry" />
+        </mxCell>
+        <mxCell id="nr1" value="&lt;b&gt;ADR-004&lt;/b&gt;: «transaction» archivo y&lt;br&gt;llave: commit juntos o rollback; llave&lt;br&gt;repetida = duplicado. Precio: una&lt;br&gt;escritura más antes del acuse" style="shape=note;html=1;size=12;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingRight=14;spacingTop=4;fillColor=#FFFDE7;strokeColor=#9A8B4F;fila=C11;" vertex="1" parent="c_rec">
+          <mxGeometry x="943.5" y="252" width="203.2" height="70.8" as="geometry" />
+        </mxCell>
+        <mxCell id="nr2" value="&lt;b&gt;ADR-005&lt;/b&gt;: enruta por bytes&lt;br&gt;sin abrir el archivo (SUP-07);&lt;br&gt;un archivo mal clasificado&lt;br&gt;solo cambia de carril" style="shape=note;html=1;size=12;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingRight=14;spacingTop=4;fillColor=#FFFDE7;strokeColor=#9A8B4F;fila=C11;" vertex="1" parent="c_rec">
+          <mxGeometry x="321.9" y="252" width="168.6" height="70.8" as="geometry" />
+        </mxCell>
+        <mxCell id="nr3" value="&lt;b&gt;ADR-001&lt;/b&gt;: el acuse sale tras&lt;br&gt;custodiar, registrar y&lt;br&gt;publicar: no espera a los&lt;br&gt;terceros ni al carril (ASR-D01)" style="shape=note;html=1;size=12;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingRight=14;spacingTop=4;fillColor=#FFFDE7;strokeColor=#9A8B4F;fila=C11;" vertex="1" parent="c_rec">
+          <mxGeometry x="957.9" y="101" width="174.2" height="70.8" as="geometry" />
+        </mxCell>
+        <mxCell id="rp_evi" value="pEvidencia : IRegistrarEvidencia" style="html=1;labelPosition=left;verticalLabelPosition=bottom;align=right;verticalAlign=top;fontSize=11;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" vertex="1" parent="1">
+          <mxGeometry x="237" y="578.8" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="rp_pub" value="pEventos : IPublicarEvento" style="html=1;labelPosition=left;verticalLabelPosition=bottom;align=right;verticalAlign=top;fontSize=11;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" vertex="1" parent="1">
+          <mxGeometry x="640.1" y="578.8" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="rp_rec" value="pRecibir : IRecibirArchivo" style="html=1;labelPosition=left;verticalLabelPosition=top;align=right;verticalAlign=bottom;fontSize=11;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" vertex="1" parent="1">
+          <mxGeometry x="1260.2" y="76" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="rp_repo" value="resourceManager : IRepositorio" style="html=1;labelPosition=left;verticalLabelPosition=bottom;align=right;verticalAlign=top;fontSize=11;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" vertex="1" parent="1">
+          <mxGeometry x="1311.8" y="578.8" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="rp_ver" value="pVerificar : IVerificar" style="html=1;labelPosition=left;verticalLabelPosition=bottom;align=right;verticalAlign=top;fontSize=11;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" vertex="1" parent="1">
+          <mxGeometry x="964.5" y="578.8" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="r0" value="«delegate»" style="endArrow=open;endSize=10;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="rp_rec" target="r_rcp">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1309.1" y="92" />
+              <mxPoint x="1309.1" y="188.4" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r1" value="«delegate»" style="endArrow=open;endSize=10;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="r_rcp" target="rp_ver">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1285.4" y="252.4" />
+              <mxPoint x="1285.4" y="285.8" />
+              <mxPoint x="972.5" y="285.8" />
+              <mxPoint x="972.5" y="578.8" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r2" value="registrar(archivo, llave)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="r_rcp" target="r_txm">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1319.8" y="252.4" />
+              <mxPoint x="1319.8" y="332.8" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r3" value="«delegate»" style="endArrow=open;endSize=10;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="r_txm" target="rp_repo">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1319.8" y="410" />
+              <mxPoint x="1319.8" y="578.8" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r4" value="anexar(hash, certificado, estampa)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="r_rcp" target="r_evi">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1216.5" y="252.4" />
+              <mxPoint x="1216.5" y="265.8" />
+              <mxPoint x="245" y="265.8" />
+              <mxPoint x="245" y="346" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r5" value="«delegate»" style="endArrow=open;endSize=10;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="r_evi" target="rp_evi">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="245" y="396.8" />
+              <mxPoint x="245" y="578.8" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r6" value="enrutar(tamañoBytes)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="r_rcp" target="r_cla">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1251" y="252.4" />
+              <mxPoint x="1251" y="275.8" />
+              <mxPoint x="648.1" y="275.8" />
+              <mxPoint x="648.1" y="332.8" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r7" value="publicar(carril-a | carril-b)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="r_cla" target="r_pub">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="685" y="410" />
+              <mxPoint x="685" y="467" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r8" value="«delegate»" style="endArrow=open;endSize=10;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="r_pub" target="rp_pub">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="648.1" y="517.8" />
+              <mxPoint x="648.1" y="578.8" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nr1__a0" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#9A8B4F;dashPattern=2 3;" edge="1" parent="1" source="nr1" target="r_txm">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1186.7" y="371.4" />
+              <mxPoint x="1196.7" y="371.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nr2__a0" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#9A8B4F;dashPattern=2 3;" edge="1" parent="1" source="nr2" target="r_cla">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="530.5" y="371.4" />
+              <mxPoint x="540.5" y="371.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nr3__a0" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#9A8B4F;dashPattern=2 3;" edge="1" parent="1" source="nr3" target="r_rcp">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1172.1" y="220.4" />
+              <mxPoint x="1182.1" y="220.4" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_rcp__asr0" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="r_rcp">
+          <mxGeometry x="8" y="-10" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="r_rcp__asr2" value="ASR-S06" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#5B3F8C;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#5B3F8C;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="r_rcp">
+          <mxGeometry x="66" y="-10" width="53" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="r_txm__asr0" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="r_txm">
+          <mxGeometry x="8" y="-10" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="r_evi__asr2" value="ASR-S06" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#5B3F8C;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#5B3F8C;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="r_evi">
+          <mxGeometry x="8" y="-10" width="53" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="r_cla__asr1" value="ASR-L04" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#2C7873;strokeColor=#2C7873;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="r_cla">
+          <mxGeometry x="8" y="-10" width="53" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="r_pub__asr0" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#1F4E79;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#1F4E79;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="r_pub">
+          <mxGeometry x="8" y="-10" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="r_pub__asr1" value="ASR-L04" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#2C7873;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#2C7873;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="r_pub">
+          <mxGeometry x="66" y="-10" width="53" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg" value="&lt;b&gt;Convenciones&lt;/b&gt;&lt;br&gt;relleno ámbar: artefacto de un ASR (ahí se aplica la táctica o se hace el cambio)&lt;br&gt;borde ámbar: participa en la respuesta, pero no se modifica&lt;br&gt;blanco: fuera del alcance de los ASR de esta página&lt;br&gt;azul: punto de contacto (interfaz, puerto o evento)&lt;br&gt;nota: la decisión, atada con punteada a su elemento&lt;br&gt;□ sobre el borde: puerto, con su interfaz junto a él&lt;br&gt;«tactic» {id = …}: el elemento aplica esa táctica del catálogo" style="text;rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9AA5B1;align=left;verticalAlign=top;spacingLeft=42;spacingTop=2;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="40" y="619.8" width="560" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m0" value="" style="text;html=1;fillColor=#FFF4D6;strokeColor=#B8860B;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="22.2" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m1" value="" style="text;html=1;fillColor=#FFFFFF;strokeColor=#B8860B;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="35.4" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m2" value="" style="text;html=1;fillColor=#FFFFFF;strokeColor=#2B3642;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="48.6" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m3" value="" style="text;html=1;fillColor=#E8F0FA;strokeColor=#3D6A9E;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="61.8" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m4" value="" style="text;html=1;fillColor=#FFFDE7;strokeColor=#9A8B4F;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="75" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv" value="&lt;b&gt;Convención ASR&lt;/b&gt; · cada elemento lleva la insignia de los ASR en cuyo alcance está" style="text;rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9AA5B1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=2;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="40" y="757.8" width="560" height="168" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__b0" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="12" y="27" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__t0" value="Ningún archivo se rechaza por la caída&lt;br&gt;de un externo" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="72" y="26" width="207" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__b1" value="ASR-L04" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#2C7873;strokeColor=#2C7873;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="287" y="27" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__t1" value="Aislamiento entre masivos y pequeños" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="347" y="26" width="207" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__b2" value="ASR-S06" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#5B3F8C;strokeColor=#5B3F8C;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="12" y="65" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__t2" value="Ningún archivo se acepta sin&lt;br&gt;verificación completa" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="72" y="64" width="207" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fa" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="12" y="115" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fat" value="&lt;b&gt;relleno&lt;/b&gt;: artefacto del ASR (ahí se aplica la táctica o se hace el cambio)" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="72" y="114" width="500" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fp" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#1F4E79;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#1F4E79;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="12" y="139" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fpt" value="&lt;b&gt;contorno punteado&lt;/b&gt;: participa en la respuesta, pero no se modifica" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="72" y="138" width="500" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__traz" value="&lt;b style=&quot;font-size:13px&quot;&gt;Trazabilidad ASR → elementos de la arquitectura&lt;/b&gt; &amp;nbsp;(★ priorizado)&lt;table style=&quot;border-collapse:collapse;table-layout:fixed;width:1120px;margin-top:6px;font-size:11px&quot;&gt;&lt;tr&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:73px&quot;&gt;ASR&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:98px&quot;&gt;Atributo&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:263px&quot;&gt;Alcance · artefacto (relleno)&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:208px&quot;&gt;Participa sin modificarse (contorno)&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:208px&quot;&gt;Táctica principal&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:198px&quot;&gt;Medida&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top;white-space:nowrap&quot;&gt;&lt;span style=&quot;background:#1F4E79;color:#fff;font-weight:bold;padding:1px 5px;border-radius:4px&quot;&gt;ASR-D01&lt;/span&gt; ★&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Disponibilidad · recuperación&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;receptor : ReceptorArchivo · transactionManager : RegistroDeArchivo&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;publicador : PublicadorCarril&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Monitor, pendientes durables y ventana nocturna&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;100 % de los archivos válidos procesados dentro de los días de reintento&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top;white-space:nowrap&quot;&gt;&lt;span style=&quot;background:#2C7873;color:#fff;font-weight:bold;padding:1px 5px;border-radius:4px&quot;&gt;ASR-L04&lt;/span&gt; ★&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Latencia&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;clasificador : EnrutadorPorTamano&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;publicador : PublicadorCarril&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Dos carriles aislados con enrutador por tamaño&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top;white-space:nowrap&quot;&gt;&lt;span style=&quot;background:#5B3F8C;color:#fff;font-weight:bold;padding:1px 5px;border-radius:4px&quot;&gt;ASR-S06&lt;/span&gt; ★&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Seguridad · prevención&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;—&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;receptor : ReceptorArchivo · evidencia : AnexadorEvidencia&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Verificación completa con resultado retenido&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" style="text;rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9AA5B1;align=left;verticalAlign=top;spacingLeft=8;spacingRight=8;spacingTop=4;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="630" y="619.8" width="1150" height="196" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="dg-cst-002" name="DG-CST-002 · Integración con terceros (caja blanca)">
+    <mxGraphModel grid="0" page="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="titulo" value="&lt;b&gt;DG-CST-002&lt;/b&gt; · Caja blanca de Integración con terceros: degradación con gracia y timeout" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#1F2A36;" vertex="1" parent="1">
+          <mxGeometry x="40" y="12" width="1101.9" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="titulo__meta" value="caja blanca · refina: Integración con terceros · ASR ASR-D01 · ADR ADR-002, ADR-003" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;fontColor=#5A6B7D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="38" width="1101.9" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="c_integ" value="«component»&lt;br&gt;&lt;b&gt;Integración con terceros&lt;/b&gt;" style="html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingTop=6;container=1;collapsible=0;recursiveResize=0;fillColor=#FFFFFF;strokeColor=#2B3642;fila=C4;spacingLeft=444;" vertex="1" parent="1">
+          <mxGeometry x="90" y="84" width="1101.9" height="571" as="geometry" />
+        </mxCell>
+        <mxCell id="c_integ__ico" value="" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" vertex="1" parent="c_integ">
+          <mxGeometry x="1073.9" y="8" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="i_ef" value="«control»&lt;br&gt;essentialFunction : OrquestadorEnriquecimiento" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFFFFF;strokeColor=#B8860B;fila=C3;" vertex="1" parent="c_integ">
+          <mxGeometry x="458.1" y="101" width="286.7" height="50.8" as="geometry" />
+        </mxCell>
+        <mxCell id="i_dc" value="«control»&lt;br&gt;degradationController : ControlDegradacion&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = DIS-14, variante = fallback}&lt;/font&gt;" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" vertex="1" parent="c_integ">
+          <mxGeometry x="355.3" y="212.2" width="262.4" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="i_sm" value="«entity»&lt;br&gt;serviceMode : EstadoTerceros&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{disponible | caído, por tercero}&lt;/font&gt;" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFFFFF;strokeColor=#B8860B;fila=C3;" vertex="1" parent="c_integ">
+          <mxGeometry x="783.4" y="346.6" width="192.3" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="i_en" value="«control»&lt;br&gt;exceptionNotifier : TemporizadorConsulta&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = DIS-04, variante = timeout}&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{0..timeout TBD}&lt;/font&gt;" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" vertex="1" parent="c_integ">
+          <mxGeometry x="295.4" y="346.6" width="250.9" height="77.2" as="geometry" />
+        </mxCell>
+        <mxCell id="i_ad" value="«adapter»&lt;br&gt;adaptador : AdaptadorTercero&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{uno por tercero}&lt;/font&gt;" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFFFFF;strokeColor=#2B3642;fila=C4;" vertex="1" parent="c_integ">
+          <mxGeometry x="325.7" y="480.8" width="190.4" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="i_fb" value="«control»&lt;br&gt;fallback : PublicadorPendientes" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" vertex="1" parent="c_integ">
+          <mxGeometry x="566.3" y="359.8" width="197.1" height="50.8" as="geometry" />
+        </mxCell>
+        <mxCell id="i_cu" value="DIS-04 : Timeout" style="ellipse;html=1;dashed=1;whiteSpace=wrap;fontSize=11;fillColor=none;strokeColor=#7A8794;fila=C7;" vertex="1" parent="c_integ">
+          <mxGeometry x="26.2" y="101.8" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ni1" value="&lt;b&gt;ADR-003 · modo Degradado&lt;/b&gt;: tercero caído&lt;br&gt;o timeout vencido: la declaración queda&lt;br&gt;pendiente, nunca rechazada. Precio: espera&lt;br&gt;a la ventana nocturna (SUP-10)" style="shape=note;html=1;size=12;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingRight=14;spacingTop=4;fillColor=#FFFDE7;strokeColor=#9A8B4F;fila=C11;" vertex="1" parent="c_integ">
+          <mxGeometry x="101.3" y="208.8" width="244" height="70.8" as="geometry" />
+        </mxCell>
+        <mxCell id="ni2" value="&lt;b&gt;ADR-002&lt;/b&gt;: qué latencia es&lt;br&gt;extrema sigue abierto (TBD); si el&lt;br&gt;monitor cae, el timeout de cada&lt;br&gt;adaptador sigue protegiendo" style="shape=note;html=1;size=12;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingRight=14;spacingTop=4;fillColor=#FFFDE7;strokeColor=#9A8B4F;fila=C11;" vertex="1" parent="c_integ">
+          <mxGeometry x="93.9" y="349.8" width="191.5" height="70.8" as="geometry" />
+        </mxCell>
+        <mxCell id="ip_enr" value="pEnriquecer : IEnriquecer" style="html=1;labelPosition=left;verticalLabelPosition=top;align=right;verticalAlign=bottom;fontSize=11;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" vertex="1" parent="1">
+          <mxGeometry x="683.4" y="76" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="ip_hs" value="healthSignal : ISuscribirEvento" style="html=1;labelPosition=left;verticalLabelPosition=top;align=right;verticalAlign=bottom;fontSize=11;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" vertex="1" parent="1">
+          <mxGeometry x="993.7" y="76" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="ip_pen" value="pPendientes : IPublicarEvento" style="html=1;labelPosition=left;verticalLabelPosition=bottom;align=right;verticalAlign=top;fontSize=11;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" vertex="1" parent="1">
+          <mxGeometry x="746.9" y="647" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="ip_sd" value="softDependency : ITercero" style="html=1;labelPosition=left;verticalLabelPosition=bottom;align=right;verticalAlign=top;fontSize=11;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" vertex="1" parent="1">
+          <mxGeometry x="154.9" y="647" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="r0" value="«delegate»" style="endArrow=open;endSize=10;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="ip_enr" target="i_ef">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="691.4" y="76" />
+              <mxPoint x="691.4" y="185" />
+            </Array>
+            <mxPoint x="0" y="16.4" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r1" value="«delegate»" style="endArrow=open;endSize=10;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="ip_hs" target="i_sm">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1001.7" y="76" />
+              <mxPoint x="1001.7" y="430.6" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r2" value="decidir(declaración, tercero)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="i_ef" target="i_dc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="691.4" y="235.8" />
+              <mxPoint x="691.4" y="282.8" />
+              <mxPoint x="620.2" y="282.8" />
+              <mxPoint x="620.2" y="296.2" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r3" value="estado(tercero)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="i_dc" target="i_sm">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="642.1" y="360.2" />
+              <mxPoint x="642.1" y="373.6" />
+              <mxPoint x="943.4" y="373.6" />
+              <mxPoint x="943.4" y="430.6" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r4" value="consultar(tercero)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="i_dc" target="i_en">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="510.9" y="360.2" />
+              <mxPoint x="510.9" y="430.6" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r5" value="llamar(declaración)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="i_en" target="i_ad">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="510.9" y="507.8" />
+              <mxPoint x="510.9" y="564.8" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r6" value="«delegate»" style="endArrow=open;endSize=10;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="i_ad" target="ip_sd">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="510.9" y="628.8" />
+              <mxPoint x="510.9" y="675.8" />
+              <mxPoint x="162.9" y="675.8" />
+              <mxPoint x="162.9" y="663" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r7" value="dejarPendiente(declaración)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="i_dc" target="i_fb">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="576.5" y="360.2" />
+              <mxPoint x="576.5" y="383.6" />
+              <mxPoint x="754.9" y="383.6" />
+              <mxPoint x="754.9" y="443.8" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r8" value="«delegate»" style="endArrow=open;endSize=10;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="i_fb" target="ip_pen">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="754.9" y="494.6" />
+              <mxPoint x="754.9" y="663" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r9" value="exceptionHandler" style="endArrow=none;dashed=1;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="i_cu" target="i_dc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="209.6" y="235.8" />
+              <mxPoint x="209.6" y="245.8" />
+              <mxPoint x="532.7" y="245.8" />
+              <mxPoint x="532.7" y="296.2" />
+            </Array>
+            <mxPoint x="-0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r10" value="supplier" style="endArrow=none;dashed=1;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="i_cu" target="ip_sd">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="162.9" y="235.8" />
+              <mxPoint x="162.9" y="663" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ni1__a0" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#9A8B4F;dashPattern=2 3;" edge="1" parent="1" source="ni1" target="i_dc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="435.3" y="328.2" />
+              <mxPoint x="445.3" y="328.2" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ni2__a0" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#9A8B4F;dashPattern=2 3;" edge="1" parent="1" source="ni2" target="i_en">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="375.4" y="469.2" />
+              <mxPoint x="385.4" y="469.2" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="i_ef__asr0" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#1F4E79;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#1F4E79;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="i_ef">
+          <mxGeometry x="8" y="-10" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="i_dc__asr0" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="i_dc">
+          <mxGeometry x="8" y="-10" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="i_sm__asr0" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#1F4E79;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#1F4E79;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="i_sm">
+          <mxGeometry x="8" y="-10" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="i_en__asr0" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="i_en">
+          <mxGeometry x="8" y="-10" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="i_fb__asr0" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="i_fb">
+          <mxGeometry x="8" y="-10" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg" value="&lt;b&gt;Convenciones&lt;/b&gt;&lt;br&gt;relleno ámbar: artefacto de un ASR (ahí se aplica la táctica o se hace el cambio)&lt;br&gt;borde ámbar: participa en la respuesta, pero no se modifica&lt;br&gt;blanco: fuera del alcance de los ASR de esta página&lt;br&gt;carpeta o marco gris: agrupa, no es un elemento&lt;br&gt;azul: punto de contacto (interfaz, puerto o evento)&lt;br&gt;nota: la decisión, atada con punteada a su elemento&lt;br&gt;□ sobre el borde: puerto, con su interfaz junto a él&lt;br&gt;elipse punteada: la táctica aplicada, atada con punteadas sin flecha a los roles que liga&lt;br&gt;«tactic» {id = …}: el elemento aplica esa táctica del catálogo" style="text;rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9AA5B1;align=left;verticalAlign=top;spacingLeft=42;spacingTop=2;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="40" y="700.8" width="560" height="148" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m0" value="" style="text;html=1;fillColor=#FFF4D6;strokeColor=#B8860B;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="22.2" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m1" value="" style="text;html=1;fillColor=#FFFFFF;strokeColor=#B8860B;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="35.4" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m2" value="" style="text;html=1;fillColor=#FFFFFF;strokeColor=#2B3642;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="48.6" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m3" value="" style="text;html=1;fillColor=none;strokeColor=#7A8794;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="61.8" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m4" value="" style="text;html=1;fillColor=#E8F0FA;strokeColor=#3D6A9E;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="75" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m5" value="" style="text;html=1;fillColor=#FFFDE7;strokeColor=#9A8B4F;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="88.2" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv" value="&lt;b&gt;Convención ASR&lt;/b&gt; · cada elemento lleva la insignia de los ASR en cuyo alcance está" style="text;rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9AA5B1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=2;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="40" y="866.8" width="560" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__b0" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="12" y="27" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__t0" value="Ningún archivo se rechaza por la caída&lt;br&gt;de un externo" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="72" y="26" width="207" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fa" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="12" y="77" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fat" value="&lt;b&gt;relleno&lt;/b&gt;: artefacto del ASR (ahí se aplica la táctica o se hace el cambio)" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="72" y="76" width="500" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fp" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#1F4E79;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#1F4E79;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="12" y="101" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fpt" value="&lt;b&gt;contorno punteado&lt;/b&gt;: participa en la respuesta, pero no se modifica" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="72" y="100" width="500" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__traz" value="&lt;b style=&quot;font-size:13px&quot;&gt;Trazabilidad ASR → elementos de la arquitectura&lt;/b&gt; &amp;nbsp;(★ priorizado)&lt;table style=&quot;border-collapse:collapse;table-layout:fixed;width:1120px;margin-top:6px;font-size:11px&quot;&gt;&lt;tr&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:73px&quot;&gt;ASR&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:98px&quot;&gt;Atributo&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:263px&quot;&gt;Alcance · artefacto (relleno)&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:208px&quot;&gt;Participa sin modificarse (contorno)&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:208px&quot;&gt;Táctica principal&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:198px&quot;&gt;Medida&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top;white-space:nowrap&quot;&gt;&lt;span style=&quot;background:#1F4E79;color:#fff;font-weight:bold;padding:1px 5px;border-radius:4px&quot;&gt;ASR-D01&lt;/span&gt; ★&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Disponibilidad · recuperación&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;degradationController : ControlDegradacion · exceptionNotifier : TemporizadorConsulta · fallback : PublicadorPendientes&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;essentialFunction : OrquestadorEnriquecimiento · serviceMode : EstadoTerceros&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Monitor, pendientes durables y ventana nocturna&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;100 % de los archivos válidos procesados dentro de los días de reintento&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" style="text;rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9AA5B1;align=left;verticalAlign=top;spacingLeft=8;spacingRight=8;spacingTop=4;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="630" y="700.8" width="1150" height="108" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="dg-cst-003" name="DG-CST-003 · Verificador criptográfico (caja blanca)">
+    <mxGraphModel grid="0" page="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="titulo" value="&lt;b&gt;DG-CST-003&lt;/b&gt; · Caja blanca del Verificador criptográfico: firma, cadena, estampa y revocación" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#1F2A36;" vertex="1" parent="1">
+          <mxGeometry x="40" y="12" width="1159.2" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="titulo__meta" value="caja blanca · refina: Verificador criptográfico · ASR ASR-S06, ASR-D01 · ADR ADR-006, ADR-007" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;fontColor=#5A6B7D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="38" width="1159.2" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="c_ver" value="«component»&lt;br&gt;&lt;b&gt;Verificador criptográfico&lt;/b&gt;" style="html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingTop=6;container=1;collapsible=0;recursiveResize=0;fillColor=#FFFFFF;strokeColor=#2B3642;fila=C4;spacingLeft=488.1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="84" width="1159.2" height="735.8" as="geometry" />
+        </mxCell>
+        <mxCell id="c_ver__ico" value="" style="shape=module;jettyWidth=8;jettyHeight=4;fillColor=#FFFFFF;strokeColor=#2B3642;" vertex="1" parent="c_ver">
+          <mxGeometry x="1131.2" y="8" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="v_par" value="«boundary»&lt;br&gt;parser : ParserStreaming&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = SEG-08}&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{sin DTD ni entidades externas}&lt;/font&gt;" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" vertex="1" parent="c_ver">
+          <mxGeometry x="552.8" y="101" width="184.2" height="77.2" as="geometry" />
+        </mxCell>
+        <mxCell id="v_res" value="«control»&lt;br&gt;resumen : ResumenFirmado&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = SEG-11}&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{mismos bytes custodiados}&lt;/font&gt;" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" vertex="1" parent="c_ver">
+          <mxGeometry x="554.1" y="235.2" width="181.6" height="77.2" as="geometry" />
+        </mxCell>
+        <mxCell id="v_aut" value="«control»&lt;br&gt;authenticator : VerificadorFirma&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = SEG-02, variante = un-factor}&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{authenticity}&lt;/font&gt;" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" vertex="1" parent="c_ver">
+          <mxGeometry x="485" y="369.4" width="239.8" height="77.2" as="geometry" />
+        </mxCell>
+        <mxCell id="v_poi" value="«entity»&lt;br&gt;proofOfIdentity : CertificadoFirmante" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFFFFF;strokeColor=#B8860B;fila=C3;" vertex="1" parent="c_ver">
+          <mxGeometry x="343.1" y="503.6" width="223.3" height="50.8" as="geometry" />
+        </mxCell>
+        <mxCell id="v_dc" value="«control»&lt;br&gt;degradationController : ControlRevocacion&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = DIS-14, variante = fallback}&lt;/font&gt;" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFF4D6;strokeColor=#B8860B;fila=C1;" vertex="1" parent="c_ver">
+          <mxGeometry x="778.6" y="503.6" width="257" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v_ai" value="«entity»&lt;br&gt;authenticationInformation : CacheRevocacion&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;«tactic» {id = LAT-10}&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;{refresco = TBD}&lt;/font&gt;" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFFFFF;strokeColor=#B8860B;fila=C3;" vertex="1" parent="c_ver">
+          <mxGeometry x="234.7" y="634.6" width="272.5" height="77.2" as="geometry" />
+        </mxCell>
+        <mxCell id="v_fb" value="«control»&lt;br&gt;fallback : MarcaVerificacionPendiente" style="html=1;whiteSpace=wrap;fontSize=12;fillColor=#FFFFFF;strokeColor=#B8860B;fila=C3;" vertex="1" parent="c_ver">
+          <mxGeometry x="856.3" y="647.8" width="230.1" height="50.8" as="geometry" />
+        </mxCell>
+        <mxCell id="v_cu" value="DIS-14 : Graceful Degradation" style="ellipse;html=1;dashed=1;whiteSpace=wrap;fontSize=11;fillColor=none;strokeColor=#7A8794;fila=C7;" vertex="1" parent="c_ver">
+          <mxGeometry x="331.1" y="262.4" width="203" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="nx1" value="&lt;b&gt;ADR-007 · precio&lt;/b&gt;: ventana de&lt;br&gt;revocación: un certificado revocado&lt;br&gt;tras el último refresco (TBD) se&lt;br&gt;acepta hasta el siguiente (R-007a)" style="shape=note;html=1;size=12;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingRight=14;spacingTop=4;fillColor=#FFFDE7;strokeColor=#9A8B4F;fila=C11;" vertex="1" parent="c_ver">
+          <mxGeometry x="24" y="637.8" width="200.7" height="70.8" as="geometry" />
+        </mxCell>
+        <mxCell id="nx2" value="&lt;b&gt;ADR-006 · precio&lt;/b&gt;: 50 MB en&lt;br&gt;streaming sin medir (SUP-01): si no&lt;br&gt;cabe en el segundo, acuse de custodia&lt;br&gt;y resultado retenido hasta verificar" style="shape=note;html=1;size=12;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingRight=14;spacingTop=4;fillColor=#FFFDE7;strokeColor=#9A8B4F;fila=C11;" vertex="1" parent="c_ver">
+          <mxGeometry x="324.1" y="104.2" width="218.7" height="70.8" as="geometry" />
+        </mxCell>
+        <mxCell id="vp_hs" value="healthSignal : IEstadoECD" style="html=1;labelPosition=left;verticalLabelPosition=top;align=right;verticalAlign=bottom;fontSize=11;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" vertex="1" parent="1">
+          <mxGeometry x="981.9" y="76" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="vp_pen" value="pPendientes : IPublicarEvento" style="html=1;labelPosition=left;verticalLabelPosition=bottom;align=right;verticalAlign=top;fontSize=11;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" vertex="1" parent="1">
+          <mxGeometry x="1003.3" y="811.8" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="vp_sd" value="softDependency : IRevocacionECD" style="html=1;labelPosition=left;verticalLabelPosition=bottom;align=right;verticalAlign=top;fontSize=11;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" vertex="1" parent="1">
+          <mxGeometry x="624.2" y="811.8" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="vp_ver" value="pVerificar : IVerificar" style="html=1;labelPosition=left;verticalLabelPosition=top;align=right;verticalAlign=bottom;fontSize=11;fillColor=#E8F0FA;strokeColor=#3D6A9E;fila=C8;" vertex="1" parent="1">
+          <mxGeometry x="676.9" y="76" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="r0" value="«delegate»" style="endArrow=open;endSize=10;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="vp_ver" target="v_par">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="684.9" y="76" />
+              <mxPoint x="684.9" y="185" />
+            </Array>
+            <mxPoint x="0" y="16.4" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r1" value="canonicalizar(elemento firmado)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="v_par" target="v_res">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="684.9" y="262.2" />
+              <mxPoint x="684.9" y="319.2" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r2" value="verificarFirma(resumen)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="v_res" target="v_aut">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="684.9" y="396.4" />
+              <mxPoint x="684.9" y="453.4" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r3" value="validarCadena(certificado)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="v_aut" target="v_poi">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="605" y="530.6" />
+              <mxPoint x="605" y="540.6" />
+              <mxPoint x="494.7" y="540.6" />
+              <mxPoint x="494.7" y="587.6" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r4" value="comprobarRevocacion(certificado)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="v_aut" target="v_dc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="684.9" y="530.6" />
+              <mxPoint x="684.9" y="577.6" />
+              <mxPoint x="945.6" y="577.6" />
+              <mxPoint x="945.6" y="587.6" />
+            </Array>
+            <mxPoint x="-47.6" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r5" value="consultar(certificado)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="v_dc" target="v_ai">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="882.8" y="651.6" />
+              <mxPoint x="882.8" y="661.6" />
+              <mxPoint x="456.4" y="661.6" />
+              <mxPoint x="456.4" y="718.6" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r6" value="«delegate»" style="endArrow=open;endSize=10;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="vp_hs" target="v_dc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="989.9" y="76" />
+              <mxPoint x="989.9" y="587.6" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r7" value="«delegate»" style="endArrow=open;endSize=10;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="v_dc" target="vp_sd">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="947.1" y="651.6" />
+              <mxPoint x="947.1" y="671.6" />
+              <mxPoint x="632.2" y="671.6" />
+              <mxPoint x="632.2" y="827.8" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r8" value="marcarPendiente(archivo)" style="endArrow=none;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="v_dc" target="v_fb">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1023.3" y="651.6" />
+              <mxPoint x="1023.3" y="731.8" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r9" value="«delegate»" style="endArrow=open;endSize=10;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="v_fb" target="vp_pen">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1011.3" y="782.6" />
+              <mxPoint x="1011.3" y="827.8" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r10" value="essentialFunction" style="endArrow=none;dashed=1;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="v_cu" target="v_aut">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="506.5" y="396.4" />
+              <mxPoint x="506.5" y="443.4" />
+              <mxPoint x="605" y="443.4" />
+              <mxPoint x="605" y="453.4" />
+            </Array>
+            <mxPoint x="-30.8" y="-15.9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r11" value="serviceMode" style="endArrow=none;dashed=1;html=1;rounded=0;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#2B3642;fontColor=#1F2A36;" edge="1" parent="1" source="v_cu" target="v_ai">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="438.8" y="396.4" />
+              <mxPoint x="438.8" y="406.4" />
+              <mxPoint x="332.3" y="406.4" />
+              <mxPoint x="332.3" y="708.6" />
+              <mxPoint x="365.5" y="708.6" />
+              <mxPoint x="365.5" y="718.6" />
+            </Array>
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nx1__a0" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#9A8B4F;dashPattern=2 3;" edge="1" parent="1" source="nx1" target="v_ai">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="264.7" y="757.2" />
+              <mxPoint x="274.7" y="757.2" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nx2__a0" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#9A8B4F;dashPattern=2 3;" edge="1" parent="1" source="nx2" target="v_par">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="582.8" y="223.6" />
+              <mxPoint x="592.8" y="223.6" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v_par__asr2" value="ASR-S06" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#5B3F8C;strokeColor=#5B3F8C;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="v_par">
+          <mxGeometry x="8" y="-10" width="53" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_res__asr2" value="ASR-S06" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#5B3F8C;strokeColor=#5B3F8C;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="v_res">
+          <mxGeometry x="8" y="-10" width="53" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_aut__asr2" value="ASR-S06" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#5B3F8C;strokeColor=#5B3F8C;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="v_aut">
+          <mxGeometry x="8" y="-10" width="53" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_poi__asr2" value="ASR-S06" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#5B3F8C;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#5B3F8C;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="v_poi">
+          <mxGeometry x="8" y="-10" width="53" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_dc__asr0" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#1F4E79;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#1F4E79;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="v_dc">
+          <mxGeometry x="8" y="-10" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_dc__asr2" value="ASR-S06" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#5B3F8C;strokeColor=#5B3F8C;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="v_dc">
+          <mxGeometry x="66" y="-10" width="53" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_ai__asr2" value="ASR-S06" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#5B3F8C;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#5B3F8C;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="v_ai">
+          <mxGeometry x="8" y="-10" width="53" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_fb__asr0" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#1F4E79;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#1F4E79;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="v_fb">
+          <mxGeometry x="8" y="-10" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v_fb__asr2" value="ASR-S06" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#5B3F8C;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#5B3F8C;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="v_fb">
+          <mxGeometry x="66" y="-10" width="53" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg" value="&lt;b&gt;Convenciones&lt;/b&gt;&lt;br&gt;relleno ámbar: artefacto de un ASR (ahí se aplica la táctica o se hace el cambio)&lt;br&gt;borde ámbar: participa en la respuesta, pero no se modifica&lt;br&gt;blanco: fuera del alcance de los ASR de esta página&lt;br&gt;carpeta o marco gris: agrupa, no es un elemento&lt;br&gt;azul: punto de contacto (interfaz, puerto o evento)&lt;br&gt;nota: la decisión, atada con punteada a su elemento&lt;br&gt;□ sobre el borde: puerto, con su interfaz junto a él&lt;br&gt;elipse punteada: la táctica aplicada, atada con punteadas sin flecha a los roles que liga&lt;br&gt;«tactic» {id = …}: el elemento aplica esa táctica del catálogo" style="text;rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9AA5B1;align=left;verticalAlign=top;spacingLeft=42;spacingTop=2;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="40" y="852.8" width="560" height="148" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m0" value="" style="text;html=1;fillColor=#FFF4D6;strokeColor=#B8860B;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="22.2" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m1" value="" style="text;html=1;fillColor=#FFFFFF;strokeColor=#B8860B;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="35.4" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m2" value="" style="text;html=1;fillColor=#FFFFFF;strokeColor=#2B3642;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="48.6" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m3" value="" style="text;html=1;fillColor=none;strokeColor=#7A8794;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="61.8" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m4" value="" style="text;html=1;fillColor=#E8F0FA;strokeColor=#3D6A9E;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="75" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__lg__m5" value="" style="text;html=1;fillColor=#FFFDE7;strokeColor=#9A8B4F;" vertex="1" connectable="0" parent="leyenda__lg">
+          <mxGeometry x="10" y="88.2" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv" value="&lt;b&gt;Convención ASR&lt;/b&gt; · cada elemento lleva la insignia de los ASR en cuyo alcance está" style="text;rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9AA5B1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=2;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="40" y="1018.8" width="560" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__b0" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="12" y="27" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__t0" value="Ningún archivo se rechaza por la caída&lt;br&gt;de un externo" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="72" y="26" width="207" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__b2" value="ASR-S06" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#5B3F8C;strokeColor=#5B3F8C;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="287" y="27" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__t2" value="Ningún archivo se acepta sin&lt;br&gt;verificación completa" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="347" y="26" width="207" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fa" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#1F4E79;strokeColor=#1F4E79;fontColor=#FFFFFF;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="12" y="77" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fat" value="&lt;b&gt;relleno&lt;/b&gt;: artefacto del ASR (ahí se aplica la táctica o se hace el cambio)" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="72" y="76" width="500" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fp" value="ASR-D01" style="text;rounded=1;arcSize=30;html=1;whiteSpace=nowrap;fillColor=#FFFFFF;strokeColor=#1F4E79;strokeWidth=1.3;dashed=1;dashPattern=3 2;fontColor=#1F4E79;fontStyle=1;fontSize=10;fontFamily=Helvetica;align=center;verticalAlign=middle;spacing=0;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="12" y="101" width="54" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__cv__fpt" value="&lt;b&gt;contorno punteado&lt;/b&gt;: participa en la respuesta, pero no se modifica" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="leyenda__cv">
+          <mxGeometry x="72" y="100" width="500" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda__traz" value="&lt;b style=&quot;font-size:13px&quot;&gt;Trazabilidad ASR → elementos de la arquitectura&lt;/b&gt; &amp;nbsp;(★ priorizado)&lt;table style=&quot;border-collapse:collapse;table-layout:fixed;width:1120px;margin-top:6px;font-size:11px&quot;&gt;&lt;tr&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:73px&quot;&gt;ASR&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:98px&quot;&gt;Atributo&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:263px&quot;&gt;Alcance · artefacto (relleno)&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:208px&quot;&gt;Participa sin modificarse (contorno)&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:208px&quot;&gt;Táctica principal&lt;/th&gt;&lt;th style=&quot;border-bottom:1.5px solid #3B4B5C;text-align:left;padding:4px 6px;width:198px&quot;&gt;Medida&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top;white-space:nowrap&quot;&gt;&lt;span style=&quot;background:#1F4E79;color:#fff;font-weight:bold;padding:1px 5px;border-radius:4px&quot;&gt;ASR-D01&lt;/span&gt; ★&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Disponibilidad · recuperación&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;—&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;degradationController : ControlRevocacion · fallback : MarcaVerificacionPendiente&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Monitor, pendientes durables y ventana nocturna&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;100 % de los archivos válidos procesados dentro de los días de reintento&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top;white-space:nowrap&quot;&gt;&lt;span style=&quot;background:#5B3F8C;color:#fff;font-weight:bold;padding:1px 5px;border-radius:4px&quot;&gt;ASR-S06&lt;/span&gt; ★&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Seguridad · prevención&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;parser : ParserStreaming · resumen : ResumenFirmado · authenticator : VerificadorFirma · degradationController : ControlRevocacion&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;proofOfIdentity : CertificadoFirmante · authenticationInformation : CacheRevocacion · fallback : MarcaVerificacionPendiente&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;Verificación completa con resultado retenido&lt;/td&gt;&lt;td style=&quot;border-bottom:1px solid #D5DBE1;padding:4px 6px;vertical-align:top&quot;&gt;0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" style="text;rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9AA5B1;align=left;verticalAlign=top;spacingLeft=8;spacingRight=8;spacingTop=4;fontFamily=Helvetica;fontSize=11;fontColor=#1F2A36;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="630" y="852.8" width="1150" height="173" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

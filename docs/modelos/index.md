@@ -17,7 +17,7 @@ Cada vista tiene su página, donde los diagramas se dibujan en el navegador, y s
 | Vista | Diagramas | Global | Detalle | Qué responde |
 |---|---|---|---|---|
 | [Contexto](vista-contexto.md) | [Ver](vista-contexto.md) · [`.drawio`](drawio/vista-contexto.drawio) | DG-CMP-001 | — | Quién envía, quién recibe y de qué terceros depende Orquídea |
-| [Componentes](vista-componentes.md) | [Ver](vista-componentes.md) · [`.drawio`](drawio/vista-componentes.drawio) | DG-CMP-002 | DG-CST-001 · DG-CST-002 · DG-CST-003 | Qué componentes tiene Orquídea, y cómo están construidos por dentro la recepción, el verificador criptográfico y el reprocesador nocturno |
+| [Componentes](vista-componentes.md) | [Ver](vista-componentes.md) · [`.drawio`](drawio/vista-componentes.drawio) | DG-CMP-003 | DG-CST-001 · DG-CST-002 · DG-CST-003 | Qué componentes tiene Orquídea, y cómo están construidos por dentro la recepción, el verificador criptográfico y el reprocesador nocturno |
 | [Concurrencia](vista-concurrencia.md) | [Ver](vista-concurrencia.md) · [`.drawio`](drawio/vista-concurrencia.drawio) | DG-CON-001 | DG-SEQ-001 · DG-SEQ-002 · DG-SEQ-003 | Qué corre en paralelo, qué se sincroniza y cómo recorre cada componente clave su operación crítica, con su camino de fallo |
 | [Información](vista-informacion.md) | [Ver](vista-informacion.md) · [`.drawio`](drawio/vista-informacion.drawio) | DG-CLS-001 | DG-STM-001 · DG-STM-002 · DG-STM-003 | Qué guarda Orquídea por archivo, y por qué estados pasan el archivo, la declaración pendiente y cada tercero en el monitor |
 | [Despliegue](vista-despliegue.md) | [Ver](vista-despliegue.md) · [`.drawio`](drawio/vista-despliegue.drawio) | DG-DEP-001 | DG-DEP-002 | Dónde corre cada parte en producción, y cómo se monta el experimento local en Docker |
@@ -38,18 +38,18 @@ El monitor de terceros, el reprocesador nocturno, los carriles y el registro de 
 
 | ASR | ADR | Táctica | Diagrama principal | También en |
 |---|---|---|---|---|
-| D01 · L04 | ADR-001 | EST-07 Pipe and Filter · ESC-05 Asincronía y colas | DG-CMP-002 | DG-CST-001 |
-| D01 | ADR-002 | DIS-01 Ping / echo · DIS-03 Monitor | DG-STM-003 | DG-CMP-002, DG-DEP-002 |
+| D01 · L04 | ADR-001 | EST-07 Pipe and Filter · ESC-05 Asincronía y colas | DG-CMP-003 | DG-CST-001 |
+| D01 | ADR-002 | DIS-01 Ping / echo · DIS-03 Monitor | DG-STM-003 | DG-CMP-003, DG-DEP-002 |
 | D01 | ADR-002 | DIS-04 Excepción / timeout | DG-CST-002 | DG-SEQ-002, DG-STM-003 |
-| D01 | ADR-003 | DIS-12 Reintento (diferido a la ventana nocturna) | DG-STM-002 | DG-CMP-002, DG-CON-001 |
+| D01 | ADR-003 | DIS-12 Reintento (diferido a la ventana nocturna) | DG-STM-002 | DG-CMP-003, DG-CON-001 |
 | D01 | ADR-003 | DIS-14 Degradación con gracia (acusar sin el tercero) | DG-CST-002 | DG-SEQ-002 |
 | D01 | ADR-004 | DIS-17 Transacciones (llave del archivo) | DG-CST-001 | DG-SEQ-001, DG-STM-001 |
-| L04 | ADR-005 | DIS-22 Bulkhead | DG-CON-001 | DG-CMP-002, DG-DEP-001 |
+| L04 | ADR-005 | DIS-22 Bulkhead | DG-CON-001 | DG-CMP-003, DG-DEP-001 |
 | L04 | ADR-005 | LAT-03 Priorizar eventos (enrutar por tamaño) | DG-CST-001 | — |
 | L04 | ADR-005 | LAT-12 Programar los recursos | DG-CON-001 | — |
 | S06 | ADR-006 | SEG-02 Autenticar actores · SEG-11 Verificar integridad · SEG-08 Validar la entrada | DG-CST-003 | DG-STM-001 |
 | S06 | ADR-007 | LAT-10 Mantener múltiples copias de datos · DIS-14 Degradación con gracia | DG-CST-003 | DG-SEQ-003 |
-| S06 | ADR-008 | SEG-18 Registro de auditoría | DG-CMP-002 | — |
+| S06 | ADR-008 | SEG-18 Registro de auditoría | DG-CMP-003 | — |
 
 Cada táctica lleva su precio anotado en una nota o una restricción sobre su elemento.
 

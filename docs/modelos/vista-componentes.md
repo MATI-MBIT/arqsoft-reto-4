@@ -12,9 +12,11 @@ Cada diagrama se dibuja en el navegador a partir del archivo [`vista-componentes
 
 {% capture vista %}{% include_relative drawio/vista-componentes.drawio %}{% endcapture %}
 
-## DG-CMP-002 · Vista general de Orquídea
+## DG-CMP-003 · Vista funcional de Orquídea
 
-El sistema en una página, con cuatro paquetes: recepción y verificación, mensajería (el bus con sus tópicos), procesamiento por carriles y disponibilidad ante terceros. Cada componente lleva la marca de su táctica, y cada sistema externo su protocolo.
+El sistema en una página, en notación UML de componentes, de izquierda a derecha: recepción y verificación, mensajería, procesamiento por carriles e integración con terceros; debajo, disponibilidad ante terceros y datos y entrega. Cada componente lleva su táctica y la insignia de los ASR en cuyo alcance está, y cada nota amarilla resume un ADR con su precio.
+
+Los tópicos del bus aparecen como componentes con un ícono de cola de mensajes, y los componentes que guardan datos llevan un ícono de cilindro. Las bases de datos no se dibujan aquí: su modelo va en la vista de información.
 
 {% include drawio.html xml=vista page=0 %}
 
