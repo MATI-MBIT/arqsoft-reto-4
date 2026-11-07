@@ -85,6 +85,9 @@ reto:
 
 - **Una sola medida por ASR, sin hermanos** (Nicolás, 2026-11-04). La trampa
   de cada medida queda como nota en «Por qué es ASR».
+- **ASR atómicos en disponibilidad y seguridad** (Nicolás, 2026-11-06): cada
+  uno es de un solo tipo, detección, corrección o prevención, y su medida es
+  una sola condición (nada de «A o B»).
 - Los ID siguen el esquema del informe (`ASR-L`, `E`, `D`, `S`, `M`, `I`, con
   número), porque el cliente prioriza con esos ID y Helix numera por atributo.
 - El ASR va en el espacio del problema: no nombra componentes, colas ni

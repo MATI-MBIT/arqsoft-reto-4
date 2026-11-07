@@ -10,7 +10,7 @@ Un ASR, o requisito arquitectónicamente significativo, es el que obligaría a r
 
 Los de Orquídea salen del enunciado del curso, del informe de consultoría del Grupo 1 y de la respuesta que BCR envió el 3 de noviembre de 2026. El enunciado manda, y la respuesta de BCR es vinculante donde fija una cifra. Las decisiones de arquitectura (ADR) que BCR aprobó responden a estos requisitos, no al revés.
 
-Cada ASR tiene una sola medida y ninguno nombra componentes ni tecnologías. El artefacto es la parte de Orquídea que recibe el estímulo: uno de sus servicios (recepción y acuse, verificación criptográfica, procesamiento de archivos, reglas cambiarias, validación de estructura, integración con los sistemas externos, consulta, entrega a las áreas o registro de auditoría) o todo el sistema. Cuando una medida se puede cumplir sin lograr lo que pide, la ficha lo advierte en una «nota de trampa».
+Cada ASR tiene una sola medida y ninguno nombra componentes ni tecnologías. En disponibilidad y seguridad, además, cada ASR es de un solo tipo: detección, corrección o prevención. El artefacto es la parte de Orquídea que recibe el estímulo: uno de sus servicios (recepción y acuse, verificación criptográfica, procesamiento de archivos, reglas cambiarias, validación de estructura, integración con los sistemas externos, consulta, entrega a las áreas o registro de auditoría) o todo el sistema. Cuando una medida se puede cumplir sin lograr lo que pide, la ficha lo advierte en una «nota de trampa».
 
 Cuatro grupos de siglas se repiten en la página. BCR es la entidad que opera Orquídea. Los remitentes son los intermediarios del mercado cambiario (IMC) y los titulares de cuentas de compensación. STM, ANTA, MAMC y RNIC son los cuatro sistemas externos que aportan tasas, datos tributarios y aduaneros, datos migratorios e identidad. La ECD es la entidad de certificación digital que emite los certificados y las estampas cronológicas.
 
@@ -20,19 +20,19 @@ Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dic
 
 | # | ID | Atributo | Qué exige | Amb. | Prioridad | Impacto | Origen |
 |---|---|---|---|---|---|---|---|
-| 1 | [ASR-D01](#asr-d01) | Disponibilidad · recuperación | **Ningún archivo se rechaza por la caída de un sistema externo.** 0 archivos válidos rechazados o sin resultado tras la ventana nocturna | C1 | Crítica | Alto | `enunciado` · BCR |
+| 1 | [ASR-D01](#asr-d01) | Disponibilidad · corrección | **Ningún archivo se rechaza por la caída de un sistema externo.** 0 archivos válidos sin aceptar tras la ventana nocturna | C1 | Crítica | Alto | `enunciado` · BCR |
 | 2 | [ASR-L04](#asr-l04) | Latencia | **Aislamiento de carga entre archivos masivos y pequeños.** p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso | A | Crítica | Alto | `enunciado` · BCR |
 | 3 | [ASR-S06](#asr-s06) | Seguridad · prevención | **Ningún archivo se acepta sin validación criptográfica completa.** 0 aceptados sin verificar | A, C1 | Crítica | Alto | `enunciado` |
 | 4 | [ASR-M01](#asr-m01) | Modificabilidad · adaptativo | **Regla cambiaria nueva en ≤ 4 h-persona.** Sin recompilar | Despliegue | Alta | Alto | `enunciado` · BCR |
 | 5 | [ASR-S01](#asr-s01) | Seguridad · prevención | **Validación criptográfica en ≤ 200 ms.** p99 desde el último byte | A | Alta | Alto | `enunciado` |
 | 6 | [ASR-E01](#asr-e01) | Escalabilidad | **Pico de pequeños con p99 ≤ 5 s.** 1 200 por minuto durante 45 min | B | Alta | Alto | `enunciado` |
 | 7 | [ASR-I01](#asr-i01) | Interoperabilidad | **Nuevo contrato de API de un externo en ≤ 4 h-persona.** Con su significado intacto | Desarrollo | Alta | Alto | `enunciado` · BCR |
-| 8 | [ASR-D03](#asr-d03) | Disponibilidad · prevención | **Cero pérdidas y cero duplicados tras el acuse.** Con un nodo caído en el pico | C2 sobre B | Alta | Alto | `enunciado` |
+| 8 | [ASR-D03](#asr-d03) | Disponibilidad · corrección | **Exactamente un resultado por declaración acusada.** Con un nodo caído en el pico | C2 sobre B | Alta | Alto | `enunciado` |
 | 9 | [ASR-L01](#asr-l01) | Latencia | **Acuse en ≤ 1 s.** p99 desde el último byte | A | Alta | Alto | `enunciado` · BCR |
 | 10 | [ASR-S03](#asr-s03) | Seguridad · prevención | **Aislamiento de datos entre remitentes.** 0 accesos a lo ajeno | A | Alta | Medio | `enunciado` |
 | 11 | [ASR-D04](#asr-d04) | Disponibilidad · prevención | **Despliegue sin indisponibilidad.** Acuse en p99 ≤ 1 s durante el cambio | E | Alta | Medio | `enunciado` |
 | 12 | [ASR-L03](#asr-l03) | Latencia | **Masivo en ≤ 5 min.** Con otros 4 masivos en proceso | A | Media | Alto | `enunciado` |
-| 13 | [ASR-D02](#asr-d02) | Disponibilidad · reparación | **Recuperación de un nodo interno en ≤ 10 s.** Sin intervención | C2 | Media | Medio | `enunciado` |
+| 13 | [ASR-D02](#asr-d02) | Disponibilidad · corrección | **Recuperación de un nodo interno en ≤ 10 s.** Sin intervención | C2 | Media | Medio | `enunciado` |
 | 14 | [ASR-L05](#asr-l05) | Latencia | **Mediano con p99 ≤ 30 s.** Con 5 masivos en proceso | A | Media | Medio | `enunciado` |
 | 15 | [ASR-M02](#asr-m02) | Modificabilidad · adaptativo | **Versión nueva del XSD en ≤ 4 h-persona.** La anterior sigue validándose | Despliegue | Media | Medio | `enunciado` · BCR |
 | 16 | [ASR-S04](#asr-s04) | Seguridad · detección | **Alteraciones de la auditoría detectadas.** 100 % de los casos | A | Media | Medio | `enunciado` · BCR |
@@ -127,7 +127,7 @@ El eje es el flujo de datos del dominio; el stakeholder va como columna auxiliar
 | **S** Suplantación | El archivo firmado que envía un remitente | Tercero contra un IMC | Prevención | A | **[ASR-S01](#asr-s01)** |
 | **S** Suplantación | Un archivo con firma inválida o certificado revocado que llega a resultado definitivo | Tercero con certificado robado | Prevención | A, C1 | **[ASR-S06](#asr-s06)** |
 | **S** Suplantación | Un archivo aceptado con un certificado revocado después de la última actualización de la información de revocación | Tercero con certificado robado | Detección | A | Pendiente: sin umbral `[PREGUNTA → BCR]` |
-| **S** Suplantación | El mismo caso, ya detectado | Tercero con certificado robado | Reacción | A | Pendiente: sin umbral |
+| **S** Suplantación | El mismo caso, ya detectado | Tercero con certificado robado | Corrección | A | Pendiente: sin umbral |
 | **S** Suplantación | Un firmante distinto del remitente autenticado | IMC contra IMC | Prevención | A | **[ASR-S06](#asr-s06)**: el firmante es parte de la verificación completa |
 | **T** Manipulación | El contenido firmado de un archivo (firma envuelta) | Tercero | Prevención | A | **[ASR-S06](#asr-s06)**: lo verificado tiene que ser lo que se procesa |
 | **T** Manipulación | La auditoría ya escrita | Interno, por abuso o **mal uso** | Detección | A | **[ASR-S04](#asr-s04)** |
@@ -166,7 +166,7 @@ Cada ficha trae, debajo de la tabla, un diagrama de secuencia con Orquídea como
 | **Artefacto** | Orquídea, todo el sistema |
 | **Ambiente** | C1: un sistema externo caído, con la carga de A |
 | **Respuesta** | Sigue recibiendo y acusando. Lo que necesita al externo queda pendiente y se reprocesa cada noche hasta que vuelva; si no vuelve en los días de reintento, se notifica al remitente |
-| **Medida** | 0 archivos válidos rechazados o sin resultado definitivo al cierre de la primera ventana nocturna tras el regreso del externo |
+| **Medida** | 0 archivos válidos sin aceptar al cierre de la primera ventana nocturna tras el regreso del externo |
 | **Por qué es ASR** | La recepción no puede depender en línea de ningún externo, y lo pendiente tiene que sobrevivir horas o días. Con caídas de minutos bastaría reintentar en línea; con caídas de 20 h, no. Un archivo es válido si se habría aceptado con el externo disponible. Nota de trampa: la medida no cuenta cuánto espera lo pendiente hasta la noche; BCR lo aceptó |
 | **Cómo se verifica** | Se cae un externo simulado a mitad de una carga A y se envían archivos válidos y otros que una regla debe rechazar. Tras la ventana nocturna con el externo de vuelta, se concilian los válidos contra los aceptados |
 | **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` («continuar operando sin rechazar archivos») · BCR: respuesta del 3-nov y reunión del 6-nov |
@@ -191,7 +191,7 @@ sequenceDiagram
             O-->>R: RESPUESTA · notificación
         end
     end
-    Note over O,R: MEDIDA · 0 archivos válidos rechazados o sin resultado<br/>tras la primera ventana posterior al regreso del externo
+    Note over O,R: MEDIDA · 0 archivos válidos sin aceptar<br/>tras la primera ventana posterior al regreso del externo
     end
     rect rgb(255, 228, 225)
     Note over X,R: LO QUE EL ASR DESCARTA · rechazar el archivo, o dejarlo pendiente sin desenlace
@@ -421,7 +421,7 @@ sequenceDiagram
     end
 ```
 
-### ASR-D03 — Cero pérdidas y cero duplicados de declaraciones con acuse emitido {#asr-d03}
+### ASR-D03 — Exactamente un resultado por declaración acusada {#asr-d03}
 
 | Parte | Descripción |
 |---|---|
@@ -430,7 +430,7 @@ sequenceDiagram
 | **Artefacto** | El servicio de procesamiento de archivos |
 | **Ambiente** | C2 sobre B: la falla ocurre en el pico |
 | **Respuesta** | Cada declaración acusada termina con un solo resultado definitivo |
-| **Medida** | 0 declaraciones acusadas sin resultado o con más de uno, por conciliación |
+| **Medida** | 0 declaraciones acusadas sin exactamente un resultado definitivo, por conciliación |
 | **Por qué es ASR** | Un acuse es una promesa: hay que decidir cuándo el archivo queda a salvo y cómo no aplicar dos veces lo que se reprocesa |
 | **Cómo se verifica** | Matar nodos durante la prueba de E01 y conciliar las declaraciones acusadas contra las resueltas |
 | **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` («sin pérdida de mensajes») |
@@ -446,7 +446,7 @@ sequenceDiagram
     Note over O: FUENTE Y ESTÍMULO · un nodo interno falla<br/>con archivos con acuse emitido en curso
     Note over O: ARTEFACTO · el servicio de procesamiento de archivos
     O-->>R: RESPUESTA · exactamente un resultado definitivo por declaración
-    Note over R,O: MEDIDA · 0 declaraciones con acuse emitido sin resultado o con más de uno,<br/>por conciliación entre las declaraciones con acuse y las resueltas
+    Note over R,O: MEDIDA · 0 declaraciones acusadas sin exactamente un resultado definitivo,<br/>por conciliación entre las declaraciones con acuse y las resueltas
     end
     rect rgb(255, 228, 225)
     Note over R,O: LO QUE EL ASR DESCARTA · acusar antes de que el archivo quede a salvo,<br/>o reprocesar sin saber qué se aplicó: declaraciones perdidas o dobles
