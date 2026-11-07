@@ -21,7 +21,7 @@ Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dic
 | # | ID | Atributo | Qué exige | Amb. | Prioridad | Impacto | Origen |
 |---|---|---|---|---|---|---|---|
 | 1 | [ASR-D01](#asr-d01) | Disponibilidad · recuperación | **Ningún archivo se rechaza por la caída de un sistema externo.** 0 archivos válidos rechazados o sin resultado tras la ventana nocturna | C1 | Crítica | Alto | `enunciado` · BCR |
-| 2 | [ASR-L04](#asr-l04) | Latencia | **Aislamiento de carga entre archivos masivos y pequeños.** Aumento del p99 de los pequeños por los masivos ≤ 10 % | A | Crítica | Alto | `enunciado` · BCR |
+| 2 | [ASR-L04](#asr-l04) | Latencia | **Aislamiento de carga entre archivos masivos y pequeños.** p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso | A | Crítica | Alto | `enunciado` · BCR |
 | 3 | [ASR-S06](#asr-s06) | Seguridad · prevención | **Ningún archivo se acepta sin validación criptográfica completa.** 0 aceptados sin verificar | A, C1 | Crítica | Alto | `enunciado` |
 | 4 | [ASR-M01](#asr-m01) | Modificabilidad · adaptativo | **Regla cambiaria nueva en ≤ 4 h-persona.** Sin recompilar | Despliegue | Alta | Alto | `enunciado` · BCR |
 | 5 | [ASR-S01](#asr-s01) | Seguridad · prevención | **Validación criptográfica en ≤ 200 ms.** p99 desde el último byte | A | Alta | Alto | `enunciado` |
@@ -50,7 +50,7 @@ Los tres primeros son **críticos**, y son los únicos que se desarrollan con t�
 
 Del 8 al 11 son requisitos explícitos del enunciado que BCR no listó y que pesan en la estructura. Del 12 al 17 completan el alcance. BCR evalúa tres de ellos (M02, S04 e I02) con su propia inspección de código en la Fase 4 de la hoja de ruta.
 
-Los plazos de procesamiento del enunciado (pequeños en 3 s, medianos en 30 s y masivos en 5 min) no son críticos, pero el experimento de L04 los mide como referencia, porque se obtienen de la misma prueba.
+Los 3 s del enunciado para pequeños son la medida de L04. Los plazos de medianos (30 s) y masivos (5 min) no son críticos, pero el experimento de L04 los reporta como referencia, porque se obtienen de la misma prueba.
 
 ### De qué historia de usuario sale cada ASR
 
@@ -206,11 +206,11 @@ sequenceDiagram
 | **Estímulo** | Envían archivos pequeños, con arribo estocástico, mientras 5 masivos están en proceso |
 | **Artefacto** | El procesamiento completo de los archivos pequeños |
 | **Ambiente** | A: 400 pequeños por minuto y 5 masivos concurrentes, sin fallas |
-| **Respuesta** | Cada archivo pequeño se resuelve casi tan rápido como sin masivos |
-| **Medida** | Aumento del p99 de los archivos pequeños por los masivos en proceso: ≤ 10 % |
-| **Por qué es ASR** | Obliga a decidir si pequeños y masivos comparten capacidad. Con +100 % bastaría una prioridad; con +10 %, el aislamiento tiene que ser por construcción. Nota de trampa: la medida es relativa; el piso absoluto son los 3 s del enunciado, que el experimento reporta |
-| **Cómo se verifica** | La misma carga A se corre sin masivos y con 5, midiendo el p99 del último byte al resultado definitivo. El aumento es la diferencia entre las dos corridas: si sin masivos da 2 s, con masivos no puede pasar de 2,2 s. Luego se suben los masivos hasta encontrar el quiebre |
-| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` («jamás encolará ni degradará la latencia de los archivos de pocos registros») · BCR: N = 5 y margen de 10 % |
+| **Respuesta** | Cada archivo pequeño se resuelve sin esperar a los masivos |
+| **Medida** | p99 ≤ 3 s por archivo pequeño |
+| **Por qué es ASR** | Obliga a decidir si pequeños y masivos comparten capacidad. En una misma fila, un pequeño que espera detrás de 5 archivos de 100 000 registros no cabe en 3 s. Nota de trampa: se cumple sobredimensionando una fila compartida; por eso la verificación compara además contra la corrida sin masivos |
+| **Cómo se verifica** | Con 5 masivos en proceso se envían pequeños y se toma el tiempo de cada uno desde que termina de llegar hasta que su resultado está disponible; el p99 tiene que dar ≤ 3 s. Complemento: la misma carga sin masivos, para comprobar el margen de 10 % que propuso BCR. Luego se suben los masivos hasta encontrar el quiebre |
+| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` («jamás encolará ni degradará la latencia de los archivos de pocos registros»; pequeños en 3 s) · BCR: N = 5 |
 
 ```mermaid
 sequenceDiagram
@@ -226,7 +226,7 @@ sequenceDiagram
     Note over O: ARTEFACTO · procesamiento completo del archivo pequeño
     O-->>P: RESPUESTA · resultado definitivo, sin esperar a los archivos masivos
     Note over P,O: t1 · resultado disponible
-    Note over P,O: MEDIDA · aumento del p99 por los masivos ≤ 10 %
+    Note over P,O: MEDIDA · p99 de t1 − t0 ≤ 3 s
     end
     rect rgb(255, 228, 225)
     Note over P,M: LO QUE EL ASR DESCARTA · pequeños y masivos en la misma fila.<br/>El archivo pequeño esperaría a que avancen los archivos masivos, como hoy en horas pico
@@ -779,7 +779,7 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 | Cualquier regla cambiaria en 4 h-persona | informe | Cambio sin acotar | Una regla que pide un dato nuevo de un sistema externo no cabe en 4 h; se acota a reglas sobre datos que ya llegan | [M01](#asr-m01) |
 | Reemplazar un sistema externo por otro proveedor en 4 h-persona | informe | Cambio sin acotar | El enunciado pide adaptar o reemplazar el conector, no cambiar de proveedor | [I01](#asr-i01) |
 | Pérdida cero en el pico sin fallas | `enunciado` | Lo cubre otro ASR | Sin fallas, solo se pierde si se descarta carga; D03 lo mide en el peor caso, una falla durante el pico | [D03](#asr-d03) |
-| Pequeños en ≤ 3 s en A | `enunciado` | Lo cubre otro ASR | Fuerza la misma decisión que E01, 5 s con el triple de carga, y se mide en la misma prueba | Se verifica junto con [E01](#asr-e01) |
+| Pequeños en ≤ 3 s en A, sin masivos | `enunciado` | Lo cubre otro ASR | Sin masivos no fuerza ninguna decisión; con 5 masivos en proceso es la medida de L04 | Medida de [L04](#asr-l04) |
 | Disponibilidad del 99,99 % | `enunciado` | No diseñable | Es la meta de negocio; la persiguen D01, D02, D03 y D04 | Motivador |
 | Cifrado en tránsito y en reposo | `enunciado` | Es infraestructura o configuración | Se cumple con configuración y práctica estándar, y no descarta ninguna familia de solución | Restricción |
 | Protección contra ataques XML | `enunciado` | Práctica estándar | Endurecer el parser es práctica estándar; la parte estructural, que lo verificado sea lo procesado, va en S06 | Restricción · [S06](#asr-s06) |
@@ -819,6 +819,7 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 - `[PREGUNTA → BCR]` ¿Cuántas veces al año cambia la Circular, y cuántas cambian su contrato de API los sistemas externos?
 - `[PREGUNTA → BCR]` ¿Los remitentes migran a una versión nueva del XSD a ritmos distintos?
 - `[PREGUNTA → BCR]` ¿Qué pasa si llegan más de 5 archivos masivos al mismo tiempo: esperan, se rechazan o se aceptan con otro plazo?
+- `[PREGUNTA → BCR]` La medida de L04 pasó del margen de 10 % frente a la operación sin masivos a un p99 ≤ 3 s por archivo pequeño con 5 masivos, porque se mide en una sola corrida. ¿Lo aceptan? El experimento reporta también el margen de 10 %.
 - `[PREGUNTA → BCR]` ¿Cada cuánto publica la ECD su lista de revocación, y en cuánto tiempo hay que detectar un archivo aceptado con un certificado ya revocado?
 - `[PREGUNTA → BCR]` ¿Qué significa «tiempo real» para las estadísticas de las áreas?
 - `[PREGUNTA → BCR]` ¿Qué datos ve cada área de BCR según su rol, y hay un límite de archivos por remitente?

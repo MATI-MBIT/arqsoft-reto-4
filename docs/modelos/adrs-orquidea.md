@@ -38,7 +38,7 @@ En la reunión técnica del 6 de noviembre de 2026, BCR y el equipo acotaron el 
 | ASR | Atributo | Fuente | Estímulo | Artefacto | Ambiente | Respuesta | Medida | Prioridad | Impacto |
 |---|---|---|---|---|---|---|---|---|---|
 | ASR-D01 | Disponibilidad · recuperación | STM, ANTA, MAMC, RNIC o la ECD | Uno deja de responder, o responde con latencia extrema, durante horas | Validación y enriquecimiento de las declaraciones | C1: un sistema externo caído, con la carga de A | Sigue recibiendo y acusando; lo pendiente se reprocesa cada noche hasta que el externo vuelva; si no vuelve en los días de reintento, se notifica | 0 archivos válidos rechazados o sin resultado definitivo al cierre de la primera ventana nocturna tras el regreso del externo | Crítica | Alto |
-| ASR-L04 | Latencia | Remitentes de archivos pequeños | Envían pequeños, con arribo estocástico, mientras 5 masivos están en proceso | Procesamiento completo de los archivos pequeños | A: 400 pequeños/min y 5 masivos, sin fallas | Cada pequeño se resuelve casi tan rápido como sin masivos | Aumento del p99 de los pequeños por los masivos en proceso ≤ 10 % | Crítica | Alto |
+| ASR-L04 | Latencia | Remitentes de archivos pequeños | Envían pequeños, con arribo estocástico, mientras 5 masivos están en proceso | Procesamiento completo de los archivos pequeños | A: 400 pequeños/min y 5 masivos, sin fallas | Cada pequeño se resuelve casi tan rápido como sin masivos | p99 ≤ 3 s por archivo pequeño, con 5 masivos en proceso | Crítica | Alto |
 | ASR-S06 | Seguridad · prevención | Remitente, o tercero que lo suplanta | Envía un archivo cuya firma, firmante, cadena, estampa o revocación no es válida o no se puede verificar | Emisión del resultado definitivo | Carga de A, con la ECD disponible (A) o caída (C1) | Puede acusarse, pero no se acepta hasta verificarse; si falla, se rechaza con la causa | 0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas | Crítica | Alto |
 
 ### 1.3 Restricciones, concerns y supuestos
@@ -75,7 +75,7 @@ Tres decisiones sostienen la disponibilidad: separar la recepción del procesami
 
 ##### Contexto
 
-ASR-D01 exige que ningún archivo acusado durante la caída de un tercero se pierda ni quede sin desenlace (C1), y R-13 prohíbe descartar archivos. ASR-L04 exige que un pequeño no pierda más de 10 % de su p99 por la presencia de 5 masivos (A). Hoy todo pasa por un flujo síncrono: validar y enriquecer cien mil registros no cabe en el tiempo de un acuse, y un tercero caído detiene la respuesta. R-4 deja cuatro dependencias externas fuera del control de BCR. ¿Qué estilo global separa la recepción del procesamiento para que recibir y acusar no dependan del tamaño del archivo ni de los terceros?
+ASR-D01 exige que ningún archivo acusado durante la caída de un tercero se pierda ni quede sin desenlace (C1), y R-13 prohíbe descartar archivos. ASR-L04 exige p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso (A). Hoy todo pasa por un flujo síncrono: validar y enriquecer cien mil registros no cabe en el tiempo de un acuse, y un tercero caído detiene la respuesta. R-4 deja cuatro dependencias externas fuera del control de BCR. ¿Qué estilo global separa la recepción del procesamiento para que recibir y acusar no dependan del tamaño del archivo ni de los terceros?
 
 ##### Decisión
 
@@ -98,7 +98,7 @@ Adoptaremos un pipeline de etapas asíncronas comunicadas por una cola durable: 
 | ASR | Atributo | Medida | Efecto esperado | Rol |
 |---|---|---|---|---|
 | ASR-D01 | Disponibilidad | 0 archivos sin desenlace en C1 | contribuye | primario |
-| ASR-L04 | Latencia | p99 con masivos ≤ 1,10 × p99 sin masivos | contribuye | primario |
+| ASR-L04 | Latencia | p99 ≤ 3 s por pequeño con 5 masivos | contribuye | primario |
 
 **A2. Tácticas**
 
@@ -282,7 +282,7 @@ Una decisión: dos carriles aislados con un enrutador por tamaño, sobre el pipe
 
 ##### Contexto
 
-ASR-L04 exige que, con 5 masivos en proceso, el p99 de los pequeños suba como máximo 10 % (A). En la reunión del 6-nov se acordó que una ráfaga masiva de un remitente grande no puede degradar la respuesta a los demás, y C-02 prohíbe componentes de arranque lento en el camino de los pequeños. ADR-001 dejó etapas que consumen de la cola, pero no dijo si todos los archivos comparten la misma. ¿Cómo se reparte la capacidad para que un masivo nunca quite capacidad a un pequeño?
+ASR-L04 exige p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso (A). En la reunión del 6-nov se acordó que una ráfaga masiva de un remitente grande no puede degradar la respuesta a los demás, y C-02 prohíbe componentes de arranque lento en el camino de los pequeños. ADR-001 dejó etapas que consumen de la cola, pero no dijo si todos los archivos comparten la misma. ¿Cómo se reparte la capacidad para que un masivo nunca quite capacidad a un pequeño?
 
 ##### Decisión
 
@@ -304,7 +304,7 @@ Separaremos dos carriles con tópico, pool y despliegue propios: el carril A pro
 
 | ASR | Atributo | Medida | Efecto esperado | Rol |
 |---|---|---|---|---|
-| ASR-L04 | Latencia | p99 con masivos ≤ 1,10 × p99 sin masivos | satisface | primario |
+| ASR-L04 | Latencia | p99 ≤ 3 s por pequeño con 5 masivos | satisface | primario |
 
 **A2. Tácticas**
 
@@ -319,7 +319,7 @@ Drivers: ASR-L04 (Crítica), C-02, C-03 — fijados antes de evaluar.
 
 | Criterio | Opción A: Carriles dedicados (elegida) | Opción B: Pool compartido con prioridad | Opción C: Pool compartido con cuotas |
 |---|---|---|---|
-| ASR-L04 +10 % | ++ aislamiento por construcción | − un masivo en curso retiene hilos que la prioridad no libera | + la cuota protege si se dimensiona bien |
+| ASR-L04 3 s con masivos | ++ aislamiento por construcción | − un masivo en curso retiene hilos que la prioridad no libera | + la cuota protege si se dimensiona bien |
 | C-02 sin arranque lento en el camino rápido | ++ el carril A no comparte componentes con el B | − el mismo pool sirve a los dos | − el mismo pool sirve a los dos |
 | C-03 capacidad ociosa | − capacidad reservada en los valles | ++ sin capacidad ociosa | + poca capacidad ociosa |
 
@@ -338,7 +338,7 @@ Descartes: B — la prioridad no expropia un masivo que ya ocupa el pool, y ASR-
 
 | Tipo | Qué se prueba | Umbral |
 |---|---|---|
-| Experimento | Misma carga de pequeños con 0 y con 5 masivos, y luego con más de 5 hasta el quiebre | p99 con 5 masivos ≤ 1,10 × p99 sin masivos, en A |
+| Experimento | Misma carga de pequeños con 0 y con 5 masivos, y luego con más de 5 hasta el quiebre | p99 ≤ 3 s por pequeño con 5 masivos, y el margen frente a la corrida sin masivos como complemento |
 
 **A6. Relaciones:** reemplaza: — · refina: ADR-001 · depende-de: — · conflicto-con: —
 

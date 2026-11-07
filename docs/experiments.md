@@ -15,7 +15,7 @@ El experimento no tiene que cumplir los ASR. Si una medida no se alcanza, se rep
 | ASR | Hipótesis | Decisiones que se prueban |
 |---|---|---|
 | ASR-D01 | Con un sistema externo caído durante la carga, ningún archivo válido se rechaza, y todos tienen resultado definitivo al cierre de la primera ventana nocturna tras su regreso | [ADR-001, ADR-003 y ADR-004](modelos/adrs-orquidea.md) |
-| ASR-L04 | Con 5 archivos masivos en proceso, el p99 de los archivos pequeños sube como máximo 10 % frente al p99 sin masivos | [ADR-002](modelos/adrs-orquidea.md) |
+| ASR-L04 | Con 5 archivos masivos en proceso, el p99 de los archivos pequeños es ≤ 3 s | [ADR-002](modelos/adrs-orquidea.md) |
 | ASR-S06 | Ningún archivo con firma, firmante, estampa, cadena o revocación inválida, o sin poder verificarse, llega a aceptación | [ADR-005, ADR-006 y ADR-007](modelos/adrs-orquidea.md) |
 
 El alcance es acotado: la recepción del archivo, la clasificación por tamaño y el enrutamiento al carril A o B, la validación de la firma, y la caída de un sistema externo con su reproceso. Quedan fuera la autenticación del canal (TLS mutuo), la integración con el Banco de la República, las reglas cambiarias completas y la entrega a las áreas de BCR.
@@ -70,10 +70,10 @@ La disponibilidad va primero porque es el foco. Los tiempos de caída de horas s
 
 | ID | Escenario | Qué se hace | Qué se observa |
 |---|---|---|---|
-| L-1 | Línea base | 400 pequeños por minuto durante 10 min, sin masivos | p99 de los pequeños sin masivos |
+| L-1 | Línea base (complemento) | 400 pequeños por minuto durante 10 min, sin masivos | p99 de los pequeños sin masivos, para el margen de 10 % |
 | L-2 | Con 5 masivos | La misma carga, con 5 masivos de 100 000 registros lanzados al minuto 2 | p99 de los pequeños con masivos |
 | L-3 | Control sin carriles | Como L-2, pero con un solo tópico y un solo pool para todos los archivos | p99 de los pequeños sin aislamiento, para contrastar con L-2 |
-| L-4 | Barrido hasta el quiebre | Como L-2, con 6, 8 y 10 masivos | El N en el que el p99 de los pequeños supera 1,10 × la línea base |
+| L-4 | Barrido hasta el quiebre | Como L-2, con 6, 8 y 10 masivos | El N en el que el p99 de los pequeños supera 3 s |
 
 ### Validación criptográfica (ASR-S06)
 
@@ -109,12 +109,12 @@ Los criterios se fijan antes de correr, y cada resultado se reporta con su anál
 | ASR | Éxito | Fracaso | Qué se reporta además |
 |---|---|---|---|
 | ASR-D01 | 0 archivos sin desenlace y 0 rechazados por la caída en D-1 a D-6, y 0 duplicados en D-5 | Un archivo acusado que se pierde, se rechaza por la caída, queda sin desenlace o se duplica | Profundidad de pendientes, duración de la ventana y tiempo de detección del monitor |
-| ASR-L04 | p99 de L-2 ≤ 1,10 × p99 de L-1 | p99 de L-2 > 1,10 × p99 de L-1 | El contraste con L-3, el N de quiebre de L-4 y las tres referencias del enunciado |
+| ASR-L04 | p99 de los pequeños en L-2 ≤ 3 s | p99 de los pequeños en L-2 > 3 s | El contraste con L-3, el N de quiebre de L-4 y las tres referencias del enunciado |
 | ASR-S06 | 0 archivos inválidos aceptados en S-1 y D-6, y 100 % de los aceptados con evidencia en S-2 | Un solo archivo inválido aceptado, o uno aceptado sin evidencia | La causa de rechazo de cada caso del catálogo |
 
 ## 7. Amenazas a la validez
 
-- **Tiempos optimistas.** En local no hay saltos de red, API Gateway ni balanceadores. Los p99 absolutos serán menores que en producción. La razón de aislamiento de L04 es más confiable que los tiempos absolutos, porque compara dos corridas en el mismo equipo.
+- **Tiempos optimistas.** En local no hay saltos de red, API Gateway ni balanceadores. Los p99 absolutos serán menores que en producción. Un p99 ≤ 3 s en local no prueba los 3 s en producción; por eso se reporta también la razón de aislamiento (L-2 ÷ L-1), más confiable porque compara dos corridas en el mismo equipo.
 - **Recursos compartidos.** Los dos carriles comparten disco, memoria y bus del mismo equipo, aunque tengan límites de CPU propios. Si L-2 falla, hay que descartar que la contienda venga del equipo y no del diseño.
 - **Horas comprimidas.** Las caídas de 2 a 20 horas y la ventana nocturna se simulan en minutos. El experimento no mide cuánto tarda una ventana real con 500 000 declaraciones acumuladas.
 - **Sistemas externos simulados.** El RNIC simulado y la autoridad certificadora de prueba se comportan como se programaron. Una caída real puede ser parcial o devolver datos errados, y eso el monitor no lo detecta.
