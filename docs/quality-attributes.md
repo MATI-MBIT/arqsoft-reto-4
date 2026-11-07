@@ -207,7 +207,7 @@ sequenceDiagram
 | **Artefacto** | El procesamiento completo de los archivos pequeños |
 | **Ambiente** | A: 400 pequeños por minuto y 5 masivos concurrentes, sin fallas |
 | **Respuesta** | Cada archivo pequeño se resuelve casi tan rápido como sin masivos |
-| **Medida** | El p99 de los archivos pequeños sube como máximo 10 % cuando hay 5 masivos en proceso. Se mide del último byte al resultado definitivo |
+| **Medida** | El p99 de los archivos pequeños con 5 masivos en proceso no supera en más de 10 % su p99 sin masivos: si sin masivos es 2 s, con masivos es ≤ 2,2 s. Se mide del último byte al resultado definitivo |
 | **Por qué es ASR** | Obliga a decidir si pequeños y masivos comparten capacidad. Con +100 % bastaría una prioridad; con +10 %, el aislamiento tiene que ser por construcción. Nota de trampa: la medida es relativa; el piso absoluto son los 3 s del enunciado, que el experimento reporta |
 | **Cómo se verifica** | La misma carga A, sin masivos y con 5; se comparan los dos p99. Luego se suben los masivos hasta encontrar el quiebre |
 | **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` («jamás encolará ni degradará la latencia de los archivos de pocos registros») · BCR: N = 5 y margen de 10 % |
@@ -226,7 +226,7 @@ sequenceDiagram
     Note over O: ARTEFACTO · procesamiento completo del archivo pequeño
     O-->>P: RESPUESTA · resultado definitivo, sin esperar a los archivos masivos
     Note over P,O: t1 · resultado disponible
-    Note over P,O: MEDIDA · el p99 de t1 − t0 sube como máximo 10 % con 5 masivos en proceso
+    Note over P,O: MEDIDA · p99 con 5 masivos ≤ p99 sin masivos + 10 % (2 s → 2,2 s)
     end
     rect rgb(255, 228, 225)
     Note over P,M: LO QUE EL ASR DESCARTA · pequeños y masivos en la misma fila.<br/>El archivo pequeño esperaría a que avancen los archivos masivos, como hoy en horas pico
