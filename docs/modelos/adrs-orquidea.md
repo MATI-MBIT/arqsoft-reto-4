@@ -37,7 +37,7 @@ En la reunión técnica del 6 de noviembre de 2026, BCR y el equipo acotaron el 
 
 | ASR | Atributo | Fuente | Estímulo | Artefacto | Ambiente | Respuesta | Medida | Prioridad | Impacto |
 |---|---|---|---|---|---|---|---|---|---|
-| ASR-D01 | Disponibilidad · recuperación | STM, ANTA, MAMC, RNIC o la ECD | Uno deja de responder o responde con lentitud extrema durante horas (2, 5, 10, 20 h o más), con arribo estocástico de archivos | Recepción, acuse y resolución de los archivos que necesitan al sistema caído | C1: un sistema externo caído o lento, con la carga de A (400 pequeños/min y 5 masivos) | Se recibe y se acusa siempre; lo pendiente se reprocesa en la ventana nocturna; si sigue caído, se reintenta al día siguiente; lo que siga sin procesar al agotar los días de reintento se notifica | 0 archivos acusados durante la caída sin resultado definitivo al cierre de la primera ventana posterior al regreso del externo; la notificación solo cuenta al agotar los días de reintento; por conciliación, en C1 | Crítica | Alto |
+| ASR-D01 | Disponibilidad · recuperación | STM, ANTA, MAMC, RNIC o la ECD | Uno deja de responder, o responde con latencia extrema, durante horas | Validación y enriquecimiento de las declaraciones | C1: un sistema externo caído, con la carga de A | Sigue recibiendo y acusando; lo pendiente se reprocesa cada noche hasta que el externo vuelva; si no vuelve en los días de reintento, se notifica | 0 archivos válidos rechazados o sin resultado definitivo al cierre de la primera ventana nocturna tras el regreso del externo | Crítica | Alto |
 | ASR-L04 | Latencia | Remitentes de archivos pequeños, mientras otros tienen masivos en proceso | Llegan pequeños con arribo estocástico mientras 5 masivos están en proceso | Procesamiento completo de los archivos pequeños | A: 400 pequeños/min y 5 masivos | Cada pequeño llega a resultado definitivo casi tan rápido como sin masivos | p99 de pequeños con 5 masivos ≤ 1,10 × p99 sin masivos, del último byte al resultado definitivo, en A | Crítica | Alto |
 | ASR-S06 | Seguridad · prevención | Remitente, o tercero que lo suplanta, con un archivo cuya verificación no termina bien | Llega un archivo cuya verificación de firma, firmante, cadena, estampa o revocación falla o no puede completarse | Emisión del resultado definitivo | Carga de A, con la ECD disponible (A) o caída (C1) | No se acepta hasta verificar; si falla, se rechaza con la causa | 0 archivos aceptados sin firma, firmante, estampa, cadena y revocación verificadas, en A y C1 | Crítica | Alto |
 
@@ -65,7 +65,7 @@ En la reunión técnica del 6 de noviembre de 2026, BCR y el equipo acotaron el 
 
 ## 2. ADRs, agrupados por ASR
 
-### 2.1 ASR-D01 · Ningún archivo se pierde ni se rechaza por la caída de un sistema externo (foco)
+### 2.1 ASR-D01 · Ningún archivo se rechaza por la caída de un sistema externo (foco)
 
 Tres decisiones sostienen la disponibilidad: separar la recepción del procesamiento, dejar lo pendiente en espera durable con una ventana nocturna de reproceso, y no duplicar lo que se reenvía o se reprocesa. ADR-006, del grupo de seguridad, también contribuye: los archivos en verificación pendiente entran a la misma ventana.
 

@@ -8,7 +8,7 @@ has_children: true
 
 Esta sección reúne los diagramas que hacen visibles las decisiones de arquitectura de Orquídea. Las decisiones están en los [ADR](adrs-orquidea.md), agrupadas por ASR, y los requisitos, en la [página de ASR](../quality-attributes.md).
 
-Los diagramas se centran en los tres ASR críticos: ningún archivo se pierde ni se rechaza por la caída de un sistema externo (ASR-D01, el foco), el aislamiento de carga entre archivos masivos y pequeños (ASR-L04) y ningún archivo aceptado sin validación criptográfica completa (ASR-S06).
+Los diagramas se centran en los tres ASR críticos: ningún archivo se rechaza por la caída de un sistema externo (ASR-D01, el foco), el aislamiento de carga entre archivos masivos y pequeños (ASR-L04) y ningún archivo aceptado sin validación criptográfica completa (ASR-S06).
 
 Cada vista tiene su página, donde los diagramas se dibujan en el navegador, y su archivo de draw.io. El primer diagrama de cada vista es el global, y los demás, hasta tres, detallan lo que el global no alcanza a mostrar.
 

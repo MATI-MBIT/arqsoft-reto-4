@@ -20,7 +20,7 @@ Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dic
 
 | # | ID | Atributo | Qué exige | Amb. | Prioridad | Impacto | Origen |
 |---|---|---|---|---|---|---|---|
-| 1 | [ASR-D01](#asr-d01) | Disponibilidad · recuperación | **Ningún archivo se pierde ni se rechaza por la caída de un sistema externo.** Si STM, ANTA, MAMC, RNIC o la ECD se cae o se pone lento durante horas, cada archivo acusado en ese lapso llega a resultado definitivo en la primera ventana de reproceso tras el regreso del sistema, o se notifica al remitente si el sistema siguió caído todos los días de reintento: 0 archivos sin desenlace | C1 | Crítica | Alto | `enunciado` · BCR |
+| 1 | [ASR-D01](#asr-d01) | Disponibilidad · recuperación | **Ningún archivo se rechaza por la caída de un sistema externo.** Si STM, ANTA, MAMC, RNIC o la ECD cae por horas, Orquídea sigue acusando y resuelve lo pendiente en la ventana nocturna: 0 archivos válidos rechazados o sin resultado | C1 | Crítica | Alto | `enunciado` · BCR |
 | 2 | [ASR-L04](#asr-l04) | Latencia | **Aislamiento de carga entre archivos masivos y pequeños.** Mientras 5 archivos masivos se procesan, cada archivo pequeño debe resolverse casi igual de rápido que sin ellos: su p99 sube como máximo 10 % | A | Crítica | Alto | `enunciado` · BCR |
 | 3 | [ASR-S06](#asr-s06) | Seguridad · prevención | **Ningún archivo se acepta sin validación criptográfica completa.** Un archivo puede acusarse antes de verificar su firma, su firmante, su estampa y la cadena y revocación de su certificado, pero no puede quedar aceptado hasta que esa verificación termine bien: 0 casos | A, C1 | Crítica | Alto | `enunciado` |
 | 4 | [ASR-M01](#asr-m01) | Modificabilidad · adaptativo | **Despliegue de una regla cambiaria nueva en ≤ 4 h-persona.** Cuando la Junta cambia la Circular con una regla sobre datos que ya llegan, implementarla, probarla y ponerla en producción cuesta ≤ 4 h-persona | Despliegue | Alta | Alto | `enunciado` · BCR |
@@ -157,21 +157,19 @@ El eje es el flujo de datos del dominio; el stakeholder va como columna auxiliar
 
 Cada ficha trae, debajo de la tabla, un diagrama de secuencia con Orquídea como caja negra. La banda azul encierra lo que se mide: el estímulo, la respuesta y los instantes t0 y t1 entre los que corre la medida. La banda roja dice qué familia de soluciones descarta el número, que es lo que hace del requisito un ASR. Lo que queda fuera de las dos bandas pasa en el escenario pero no entra en la medida. El diagrama no muestra componentes internos: esos los decide el diseño, no el requisito.
 
-### ASR-D01 — Ningún archivo se pierde ni se rechaza por la caída de un sistema externo {#asr-d01}
+### ASR-D01 — Ningún archivo se rechaza por la caída de un sistema externo {#asr-d01}
 
 | Parte | Descripción |
 |---|---|
-| **Fuente** | STM, ANTA, MAMC, RNIC o la ECD: sistemas que BCR no controla |
-| **Estímulo** | Uno de ellos deja de responder o responde con lentitud extrema durante horas (2, 5, 10, 20 h o más) mientras siguen llegando archivos con arribo estocástico |
-| **Artefacto** | La recepción, el acuse y la resolución de los archivos cuyas declaraciones necesitan al sistema caído |
-| **Ambiente** | C1: un sistema externo caído o lento, con la carga de A (400 archivos pequeños por minuto y 5 archivos masivos) |
-| **Respuesta** | El archivo se recibe y se acusa siempre. Lo que no se pudo procesar por la falla queda pendiente y se reprocesa en una ventana nocturna a hora fija. Si el sistema sigue caído en esa ventana, se reintenta en la del día siguiente, y lo que siga sin procesar al agotar los días de reintento se notifica al remitente |
-| **Medida** | 0 archivos acusados durante la caída que terminen perdidos o rechazados por la falla: al cierre de la primera ventana de reproceso posterior al regreso del sistema externo, cada uno tiene resultado definitivo. Solo cuenta como desenlace la notificación de un archivo cuyo sistema externo siguió caído en todas las ventanas de los días de reintento. Se cuenta por conciliación entre los archivos acusados y los resueltos o notificados, en C1 |
-| **Por qué es ASR** | La recepción no puede depender en línea de ningún sistema ajeno, y lo que queda pendiente tiene que sobrevivir horas o días con un desenlace garantizado. Con «se reintenta en el momento» bastaría un reintento en línea; con caídas de 20 h y la obligación de no perder nada, hay que decidir dónde espera el trabajo, cuándo se reprocesa y cómo se avisa. La hora de la ventana y cuántos días se reintenta son `[PREGUNTA → BCR]`. Nota de trampa: la medida se cumple aunque el sistema externo vuelva a mediodía y lo pendiente espere hasta la noche; BCR acepta ese retraso, y lo acota la hora de la ventana. El rechazo de un archivo reenviado como duplicado es otro escenario, con otra fuente (el remitente que reenvía): queda como criterio de aceptación de HU-06, y lo que el diseño haga para cumplirlo no puede romper esta medida. El acuse en p99 ≤ 1 s con el externo caído lo mide [L01](#asr-l01), que aplica igual en C1. Detectar a tiempo que un externo cayó es la rama de detección, sin umbral todavía (sección 6) |
-| **Cómo se verifica** | Un sistema externo simulado con una tabla de personas ficticias. Se cae a mitad de una carga A, se envían archivos válidos y archivos con una cédula que no corresponde al nombre, y se dispara la ventana de reproceso con el externo arriba y otra vez con el externo caído. Se concilian acusados contra resueltos y notificados, y se comprueba que la cédula que no corresponde termina rechazada por la regla y no por la caída |
-| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` (Disponibilidad: «continuar operando sin rechazar archivos»; reto: «sin detener la recepción ni el procesamiento local») · BCR, respuesta del 3-nov: «operabilidad sin rechazo (0 perdidos)» · reunión del 6-nov: ventana nocturna, reintento al día siguiente y notificación |
-
-La llave que identifica un archivo duplicado se propuso en la reunión como entidad + fecha + lote + consecutivo `[SUPUESTO → BCR]`: falta confirmar que el XSD trae esos cuatro campos.
+| **Fuente** | STM, ANTA, MAMC, RNIC o la ECD |
+| **Estímulo** | Uno de ellos deja de responder, o responde con latencia extrema, durante horas |
+| **Artefacto** | La validación y el enriquecimiento de las declaraciones |
+| **Ambiente** | C1: un sistema externo caído, con la carga de A |
+| **Respuesta** | Sigue recibiendo y acusando. Lo que necesita al externo queda pendiente y se reprocesa cada noche hasta que vuelva; si no vuelve en los días de reintento, se notifica al remitente |
+| **Medida** | 0 archivos válidos rechazados o sin resultado definitivo al cierre de la primera ventana nocturna tras el regreso del externo |
+| **Por qué es ASR** | La recepción no puede depender en línea de ningún externo, y lo pendiente tiene que sobrevivir horas o días. Con caídas de minutos bastaría reintentar en línea; con caídas de 20 h, no. Un archivo es válido si se habría aceptado con el externo disponible. Nota de trampa: la medida no cuenta cuánto espera lo pendiente hasta la noche; BCR lo aceptó |
+| **Cómo se verifica** | Se cae un externo simulado a mitad de una carga A y se envían archivos válidos y otros que una regla debe rechazar. Tras la ventana nocturna con el externo de vuelta, se concilian los válidos contra los aceptados |
+| **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` («continuar operando sin rechazar archivos») · BCR: respuesta del 3-nov y reunión del 6-nov |
 
 ```mermaid
 sequenceDiagram
@@ -180,24 +178,23 @@ sequenceDiagram
     end
     participant O as Orquídea
     participant R as Remitente
-    Note over X,R: AMBIENTE C1 · 400 archivos pequeños/min y 5 archivos masivos · un sistema externo caído o lento durante horas
-    X--xO: ESTÍMULO · deja de responder, o tarda horas en hacerlo
+    Note over X,R: AMBIENTE C1 · un sistema externo caído, con la carga de A
+    X--xO: ESTÍMULO · deja de responder durante horas
     rect rgb(222, 236, 255)
-    R->>O: Envía un archivo firmado
-    O-->>R: Acuse de recibo, sin esperar al sistema externo
-    Note over O: ARTEFACTO · recepción, acuse y resolución<br/>lo que necesita al externo queda pendiente
-    loop Cada noche, a la hora fija de la ventana de reproceso
-        alt El sistema externo volvió
+    R->>O: Envía un archivo válido
+    O-->>R: Acuse, sin esperar al externo
+    Note over O: ARTEFACTO · validación y enriquecimiento<br/>lo que necesita al externo queda pendiente
+    loop Cada noche, en la ventana de reproceso
+        alt El externo volvió
             O-->>R: RESPUESTA · resultado definitivo
-        else Sigue caído
-            Note over O: Se reintenta en la ventana del día siguiente
-            O-->>R: RESPUESTA · notificación, al agotar los días de reintento
+        else Sigue caído al agotar los días de reintento
+            O-->>R: RESPUESTA · notificación
         end
     end
-    Note over O,R: MEDIDA · 0 archivos acusados sin resultado definitivo al cierre de la primera ventana<br/>tras el regreso del externo; la notificación solo vale al agotar los días de reintento
+    Note over O,R: MEDIDA · 0 archivos válidos rechazados o sin resultado<br/>tras la primera ventana posterior al regreso del externo
     end
     rect rgb(255, 228, 225)
-    Note over X,R: LO QUE EL ASR DESCARTA · rechazar el archivo o dejarlo esperando sin desenlace.<br/>La información es reportable a otras entidades y no puede perderse
+    Note over X,R: LO QUE EL ASR DESCARTA · rechazar el archivo, o dejarlo pendiente sin desenlace
     end
 ```
 
@@ -778,7 +775,7 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 
 | Candidato | Origen | Salió por | Razón en una frase | Va a |
 |---|---|---|---|---|
-| «Con un sistema externo caído, 0 archivos rechazados», sin plazo | informe | Se cumple sin lograr el objetivo | Se cumple dejando las declaraciones pendientes para siempre. La medida de D01 la cierra con el reproceso nocturno y la notificación acordados el 6-nov | Medida de [D01](#asr-d01) |
+| «Con un sistema externo caído, 0 archivos rechazados», sin plazo | informe | Se cumple sin lograr el objetivo | Se cumple dejando las declaraciones pendientes para siempre. La medida de D01 le agrega el plazo: la primera ventana nocturna tras el regreso del externo | Medida de [D01](#asr-d01) |
 | Cualquier regla cambiaria en 4 h-persona | informe | Cambio sin acotar | Una regla que pide un dato nuevo de un sistema externo no cabe en 4 h; se acota a reglas sobre datos que ya llegan | [M01](#asr-m01) |
 | Reemplazar un sistema externo por otro proveedor en 4 h-persona | informe | Cambio sin acotar | El enunciado pide adaptar o reemplazar el conector, no cambiar de proveedor | [I01](#asr-i01) |
 | Pérdida cero en el pico sin fallas | `enunciado` | Lo cubre otro ASR | Sin fallas, solo se pierde si se descarta carga; D03 lo mide en el peor caso, una falla durante el pico | [D03](#asr-d03) |
