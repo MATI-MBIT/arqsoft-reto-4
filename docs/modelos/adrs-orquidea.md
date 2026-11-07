@@ -37,9 +37,9 @@ En la reunión técnica del 6 de noviembre de 2026, BCR y el equipo acotaron el 
 
 | ASR | Atributo | Fuente | Estímulo | Artefacto | Ambiente | Respuesta | Medida | Prioridad | Impacto |
 |---|---|---|---|---|---|---|---|---|---|
-| ASR-D01 | Disponibilidad · corrección | STM, ANTA, MAMC, RNIC o la ECD | Uno deja de responder, o responde con latencia extrema, durante horas | Orquídea, todo el sistema | C1: un sistema externo caído, con la carga de A | Sigue recibiendo y acusando; lo pendiente se reprocesa cada noche hasta que el externo vuelva; si no vuelve en los días de reintento, se notifica | 0 archivos válidos sin aceptar al cierre de la primera ventana nocturna tras el regreso del externo | Crítica | Alto |
+| ASR-D01 | Disponibilidad · corrección | STM, ANTA, MAMC, RNIC o la ECD | Uno deja de responder, o responde con latencia extrema, durante horas | Orquídea, todo el sistema | C1 - Sistema externo degradado: un sistema externo caído, con la carga de A - Operación normal | Sigue recibiendo y acusando; lo pendiente se reprocesa cada noche hasta que el externo vuelva; si no vuelve en los días de reintento, se notifica | 0 archivos válidos sin aceptar al cierre de la primera ventana nocturna tras el regreso del externo | Crítica | Alto |
 | ASR-L04 | Latencia | Remitentes de archivos pequeños | Envían pequeños, con arribo estocástico, mientras 5 masivos están en proceso | Servicio de procesamiento de archivos | A: 400 pequeños/min y 5 masivos, sin fallas | Cada pequeño se resuelve casi tan rápido como sin masivos | p99 ≤ 3 s por archivo pequeño, con 5 masivos en proceso | Crítica | Alto |
-| ASR-S06 | Seguridad · prevención | Remitente, o tercero que lo suplanta | Envía un archivo cuya firma, firmante, cadena, estampa o revocación no es válida o no se puede verificar | Servicio de verificación criptográfica | Carga de A, con la ECD disponible (A) o caída (C1) | Puede acusarse, pero no se acepta hasta verificarse; si falla, se rechaza con la causa | 0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas | Crítica | Alto |
+| ASR-S06 | Seguridad · prevención | Remitente, o tercero que lo suplanta | Envía un archivo cuya firma, firmante, cadena, estampa o revocación no es válida o no se puede verificar | Servicio de verificación criptográfica | Carga de A - Operación normal, con la ECD disponible (A) o caída (C1 - Sistema externo degradado) | Puede acusarse, pero no se acepta hasta verificarse; si falla, se rechaza con la causa | 0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas | Crítica | Alto |
 
 ### 1.3 Restricciones, concerns y supuestos
 
@@ -75,7 +75,7 @@ Tres decisiones sostienen la disponibilidad: separar la recepción del procesami
 
 ##### Contexto
 
-ASR-D01 exige que ningún archivo acusado durante la caída de un tercero se pierda ni quede sin desenlace (C1), y R-13 prohíbe descartar archivos. ASR-L04 exige p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso (A). Hoy todo pasa por un flujo síncrono: validar y enriquecer cien mil registros no cabe en el tiempo de un acuse, y un tercero caído detiene la respuesta. R-4 deja cuatro dependencias externas fuera del control de BCR. ¿Qué estilo global separa la recepción del procesamiento para que recibir y acusar no dependan del tamaño del archivo ni de los terceros?
+ASR-D01 exige que ningún archivo acusado durante la caída de un tercero se pierda ni quede sin desenlace (C1 - Sistema externo degradado), y R-13 prohíbe descartar archivos. ASR-L04 exige p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso (A - Operación normal). Hoy todo pasa por un flujo síncrono: validar y enriquecer cien mil registros no cabe en el tiempo de un acuse, y un tercero caído detiene la respuesta. R-4 deja cuatro dependencias externas fuera del control de BCR. ¿Qué estilo global separa la recepción del procesamiento para que recibir y acusar no dependan del tamaño del archivo ni de los terceros?
 
 ##### Decisión
 
@@ -97,7 +97,7 @@ Adoptaremos un pipeline de etapas asíncronas comunicadas por una cola durable: 
 
 | ASR | Atributo | Medida | Efecto esperado | Rol |
 |---|---|---|---|---|
-| ASR-D01 | Disponibilidad | 0 archivos sin desenlace en C1 | contribuye | primario |
+| ASR-D01 | Disponibilidad | 0 archivos sin desenlace en C1 - Sistema externo degradado | contribuye | primario |
 | ASR-L04 | Latencia | p99 ≤ 3 s por pequeño con 5 masivos | contribuye | primario |
 
 **A2. Tácticas**
@@ -143,7 +143,7 @@ Descartes: B — KO: con el tercero caído, o rechaza o deja colgado el archivo 
 
 ##### Contexto
 
-ASR-D01 exige que ningún archivo acusado durante una caída de horas de STM, ANTA, MAMC, RNIC o la ECD termine perdido o sin desenlace: al cierre de la primera ventana de reproceso tras el regreso del tercero, cada uno tiene resultado definitivo o fue notificado (C1). R-13 prohíbe descartar archivos, y BCR preguntó qué evita el estallido sobre la base de datos cuando un tercero vuelve tras 12 horas con 500 000 declaraciones acumuladas. ADR-001 sacó el enriquecimiento del camino del acuse. ¿Cómo se detecta que un tercero cayó, dónde espera el trabajo que lo necesita y cuándo y cómo se reprocesa?
+ASR-D01 exige que ningún archivo acusado durante una caída de horas de STM, ANTA, MAMC, RNIC o la ECD termine perdido o sin desenlace: al cierre de la primera ventana de reproceso tras el regreso del tercero, cada uno tiene resultado definitivo o fue notificado (C1 - Sistema externo degradado). R-13 prohíbe descartar archivos, y BCR preguntó qué evita el estallido sobre la base de datos cuando un tercero vuelve tras 12 horas con 500 000 declaraciones acumuladas. ADR-001 sacó el enriquecimiento del camino del acuse. ¿Cómo se detecta que un tercero cayó, dónde espera el trabajo que lo necesita y cuándo y cómo se reprocesa?
 
 ##### Decisión
 
@@ -165,7 +165,7 @@ Un monitor sondeará a cada tercero y publicará su estado. El orquestador consu
 
 | ASR | Atributo | Medida | Efecto esperado | Rol |
 |---|---|---|---|---|
-| ASR-D01 | Disponibilidad | 0 archivos sin desenlace en C1 | satisface | primario |
+| ASR-D01 | Disponibilidad | 0 archivos sin desenlace en C1 - Sistema externo degradado | satisface | primario |
 
 **A2. Tácticas**
 
@@ -235,7 +235,7 @@ Registraremos la llave del archivo (entidad, fecha, lote y consecutivo) en el re
 
 | ASR | Atributo | Medida | Efecto esperado | Rol |
 |---|---|---|---|---|
-| ASR-D01 | Disponibilidad | 0 archivos sin desenlace en C1 | contribuye | primario |
+| ASR-D01 | Disponibilidad | 0 archivos sin desenlace en C1 - Sistema externo degradado | contribuye | primario |
 
 **A2. Tácticas**
 
@@ -282,7 +282,7 @@ Una decisión: dos carriles aislados con un enrutador por tamaño, sobre el pipe
 
 ##### Contexto
 
-ASR-L04 exige p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso (A). En la reunión del 6-nov se acordó que una ráfaga masiva de un remitente grande no puede degradar la respuesta a los demás, y C-02 prohíbe componentes de arranque lento en el camino de los pequeños. ADR-001 dejó etapas que consumen de la cola, pero no dijo si todos los archivos comparten la misma. ¿Cómo se reparte la capacidad para que un masivo nunca quite capacidad a un pequeño?
+ASR-L04 exige p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso (A - Operación normal). En la reunión del 6-nov se acordó que una ráfaga masiva de un remitente grande no puede degradar la respuesta a los demás, y C-02 prohíbe componentes de arranque lento en el camino de los pequeños. ADR-001 dejó etapas que consumen de la cola, pero no dijo si todos los archivos comparten la misma. ¿Cómo se reparte la capacidad para que un masivo nunca quite capacidad a un pequeño?
 
 ##### Decisión
 
@@ -353,7 +353,7 @@ Tres decisiones: verificar todo en la recepción y retener el resultado, comprob
 
 ##### Contexto
 
-ASR-S06 exige que ningún archivo llegue a aceptación sin firma, firmante, estampa, cadena y revocación del certificado verificadas (A y C1). R-1 fija que el archivo llega firmado en XML, y la firma XML obliga a canonicalizar y resumir el documento. BCR aprobó que un masivo cuya verificación no quepa en el segundo reciba un acuse de custodia, y R-14 deja el canal fuera del alcance. ¿Qué se verifica antes del acuse, y cómo se impide que un archivo sin verificar llegue a resultado definitivo?
+ASR-S06 exige que ningún archivo llegue a aceptación sin firma, firmante, estampa, cadena y revocación del certificado verificadas (A - Operación normal y C1 - Sistema externo degradado). R-1 fija que el archivo llega firmado en XML, y la firma XML obliga a canonicalizar y resumir el documento. BCR aprobó que un masivo cuya verificación no quepa en el segundo reciba un acuse de custodia, y R-14 deja el canal fuera del alcance. ¿Qué se verifica antes del acuse, y cómo se impide que un archivo sin verificar llegue a resultado definitivo?
 
 ##### Decisión
 
@@ -420,7 +420,7 @@ Descartes: B — un masivo dejaría al remitente sin acuse mientras se verifica.
 
 ##### Contexto
 
-ASR-S06 exige que nada se acepte sin comprobar la revocación, y ASR-D01 cuenta a la ECD entre los terceros cuya caída no puede dejar archivos sin desenlace (C1). Consultar a la ECD en línea por cada archivo ata la recepción a su disponibilidad. ADR-005 retiene el resultado hasta verificar, y ADR-003 ya reprocesa lo pendiente cada noche. ¿Cómo se comprueba la revocación sin depender en línea de la ECD, y qué pasa con un archivo cuya revocación no se pudo comprobar?
+ASR-S06 exige que nada se acepte sin comprobar la revocación, y ASR-D01 cuenta a la ECD entre los terceros cuya caída no puede dejar archivos sin desenlace (C1 - Sistema externo degradado). Consultar a la ECD en línea por cada archivo ata la recepción a su disponibilidad. ADR-005 retiene el resultado hasta verificar, y ADR-003 ya reprocesa lo pendiente cada noche. ¿Cómo se comprueba la revocación sin depender en línea de la ECD, y qué pasa con un archivo cuya revocación no se pudo comprobar?
 
 ##### Decisión
 
@@ -442,7 +442,7 @@ Mantendremos localmente la lista de revocación de la ECD y las respuestas OCSP 
 | ASR | Atributo | Medida | Efecto esperado | Rol |
 |---|---|---|---|---|
 | ASR-S06 | Seguridad | 0 archivos aceptados sin verificación completa | contribuye | primario |
-| ASR-D01 | Disponibilidad | 0 archivos sin desenlace en C1 | contribuye | afectado |
+| ASR-D01 | Disponibilidad | 0 archivos sin desenlace en C1 - Sistema externo degradado | contribuye | afectado |
 
 **A2. Tácticas**
 

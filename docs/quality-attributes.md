@@ -20,22 +20,22 @@ Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dic
 
 | # | ID | Atributo | Qué exige | Amb. | Prioridad | Impacto | Origen |
 |---|---|---|---|---|---|---|---|
-| 1 | [ASR-D01](#asr-d01) | Disponibilidad · corrección | **Ningún archivo se rechaza por la caída de un sistema externo.** 0 archivos válidos sin aceptar tras la ventana nocturna | C1 | Crítica | Alto | `enunciado` · BCR |
-| 2 | [ASR-L04](#asr-l04) | Latencia | **Aislamiento de carga entre archivos masivos y pequeños.** p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso | A | Crítica | Alto | `enunciado` · BCR |
-| 3 | [ASR-S06](#asr-s06) | Seguridad · prevención | **Ningún archivo se acepta sin validación criptográfica completa.** 0 aceptados sin verificar | A, C1 | Crítica | Alto | `enunciado` |
+| 1 | [ASR-D01](#asr-d01) | Disponibilidad · corrección | **Ningún archivo se rechaza por la caída de un sistema externo.** 0 archivos válidos sin aceptar tras la ventana nocturna | C1 - Sistema externo degradado | Crítica | Alto | `enunciado` · BCR |
+| 2 | [ASR-L04](#asr-l04) | Latencia | **Aislamiento de carga entre archivos masivos y pequeños.** p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso | A - Operación normal | Crítica | Alto | `enunciado` · BCR |
+| 3 | [ASR-S06](#asr-s06) | Seguridad · prevención | **Ningún archivo se acepta sin validación criptográfica completa.** 0 aceptados sin verificar | A - Operación normal, C1 - Sistema externo degradado | Crítica | Alto | `enunciado` |
 | 4 | [ASR-M01](#asr-m01) | Modificabilidad · adaptativo | **Regla cambiaria nueva en ≤ 4 h-persona.** Sin recompilar | Despliegue | Alta | Alto | `enunciado` · BCR |
-| 5 | [ASR-S01](#asr-s01) | Seguridad · prevención | **Validación criptográfica en ≤ 200 ms.** p99 desde el último byte | A | Alta | Alto | `enunciado` |
-| 6 | [ASR-E01](#asr-e01) | Escalabilidad | **Pico de pequeños con p99 ≤ 5 s.** 1 200 por minuto durante 45 min | B | Alta | Alto | `enunciado` |
+| 5 | [ASR-S01](#asr-s01) | Seguridad · prevención | **Validación criptográfica en ≤ 200 ms.** p99 desde el último byte | A - Operación normal | Alta | Alto | `enunciado` |
+| 6 | [ASR-E01](#asr-e01) | Escalabilidad | **Pico de pequeños con p99 ≤ 5 s.** 1 200 por minuto durante 45 min | B - Carga pico | Alta | Alto | `enunciado` |
 | 7 | [ASR-I01](#asr-i01) | Interoperabilidad | **Nuevo contrato de API de un externo en ≤ 4 h-persona.** Con su significado intacto | Desarrollo | Alta | Alto | `enunciado` · BCR |
-| 8 | [ASR-D03](#asr-d03) | Disponibilidad · corrección | **Exactamente un resultado por declaración acusada.** Con un nodo caído en el pico | C2 sobre B | Alta | Alto | `enunciado` |
-| 9 | [ASR-L01](#asr-l01) | Latencia | **Acuse en ≤ 1 s.** p99 desde el último byte | A | Alta | Alto | `enunciado` · BCR |
-| 10 | [ASR-S03](#asr-s03) | Seguridad · prevención | **Aislamiento de datos entre remitentes.** 0 accesos a lo ajeno | A | Alta | Medio | `enunciado` |
-| 11 | [ASR-D04](#asr-d04) | Disponibilidad · prevención | **Despliegue sin indisponibilidad.** Acuse en p99 ≤ 1 s durante el cambio | E | Alta | Medio | `enunciado` |
-| 12 | [ASR-L03](#asr-l03) | Latencia | **Masivo en ≤ 5 min.** Con otros 4 masivos en proceso | A | Media | Alto | `enunciado` |
-| 13 | [ASR-D02](#asr-d02) | Disponibilidad · corrección | **Recuperación de un nodo interno en ≤ 10 s.** Sin intervención | C2 | Media | Medio | `enunciado` |
-| 14 | [ASR-L05](#asr-l05) | Latencia | **Mediano con p99 ≤ 30 s.** Con 5 masivos en proceso | A | Media | Medio | `enunciado` |
+| 8 | [ASR-D03](#asr-d03) | Disponibilidad · corrección | **Exactamente un resultado por declaración acusada.** Con un nodo caído en el pico | C2 - Falla interna sobre B - Carga pico | Alta | Alto | `enunciado` |
+| 9 | [ASR-L01](#asr-l01) | Latencia | **Acuse en ≤ 1 s.** p99 desde el último byte | A - Operación normal | Alta | Alto | `enunciado` · BCR |
+| 10 | [ASR-S03](#asr-s03) | Seguridad · prevención | **Aislamiento de datos entre remitentes.** 0 accesos a lo ajeno | A - Operación normal | Alta | Medio | `enunciado` |
+| 11 | [ASR-D04](#asr-d04) | Disponibilidad · prevención | **Despliegue sin indisponibilidad.** Acuse en p99 ≤ 1 s durante el cambio | E - Cambio en producción | Alta | Medio | `enunciado` |
+| 12 | [ASR-L03](#asr-l03) | Latencia | **Masivo en ≤ 5 min.** Con otros 4 masivos en proceso | A - Operación normal | Media | Alto | `enunciado` |
+| 13 | [ASR-D02](#asr-d02) | Disponibilidad · corrección | **Recuperación de un nodo interno en ≤ 10 s.** Sin intervención | C2 - Falla interna | Media | Medio | `enunciado` |
+| 14 | [ASR-L05](#asr-l05) | Latencia | **Mediano con p99 ≤ 30 s.** Con 5 masivos en proceso | A - Operación normal | Media | Medio | `enunciado` |
 | 15 | [ASR-M02](#asr-m02) | Modificabilidad · adaptativo | **Versión nueva del XSD en ≤ 4 h-persona.** La anterior sigue validándose | Despliegue | Media | Medio | `enunciado` · BCR |
-| 16 | [ASR-S04](#asr-s04) | Seguridad · detección | **Alteraciones de la auditoría detectadas.** 100 % de los casos | A | Media | Medio | `enunciado` · BCR |
+| 16 | [ASR-S04](#asr-s04) | Seguridad · detección | **Alteraciones de la auditoría detectadas.** 100 % de los casos | A - Operación normal | Media | Medio | `enunciado` · BCR |
 | 17 | [ASR-I02](#asr-i02) | Integración | **Nuevo consumidor interno sin tocar el flujo principal.** 0 funciones modificadas | Desarrollo | Baja | Bajo | informe · BCR |
 
 **Por qué este orden.** La prioridad es exposición al riesgo: qué tan probable es no cumplir, multiplicado por cuánto le duele a BCR. El impacto es la dificultad de diseño: cuánto pesa el requisito en la estructura.
@@ -80,7 +80,7 @@ Cada escenario de calidad cuelga de una [historia de usuario](requirements.md): 
 
 ### Tiempo, disponibilidad y seguridad
 
-| Variable | A — normal | B — carga pico | C1 — sistema externo degradado | C2 — falla interna | E — cambio en producción |
+| Variable | A - Operación normal | B - Carga pico | C1 - Sistema externo degradado | C2 - Falla interna | E - Cambio en producción |
 |---|---|---|---|---|---|
 | Pequeños (1 a 50 registros) | 400/min (enunciado, Escalabilidad) | 1 200/min durante 45 min (enunciado) | Como A | Como A; como B para D03 | Como A |
 | Medianos (51 a 5 000) | `[PREGUNTA → BCR]` ¿cuántos por minuto? | `[PREGUNTA → BCR]` | Como A | Como A | Como A |
@@ -124,22 +124,22 @@ El eje es el flujo de datos del dominio; el stakeholder va como columna auxiliar
 
 | STRIDE | Flujo de datos del dominio | Stakeholder | Modo | Amb. | Resultado |
 |---|---|---|---|---|---|
-| **S** Suplantación | El archivo firmado que envía un remitente | Tercero contra un IMC | Prevención | A | **[ASR-S01](#asr-s01)** |
-| **S** Suplantación | Un archivo con firma inválida o certificado revocado que llega a resultado definitivo | Tercero con certificado robado | Prevención | A, C1 | **[ASR-S06](#asr-s06)** |
-| **S** Suplantación | Un archivo aceptado con un certificado revocado después de la última actualización de la información de revocación | Tercero con certificado robado | Detección | A | Pendiente: sin umbral `[PREGUNTA → BCR]` |
-| **S** Suplantación | El mismo caso, ya detectado | Tercero con certificado robado | Corrección | A | Pendiente: sin umbral |
-| **S** Suplantación | Un firmante distinto del remitente autenticado | IMC contra IMC | Prevención | A | **[ASR-S06](#asr-s06)**: el firmante es parte de la verificación completa |
-| **T** Manipulación | El contenido firmado de un archivo (firma envuelta) | Tercero | Prevención | A | **[ASR-S06](#asr-s06)**: lo verificado tiene que ser lo que se procesa |
-| **T** Manipulación | La auditoría ya escrita | Interno, por abuso o **mal uso** | Detección | A | **[ASR-S04](#asr-s04)** |
-| **T** Manipulación | Las declaraciones que reportó otro remitente | IMC contra IMC | Prevención | A | **[ASR-S03](#asr-s03)** |
-| **R** Repudio | El envío de un archivo que el remitente niega | IMC | Prevención | A, C1 | **[ASR-S06](#asr-s06)**: nada se acepta sin firma, firmante y estampa verificadas, y esa verificación es la evidencia. S04 la protege contra alteraciones |
-| **R** Repudio | El acuse o el resultado que BCR niega haber emitido | IMC contra BCR | Prevención | A | Descartada: un acuse y una respuesta firmados por BCR son funcionales |
-| **I** Divulgación | La consulta de resultados y declaraciones | IMC contra IMC | Prevención | A | **[ASR-S03](#asr-s03)** |
-| **I** Divulgación | La entrega a las áreas internas | Funcionario de BCR, **mal uso** | Prevención | A | Descartada: `[PREGUNTA → BCR]` ¿qué ve cada área por su rol? |
-| **I** Divulgación | Los datos en tránsito y en reposo | Externo | Prevención | A | Descartada: el cifrado es una restricción del enunciado |
-| **D** Denegación | Un XML con expansión de entidades que degrada a los demás | Tercero | Detección | A | Descartada: endurecer el parser es práctica estándar; la degradación real la mide L04 |
-| **D** Denegación | Una avalancha de archivos de un solo remitente | IMC | Detección | B | Descartada: E01 acota la carga total; `[PREGUNTA → BCR]` ¿hay límite por remitente? |
-| **E** Elevación | Un operador de un IMC con permisos de administrador | Usuario de un IMC | Detección | A | Descartada: la gestión de usuarios queda fuera de alcance (informe, §4.3) |
+| **S** Suplantación | El archivo firmado que envía un remitente | Tercero contra un IMC | Prevención | A - Operación normal | **[ASR-S01](#asr-s01)** |
+| **S** Suplantación | Un archivo con firma inválida o certificado revocado que llega a resultado definitivo | Tercero con certificado robado | Prevención | A - Operación normal, C1 - Sistema externo degradado | **[ASR-S06](#asr-s06)** |
+| **S** Suplantación | Un archivo aceptado con un certificado revocado después de la última actualización de la información de revocación | Tercero con certificado robado | Detección | A - Operación normal | Pendiente: sin umbral `[PREGUNTA → BCR]` |
+| **S** Suplantación | El mismo caso, ya detectado | Tercero con certificado robado | Corrección | A - Operación normal | Pendiente: sin umbral |
+| **S** Suplantación | Un firmante distinto del remitente autenticado | IMC contra IMC | Prevención | A - Operación normal | **[ASR-S06](#asr-s06)**: el firmante es parte de la verificación completa |
+| **T** Manipulación | El contenido firmado de un archivo (firma envuelta) | Tercero | Prevención | A - Operación normal | **[ASR-S06](#asr-s06)**: lo verificado tiene que ser lo que se procesa |
+| **T** Manipulación | La auditoría ya escrita | Interno, por abuso o **mal uso** | Detección | A - Operación normal | **[ASR-S04](#asr-s04)** |
+| **T** Manipulación | Las declaraciones que reportó otro remitente | IMC contra IMC | Prevención | A - Operación normal | **[ASR-S03](#asr-s03)** |
+| **R** Repudio | El envío de un archivo que el remitente niega | IMC | Prevención | A - Operación normal, C1 - Sistema externo degradado | **[ASR-S06](#asr-s06)**: nada se acepta sin firma, firmante y estampa verificadas, y esa verificación es la evidencia. S04 la protege contra alteraciones |
+| **R** Repudio | El acuse o el resultado que BCR niega haber emitido | IMC contra BCR | Prevención | A - Operación normal | Descartada: un acuse y una respuesta firmados por BCR son funcionales |
+| **I** Divulgación | La consulta de resultados y declaraciones | IMC contra IMC | Prevención | A - Operación normal | **[ASR-S03](#asr-s03)** |
+| **I** Divulgación | La entrega a las áreas internas | Funcionario de BCR, **mal uso** | Prevención | A - Operación normal | Descartada: `[PREGUNTA → BCR]` ¿qué ve cada área por su rol? |
+| **I** Divulgación | Los datos en tránsito y en reposo | Externo | Prevención | A - Operación normal | Descartada: el cifrado es una restricción del enunciado |
+| **D** Denegación | Un XML con expansión de entidades que degrada a los demás | Tercero | Detección | A - Operación normal | Descartada: endurecer el parser es práctica estándar; la degradación real la mide L04 |
+| **D** Denegación | Una avalancha de archivos de un solo remitente | IMC | Detección | B - Carga pico | Descartada: E01 acota la carga total; `[PREGUNTA → BCR]` ¿hay límite por remitente? |
+| **E** Elevación | Un operador de un IMC con permisos de administrador | Usuario de un IMC | Detección | A - Operación normal | Descartada: la gestión de usuarios queda fuera de alcance (informe, §4.3) |
 
 ### Interoperabilidad: distancias
 
@@ -164,7 +164,7 @@ Cada ficha trae, debajo de la tabla, un diagrama de secuencia con Orquídea como
 | **Fuente** | Los sistemas externos que BCR no controla: el Sistema de Tasas de Mercado (STM), la Agencia Nacional Tributaria y Aduanera (ANTA), el Ministerio de Asuntos Migratorios y Consulares (MAMC), el Registro Nacional de Identificación Ciudadana (RNIC) y la entidad de certificación digital (ECD) |
 | **Estímulo** | Uno de ellos deja de responder, o responde con latencia extrema, durante horas |
 | **Artefacto** | Orquídea, todo el sistema |
-| **Ambiente** | C1: un sistema externo caído, con la carga de A |
+| **Ambiente** | C1 - Sistema externo degradado: un sistema externo caído, con la carga de A |
 | **Respuesta** | Sigue recibiendo y acusando. Lo que necesita al externo queda pendiente y se reprocesa cada noche hasta que vuelva; si no vuelve en los días de reintento, se notifica al remitente |
 | **Medida** | 0 archivos válidos sin aceptar al cierre de la primera ventana nocturna tras el regreso del externo |
 | **Por qué es ASR** | La recepción no puede depender en línea de ningún externo, y lo pendiente tiene que sobrevivir horas o días. Con caídas de minutos bastaría reintentar en línea; con caídas de 20 h, no. Un archivo es válido si se habría aceptado con el externo disponible. Nota de trampa: la medida no cuenta cuánto espera lo pendiente hasta la noche; BCR lo aceptó |
@@ -178,7 +178,7 @@ sequenceDiagram
     end
     participant O as Orquídea
     participant R as Remitente
-    Note over X,R: AMBIENTE C1 · un sistema externo caído, con la carga de A
+    Note over X,R: AMBIENTE C1 - sistema externo degradado · un sistema externo caído, con la carga de A
     X--xO: ESTÍMULO · deja de responder durante horas
     rect rgb(222, 236, 255)
     R->>O: Envía un archivo válido
@@ -205,7 +205,7 @@ sequenceDiagram
 | **Fuente** | Los remitentes de archivos pequeños |
 | **Estímulo** | Envían archivos pequeños, con arribo estocástico, mientras 5 masivos están en proceso |
 | **Artefacto** | El servicio de procesamiento de archivos |
-| **Ambiente** | A: 400 pequeños por minuto y 5 masivos concurrentes, sin fallas |
+| **Ambiente** | A - Operación normal: 400 pequeños por minuto y 5 masivos concurrentes, sin fallas |
 | **Respuesta** | Cada archivo pequeño se resuelve sin esperar a los masivos |
 | **Medida** | p99 ≤ 3 s por archivo pequeño |
 | **Por qué es ASR** | Obliga a decidir si pequeños y masivos comparten capacidad. En una misma fila, un pequeño que espera detrás de 5 archivos de 100 000 registros no cabe en 3 s. Nota de trampa: se cumple sobredimensionando una fila compartida; por eso la verificación compara además contra la corrida sin masivos |
@@ -217,7 +217,7 @@ sequenceDiagram
     participant P as FUENTE · remitente de un archivo pequeño
     participant O as Orquídea
     participant M as Remitentes de archivos masivos
-    Note over P,M: AMBIENTE A · 400 archivos pequeños por minuto · sin fallas
+    Note over P,M: AMBIENTE A - operación normal · 400 archivos pequeños por minuto · sin fallas
     M->>O: 5 archivos masivos de hasta 100 000 registros
     Note over O,M: Los 5 archivos masivos siguen en proceso
     rect rgb(222, 236, 255)
@@ -240,7 +240,7 @@ sequenceDiagram
 | **Fuente** | Un remitente, o un tercero que lo suplanta |
 | **Estímulo** | Envía un archivo cuya firma, firmante, cadena, estampa o revocación no es válida o no se puede verificar |
 | **Artefacto** | El servicio de verificación criptográfica |
-| **Ambiente** | Carga de A, con la ECD disponible (A) o caída (C1) |
+| **Ambiente** | Carga de A - Operación normal, con la ECD disponible (A) o caída (C1 - Sistema externo degradado) |
 | **Respuesta** | El archivo puede acusarse, pero no se acepta hasta verificarse; si falla, se rechaza con la causa |
 | **Medida** | 0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas |
 | **Por qué es ASR** | BCR aprobó acusar antes de verificar: el masivo con acuse de custodia y la ECD caída. Hay que decidir dónde espera el archivo y cómo se garantiza que lo verificado es lo que se procesa. El no repudio sale de esta medida y de [S04](#asr-s04). El desfase y la antigüedad de la estampa son `[PREGUNTA → BCR]`. Nota de trampa: se cumple rechazando todo |
@@ -317,7 +317,7 @@ sequenceDiagram
 | **Fuente** | Un remitente |
 | **Estímulo** | Envía un archivo firmado de hasta 50 MB, con arribo estocástico |
 | **Artefacto** | El servicio de verificación criptográfica |
-| **Ambiente** | A, sin fallas |
+| **Ambiente** | A - Operación normal, sin fallas |
 | **Respuesta** | Determina si la firma, la estampa y el certificado son válidos y vigentes |
 | **Medida** | p99 ≤ 200 ms del último byte al resultado de la validación |
 | **Por qué es ASR** | Pasan todos los archivos. Con 2 s cabría consultar a la ECD en línea; con 200 ms no, y un archivo de 50 MB no puede cargarse entero. Con la ECD caída no aplica. Lo que el control protege lo mide [S06](#asr-s06) |
@@ -331,7 +331,7 @@ sequenceDiagram
     box rgb(240,240,240) Fuera de BCR
     participant E as ECD
     end
-    Note over R,E: AMBIENTE A · 400 archivos pequeños por minuto y 5 archivos masivos · sin fallas
+    Note over R,E: AMBIENTE A - operación normal · 400 archivos pequeños por minuto y 5 archivos masivos · sin fallas
     rect rgb(222, 236, 255)
     R->>O: ESTÍMULO · archivo firmado y con estampa, de hasta 50 MB
     Note over R,O: t0 · último byte recibido
@@ -352,7 +352,7 @@ sequenceDiagram
 | **Fuente** | Los remitentes, en cierres de mercado y vencimientos |
 | **Estímulo** | Envían 1 200 archivos pequeños por minuto durante 45 min, en ráfaga `[SUPUESTO → BCR]` |
 | **Artefacto** | El servicio de procesamiento de archivos |
-| **Ambiente** | B: pico de 45 min con 5 masivos, sin fallas |
+| **Ambiente** | B - Carga pico: pico de 45 min con 5 masivos, sin fallas |
 | **Respuesta** | Cada archivo pequeño se resuelve sin que el retraso se acumule |
 | **Medida** | p99 ≤ 5 s del último byte al resultado definitivo, en cada minuto de la ventana |
 | **Por qué es ASR** | La capacidad se triplica 45 min sin quedar fija el resto del día. Con 5 min, una cola absorbería el pico; con 5 s, no. Si los 5 s son de procesamiento o de acuse es `[PREGUNTA → BCR]` |
@@ -364,7 +364,7 @@ sequenceDiagram
     participant R as FUENTE · remitentes de archivos pequeños
     participant O as Orquídea
     participant M as Remitentes de archivos masivos
-    Note over R,M: AMBIENTE B · cierre de mercado diario o vencimiento regulatorio · sin fallas
+    Note over R,M: AMBIENTE B - carga pico · cierre de mercado diario o vencimiento regulatorio · sin fallas
     M->>O: 5 archivos masivos en paralelo
     rect rgb(222, 236, 255)
     loop Durante 45 minutos
@@ -428,7 +428,7 @@ sequenceDiagram
 | **Fuente** | Un nodo interno de procesamiento |
 | **Estímulo** | Falla con archivos acusados en curso |
 | **Artefacto** | El servicio de procesamiento de archivos |
-| **Ambiente** | C2 sobre B: la falla ocurre en el pico |
+| **Ambiente** | C2 - Falla interna sobre B - Carga pico: la falla ocurre en el pico |
 | **Respuesta** | Cada declaración acusada termina con un solo resultado definitivo |
 | **Medida** | 0 declaraciones acusadas sin exactamente un resultado definitivo, por conciliación |
 | **Por qué es ASR** | Un acuse es una promesa: hay que decidir cuándo el archivo queda a salvo y cómo no aplicar dos veces lo que se reprocesa |
@@ -439,7 +439,7 @@ sequenceDiagram
 sequenceDiagram
     participant R as Remitentes
     participant O as Orquídea
-    Note over R,O: AMBIENTE C2 sobre B · la falla ocurre en el pico de 45 minutos
+    Note over R,O: AMBIENTE C2 - Falla interna sobre B - Carga pico · la falla ocurre en el pico de 45 minutos
     R->>O: Archivos durante el pico
     O-->>R: Acuses, cada uno es una promesa
     rect rgb(222, 236, 255)
@@ -460,7 +460,7 @@ sequenceDiagram
 | **Fuente** | Un remitente |
 | **Estímulo** | Termina de enviar un archivo de hasta 50 MB |
 | **Artefacto** | El servicio de recepción y acuse |
-| **Ambiente** | A, sin fallas |
+| **Ambiente** | A - Operación normal, sin fallas |
 | **Respuesta** | Entrega un acuse que confirma el inicio del procesamiento |
 | **Medida** | p99 ≤ 1 s del último byte al acuse. El percentil es `[SUPUESTO → BCR]` |
 | **Por qué es ASR** | En un segundo no cabe validar 100 000 registros: el acuse tiene que separarse del procesamiento. Un masivo cuya verificación no quepa recibe acuse de custodia (BCR) |
@@ -471,7 +471,7 @@ sequenceDiagram
 sequenceDiagram
     participant R as FUENTE · remitente
     participant O as Orquídea
-    Note over R,O: AMBIENTE A · 400 archivos pequeños por minuto y 5 archivos masivos · sin fallas
+    Note over R,O: AMBIENTE A - operación normal · 400 archivos pequeños por minuto y 5 archivos masivos · sin fallas
     rect rgb(222, 236, 255)
     R->>O: ESTÍMULO · archivo de cualquier tamaño, hasta 50 MB
     Note over R,O: t0 · último byte recibido, la subida no cuenta
@@ -493,7 +493,7 @@ sequenceDiagram
 | **Fuente** | Un remitente autenticado |
 | **Estímulo** | Intenta consultar, corregir o anular operaciones que reportó otro remitente |
 | **Artefacto** | El servicio de consulta, corrección y anulación |
-| **Ambiente** | A, sin fallas |
+| **Ambiente** | A - Operación normal, sin fallas |
 | **Respuesta** | Solo accede a lo que reportó él; lo demás se niega |
 | **Medida** | 0 accesos efectivos a operaciones de otro remitente, sobre el catálogo de pruebas |
 | **Por qué es ASR** | El límite no es el declarante sino quién reportó, y la identidad sale de la autenticación y el certificado, no de un campo del archivo. Se cuenta el acceso que ocurrió, no el intento |
@@ -504,7 +504,7 @@ sequenceDiagram
 sequenceDiagram
     participant A as FUENTE · remitente A, autenticado
     participant O as Orquídea
-    Note over A,O: AMBIENTE A · 400 archivos pequeños por minuto y 5 archivos masivos · sin fallas
+    Note over A,O: AMBIENTE A - operación normal · 400 archivos pequeños por minuto y 5 archivos masivos · sin fallas
     rect rgb(222, 236, 255)
     A->>O: ESTÍMULO · consulta, corrige o anula una operación que reportó el remitente B
     Note over O: ARTEFACTO · el servicio de consulta, corrección y anulación
@@ -525,7 +525,7 @@ sequenceDiagram
 | **Fuente** | El equipo de TI de BCR |
 | **Estímulo** | Activa o revierte una regla, un XSD o un contrato de API con archivos en curso |
 | **Artefacto** | El servicio de recepción y acuse |
-| **Ambiente** | E: cambio en producción con la carga de A |
+| **Ambiente** | E - Cambio en producción: cambio en producción con la carga de A |
 | **Respuesta** | Sigue recibiendo y acusando durante el cambio |
 | **Medida** | p99 ≤ 1 s del último byte al acuse mientras dura el cambio |
 | **Por qué es ASR** | Las dos versiones conviven mientras hay archivos en curso, y una ventana de mantenimiento no cabe en el 99,99 %. Nota de trampa: se cumple aunque un archivo se evalúe con dos versiones; BCR fijó la vigente a la hora de ingesta, y la prueba lo cuenta |
@@ -537,7 +537,7 @@ sequenceDiagram
     participant T as FUENTE · equipo de TI de BCR
     participant O as Orquídea
     participant R as Remitentes
-    Note over T,R: AMBIENTE E · cambio en producción con la carga de A
+    Note over T,R: AMBIENTE E - cambio en producción · cambio en producción con la carga de A
     T->>O: ESTÍMULO · activa o revierte una regla, un XSD o un nuevo contrato de API
     rect rgb(222, 236, 255)
     loop Mientras dura la activación o la reversión
@@ -547,7 +547,7 @@ sequenceDiagram
         Note over O,R: t1 · acuse
     end
     Note over O: ARTEFACTO · el servicio de recepción y acuse<br/>cada archivo se evalúa con una sola versión
-    Note over O,R: MEDIDA · p99 de t1 − t0 ≤ 1 s durante el cambio, como en A
+    Note over O,R: MEDIDA · p99 de t1 − t0 ≤ 1 s durante el cambio, como en A - Operación normal
     end
     rect rgb(255, 228, 225)
     Note over T,R: LO QUE EL ASR DESCARTA · una ventana de mantenimiento que detiene la recepción.<br/>El 99,99 % deja 4,4 minutos al mes
@@ -561,18 +561,18 @@ sequenceDiagram
 | **Fuente** | Un remitente |
 | **Estímulo** | Envía un archivo de 100 000 registros con otros 4 masivos en proceso |
 | **Artefacto** | El servicio de procesamiento de archivos |
-| **Ambiente** | A, sin fallas |
+| **Ambiente** | A - Operación normal, sin fallas |
 | **Respuesta** | El archivo llega a resultado definitivo |
 | **Medida** | ≤ 5 min del último byte al resultado definitivo, para cada uno de los 5 masivos |
 | **Por qué es ASR** | Son unos 333 registros por segundo por archivo: hay que procesar en paralelo. Con 50 min bastaría en secuencia. Es un máximo y no un percentil, porque la muestra es de cinco |
-| **Cómo se verifica** | 5 masivos de 100 000 registros en paralelo sobre la carga de A |
+| **Cómo se verifica** | 5 masivos de 100 000 registros en paralelo sobre la carga de A - Operación normal |
 | **Prioridad · Impacto · Origen** | Media · Alto · `enunciado` (Latencia) |
 
 ```mermaid
 sequenceDiagram
     participant R as FUENTE · remitente
     participant O as Orquídea
-    Note over R,O: AMBIENTE A · 400 archivos pequeños por minuto · otros 4 archivos masivos en proceso
+    Note over R,O: AMBIENTE A - operación normal · 400 archivos pequeños por minuto · otros 4 archivos masivos en proceso
     rect rgb(222, 236, 255)
     R->>O: ESTÍMULO · archivo masivo de 100 000 registros y 50 MB
     Note over R,O: t0 · último byte recibido
@@ -593,7 +593,7 @@ sequenceDiagram
 | **Fuente** | Un nodo interno de procesamiento |
 | **Estímulo** | Falla con declaraciones en curso |
 | **Artefacto** | El servicio de procesamiento de archivos |
-| **Ambiente** | C2: falla interna con la carga de A |
+| **Ambiente** | C2 - Falla interna: falla interna con la carga de A |
 | **Respuesta** | Las declaraciones vuelven a avanzar sin intervención |
 | **Medida** | ≤ 10 s desde la falla hasta que avanza la última declaración afectada |
 | **Por qué es ASR** | El estado en curso tiene que vivir donde otro nodo lo retome. Con 10 min alcanzaría un reinicio manual. Que no se pierda ni se duplique nada lo mide [D03](#asr-d03) |
@@ -605,7 +605,7 @@ sequenceDiagram
     participant R as Remitentes
     participant O as Orquídea
     participant Op as Operador de BCR
-    Note over R,Op: AMBIENTE C2 · falla interna con la carga de A
+    Note over R,Op: AMBIENTE C2 - falla interna · falla interna con la carga de A
     R->>O: Archivos en proceso
     rect rgb(222, 236, 255)
     Note over O: FUENTE Y ESTÍMULO · un nodo interno se cae<br/>con declaraciones en curso · t0
@@ -627,11 +627,11 @@ sequenceDiagram
 | **Fuente** | Un remitente |
 | **Estímulo** | Envía un archivo mediano (51 a 5 000 registros) |
 | **Artefacto** | El servicio de procesamiento de archivos |
-| **Ambiente** | A, con 5 masivos en proceso |
+| **Ambiente** | A - Operación normal, con 5 masivos en proceso |
 | **Respuesta** | El archivo llega a resultado definitivo |
 | **Medida** | p99 ≤ 30 s del último byte al resultado definitivo. El percentil es `[SUPUESTO → BCR]` |
 | **Por qué es ASR** | Hay que decidir con qué carga va: con los masivos se pasa de 30 s, y con los pequeños puede degradarlos |
-| **Cómo se verifica** | Medianos de 5 000 registros con 5 masivos sobre la carga de A |
+| **Cómo se verifica** | Medianos de 5 000 registros con 5 masivos sobre la carga de A - Operación normal |
 | **Prioridad · Impacto · Origen** | Media · Medio · `enunciado` (Latencia) |
 
 ```mermaid
@@ -639,7 +639,7 @@ sequenceDiagram
     participant P as FUENTE · remitente de un archivo mediano
     participant O as Orquídea
     participant M as Remitentes de archivos masivos
-    Note over P,M: AMBIENTE A · 400 archivos pequeños por minuto · sin fallas
+    Note over P,M: AMBIENTE A - operación normal · 400 archivos pequeños por minuto · sin fallas
     M->>O: 5 archivos masivos en proceso
     rect rgb(222, 236, 255)
     P->>O: ESTÍMULO · archivo mediano de 51 a 5 000 registros
@@ -699,7 +699,7 @@ sequenceDiagram
 | **Fuente** | Alguien con acceso al almacenamiento |
 | **Estímulo** | Modifica, borra o reordena registros de auditoría ya escritos |
 | **Artefacto** | El registro de auditoría |
-| **Ambiente** | A, sin fallas |
+| **Ambiente** | A - Operación normal, sin fallas |
 | **Respuesta** | La verificación de integridad señala la alteración y dónde ocurrió |
 | **Medida** | 100 % de las alteraciones del catálogo detectadas en la verificación siguiente |
 | **Por qué es ASR** | La evidencia tiene que encadenarse para que una alteración se note sin depender de quien administra el almacenamiento. Nota de trampa: se cumple verificando una vez al año; la frecuencia es `[PREGUNTA → BCR]` |
@@ -711,7 +711,7 @@ sequenceDiagram
     participant X as FUENTE · alguien con acceso al almacenamiento
     participant O as Orquídea
     participant Au as Auditores de BCR
-    Note over X,Au: AMBIENTE A · 400 archivos pequeños por minuto y 5 archivos masivos · sin fallas
+    Note over X,Au: AMBIENTE A - operación normal · 400 archivos pequeños por minuto y 5 archivos masivos · sin fallas
     rect rgb(222, 236, 255)
     X->>O: ESTÍMULO · modifica, borra o reordena registros de auditoría ya escritos
     Note over O: ARTEFACTO · el registro de auditoría
@@ -779,7 +779,7 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 | Cualquier regla cambiaria en 4 h-persona | informe | Cambio sin acotar | Una regla que pide un dato nuevo de un sistema externo no cabe en 4 h; se acota a reglas sobre datos que ya llegan | [M01](#asr-m01) |
 | Reemplazar un sistema externo por otro proveedor en 4 h-persona | informe | Cambio sin acotar | El enunciado pide adaptar o reemplazar el conector, no cambiar de proveedor | [I01](#asr-i01) |
 | Pérdida cero en el pico sin fallas | `enunciado` | Lo cubre otro ASR | Sin fallas, solo se pierde si se descarta carga; D03 lo mide en el peor caso, una falla durante el pico | [D03](#asr-d03) |
-| Pequeños en ≤ 3 s en A, sin masivos | `enunciado` | Lo cubre otro ASR | Sin masivos no fuerza ninguna decisión; con 5 masivos en proceso es la medida de L04 | Medida de [L04](#asr-l04) |
+| Pequeños en ≤ 3 s en A - Operación normal, sin masivos | `enunciado` | Lo cubre otro ASR | Sin masivos no fuerza ninguna decisión; con 5 masivos en proceso es la medida de L04 | Medida de [L04](#asr-l04) |
 | Disponibilidad del 99,99 % | `enunciado` | No diseñable | Es la meta de negocio; la persiguen D01, D02, D03 y D04 | Motivador |
 | Cifrado en tránsito y en reposo | `enunciado` | Es infraestructura o configuración | Se cumple con configuración y práctica estándar, y no descarta ninguna familia de solución | Restricción |
 | Protección contra ataques XML | `enunciado` | Práctica estándar | Endurecer el parser es práctica estándar; la parte estructural, que lo verificado sea lo procesado, va en S06 | Restricción · [S06](#asr-s06) |
@@ -794,7 +794,7 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 | Drenar 12 h de pendientes sin degradar lo nuevo | análisis del equipo | Pendiente | Es la medida de L04 en otro ambiente; entra si BCR fija cómo se drena | Sección 6 |
 | Archivo aceptado con un certificado revocado dentro de la ventana de la caché | análisis del equipo | Sin umbral | Su detección depende de cada cuánto publica la ECD su lista de revocación | Sección 6 |
 | Más de 5 archivos masivos al mismo tiempo | análisis del equipo | Pendiente | El enunciado y BCR fijan 5, y nadie dice qué pasa con el sexto | Sección 6 |
-| Un remitente que satura a los demás con archivos pequeños | análisis del equipo | No cambia la estructura | Dentro de B la carga total está acotada a 1 200 por minuto | — |
+| Un remitente que satura a los demás con archivos pequeños | análisis del equipo | No cambia la estructura | Dentro de B - Carga pico la carga total está acotada a 1 200 por minuto | — |
 | Frescura de los datos para las áreas («tiempo real») | análisis del equipo | Sin umbral | El enunciado no da cifra | Sección 6 |
 | Correcciones o anulaciones que llegan antes que la declaración original | informe | Funcional | Es una regla de orden del negocio | Funcional |
 | Exactitud de las reglas cambiarias | análisis del equipo | Funcional | Ningún diseño mueve la exactitud de una regla | Funcional |
@@ -813,9 +813,9 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 - `[PREGUNTA → BCR]` ¿Qué desfase de reloj y qué antigüedad máxima de la estampa se toleran antes de rechazar un archivo?
 - `[PREGUNTA → BCR]` ¿El XSD trae entidad, fecha, lote y consecutivo, para usarlos como llave de un archivo duplicado?
 - `[PREGUNTA → equipo]` En la reunión del 6-nov el ASR de seguridad crítico quedó como «ningún archivo se acepta sin validación criptográfica completa», que es S06. Confirmar con BCR por escrito que S06 reemplaza a S01 entre los críticos; S01 conserva sus 200 ms como alto.
-- `[PREGUNTA → BCR]` Los «5 segundos de respuesta» del pico, ¿son de procesamiento completo, como los 3 s de A, o del acuse?
+- `[PREGUNTA → BCR]` Los «5 segundos de respuesta» del pico, ¿son de procesamiento completo, como los 3 s de A - Operación normal, o del acuse?
 - `[PREGUNTA → BCR]` ¿Cada cuánto debe verificarse la integridad de la auditoría?
-- `[PREGUNTA → BCR]` ¿Cuántos archivos medianos llegan por minuto, en A y en B?
+- `[PREGUNTA → BCR]` ¿Cuántos archivos medianos llegan por minuto, en A - Operación normal y en B - Carga pico?
 - `[PREGUNTA → BCR]` ¿Cuántas veces al año cambia la Circular, y cuántas cambian su contrato de API los sistemas externos?
 - `[PREGUNTA → BCR]` ¿Los remitentes migran a una versión nueva del XSD a ritmos distintos?
 - `[PREGUNTA → BCR]` ¿Qué pasa si llegan más de 5 archivos masivos al mismo tiempo: esperan, se rechazan o se aceptan con otro plazo?
@@ -827,7 +827,7 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 **Supuestos**
 
 - `[SUPUESTO → BCR]` El percentil de L01 y L05 es p99, el mismo que BCR usó en L04, E01 y S01.
-- `[SUPUESTO → BCR]` En A el arribo es estocástico, y en B llega en ráfaga en los cierres.
+- `[SUPUESTO → BCR]` En A - Operación normal el arribo es estocástico, y en B - Carga pico llega en ráfaga en los cierres.
 - `[SUPUESTO → BCR]` Los cambios de reglas, XSD y contratos de API los hace el equipo propio de TI, que conoce Orquídea.
 - `[SUPUESTO → BCR]` Las versiones del XSD conviven mientras los remitentes migran, y una versión nueva no cambia el modelo canónico.
 - `[SUPUESTO → BCR]` Los contratos de API de los sistemas externos cambian menos que la Circular; por eso I01 va después de M01.
@@ -836,7 +836,7 @@ Se validan [M01](#asr-m01) e [I01](#asr-i01), uno de cada atributo. M02 e I02 no
 
 - **S01 contra 50 MB.** Verificar la firma de un XML de 50 MB exige canonicalizar y resumir el documento completo, y 200 ms pueden no alcanzar. Es la primera pregunta de BCR.
 - **S01 contra el ADR-04 aprobado.** El ADR-04 deja que un archivo masivo reciba un acuse de custodia y se verifique después. S01, en cambio, pide la validación criptográfica en 200 ms para el 100 % de los archivos: `[PREGUNTA → BCR]` ¿S01 aplica también a los archivos masivos?
-- **N = 5 en A o en B.** BCR pone los 5 archivos masivos en el ambiente A en su tabla de ASR y en hora pico en el ADR-02. Los ASR los usan en los dos; si en A son menos, L04 y L03 se relajan.
+- **N = 5 en A - Operación normal o en B - Carga pico.** BCR pone los 5 archivos masivos en el ambiente A - Operación normal en su tabla de ASR y en hora pico en el ADR-02. Los ASR los usan en los dos; si en A - Operación normal son menos, L04 y L03 se relajan.
 
 **Fuera de alcance**
 

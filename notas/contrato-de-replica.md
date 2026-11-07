@@ -76,7 +76,7 @@ Recorrido del 2026-11-04, al cargar los escenarios:
 
 Cada escenario cuelga de una historia de usuario. Helix toma la fuente del
 escenario del stakeholder de la historia, así que en S01 y S06 muestra a la
-Auditoría de BCR y no al remitente. El TPS del ambiente A es 7 (400 pequeños por
+Auditoría de BCR y no al remitente. El TPS del ambiente A - Operación normal es 7 (400 pequeños por
 minuto) y el del B, 20 (1 200 por minuto).
 
 | ID | Atributo en Helix | Prioridad en Helix | ¿Cabe la medida? | Historia |
