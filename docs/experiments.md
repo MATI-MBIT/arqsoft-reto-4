@@ -14,8 +14,8 @@ El experimento no tiene que cumplir los ASR. Si una medida no se alcanza, se rep
 
 | ASR | Hipótesis | Decisiones que se prueban |
 |---|---|---|
-| ASR-D01 | Con un sistema externo caído durante la carga, todos los archivos válidos quedan aceptados al cierre de la primera ventana nocturna tras su regreso | [ADR-001, ADR-003 y ADR-004](modelos/adrs-orquidea.md) |
-| ASR-L04 | Con 5 archivos masivos en proceso, el p99 de los archivos pequeños es ≤ 3 s | [ADR-002](modelos/adrs-orquidea.md) |
+| ASR-D01 | Con un sistema externo caído durante la carga, todos los archivos válidos quedan aceptados al cierre de la primera ventana nocturna tras su regreso | [ADR-001, ADR-002 y ADR-003](modelos/adrs-orquidea.md) |
+| ASR-L04 | Con 5 archivos masivos en proceso, el p99 de los archivos pequeños es ≤ 3 s | [ADR-004](modelos/adrs-orquidea.md) |
 | ASR-S06 | Ningún archivo con firma, firmante, estampa, cadena o revocación inválida, o sin poder verificarse, llega a aceptación | [ADR-005, ADR-006 y ADR-007](modelos/adrs-orquidea.md) |
 
 El alcance es acotado: la recepción del archivo, la clasificación por tamaño y el enrutamiento al carril A o B, la validación de la firma, y la caída de un sistema externo con su reproceso. Quedan fuera la autenticación del canal (TLS mutuo), la integración con el Banco de la República, las reglas cambiarias completas y la entrega a las áreas de BCR.
@@ -26,16 +26,16 @@ Todo corre en contenedores de Docker Compose sobre un solo equipo. El diagrama e
 
 | Contenedor | Papel en el experimento | Decisión que encarna |
 |---|---|---|
-| `recepcion` | Recibe el archivo por HTTP, lo custodia, verifica la firma, registra la llave del archivo, emite el acuse y lo publica en el tópico de su carril según el tamaño en bytes | ADR-001, ADR-002, ADR-004, ADR-005 |
+| `recepcion` | Recibe el archivo por HTTP, lo custodia, verifica la firma, registra la llave del archivo, emite el acuse y lo publica en el tópico de su carril según el tamaño en bytes | ADR-001, ADR-004, ADR-003, ADR-005 |
 | `kafka` | Cola durable en modo KRaft, nodo único, con los tópicos `carril-a`, `carril-b` y `pendientes` | ADR-001 |
-| `carril-a` | Procesa archivos pequeños con su propio pool y su propio límite de CPU, sin componentes de arranque lento | ADR-002 |
-| `carril-b` | Procesa archivos masivos en modo batch, con su propio pool y su propio límite de CPU | ADR-002 |
-| `monitor-terceros` | Sondea al sistema externo simulado y publica su estado: disponible, degradado o caído | ADR-003 |
-| `reprocesador` | Corre la ventana de reproceso a una hora configurable o al llamar a un endpoint de prueba; reprograma lo que sigue pendiente y manda a notificar lo que agotó los reintentos | ADR-003, ADR-006 |
+| `carril-a` | Procesa archivos pequeños con su propio pool y su propio límite de CPU, sin componentes de arranque lento | ADR-004 |
+| `carril-b` | Procesa archivos masivos en modo batch, con su propio pool y su propio límite de CPU | ADR-004 |
+| `monitor-terceros` | Sondea al sistema externo simulado y publica su estado: disponible, degradado o caído | ADR-002 |
+| `reprocesador` | Corre la ventana de reproceso a una hora configurable o al llamar a un endpoint de prueba; reprograma lo que sigue pendiente y manda a notificar lo que agotó los reintentos | ADR-002, ADR-006 |
 | `tercero-rnic-sim` | RNIC simulado: una tabla de personas ficticias que cruza cédula contra nombre | — |
 | `toxiproxy` | Proxy entre los carriles y el sistema externo simulado, para cortarlo o agregarle latencia en mitad de la carga | — |
 | `ecd-sim` | Autoridad certificadora de prueba con su lista de revocación y su servicio de estampa cronológica | ADR-006 |
-| `postgres` | Repositorio de archivos, llaves, declaraciones, pendientes y resultados, y el registro de evidencia de solo anexar | ADR-004, ADR-007 |
+| `postgres` | Repositorio de archivos, llaves, declaraciones, pendientes y resultados, y el registro de evidencia de solo anexar | ADR-003, ADR-007 |
 | `generador-carga` | k6: genera archivos pequeños a ritmo constante y dispara los masivos | — |
 
 El RNIC simulado hace las veces de la Registraduría que se nombró en la reunión. Basta con un sistema externo simulado: los otros tres tienen el mismo comportamiento ante una caída.

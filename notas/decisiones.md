@@ -101,3 +101,12 @@ esperan una cifra de BCR:
 - Sincronizados: tabla de ASR y contexto de ADR-002, ADR-004 y ADR-007 en el registro, hipótesis y criterios del experimento, leyendas de los cinco diagramas y el índice de vistas.
 - Artefactos (Nicolás): la definición pide «la parte del sistema estimulada», y estaban escritos como procesos. Los 17 pasan a un servicio funcional de Orquídea o a «todo el sistema»: D01 es todo el sistema, porque la caída de un externo recorre de la recepción al resultado; L04, E01, L03, L05, D02 y D03 son el servicio de procesamiento de archivos. Sigue sin nombrarse ningún componente del diseño.
 - ASR atómicos (Nicolás): en disponibilidad y seguridad cada ASR es de un solo tipo (detección, corrección o prevención) con una medida de una sola condición. D01 pasa a corrección con «0 archivos válidos sin aceptar al cierre de la primera ventana nocturna tras el regreso del externo»; D03 pasa a corrección con «0 declaraciones acusadas sin exactamente un resultado definitivo» y título «Exactamente un resultado por declaración acusada»; D02 pasa de «reparación» a corrección; en STRIDE, «Reacción» pasa a «Corrección». D04, S01, S03 y S06 siguen como prevención y S04 como detección. Quedan sin ASR, por falta de umbral, la detección de un externo caído y la corrección de un certificado revocado ya aceptado (sección 6).
+
+### 2026-11-06 · Registro de ADR recreado, agrupado por ASR
+
+- Pedido de Nicolás: recrear los ADR agrupados por ASR, sin detalles de construcción de los diagramas.
+- Numeración seguida por grupo. D01: ADR-001 pipeline, ADR-002 monitor y ventana nocturna (antes ADR-003), ADR-003 llave de idempotencia (antes ADR-004). L04: ADR-004 carriles (antes ADR-002). S06: ADR-005 a ADR-007 sin cambio. Se renumeraron las referencias en el experimento y en los cinco `.drawio`; esta bitácora conserva los números viejos en las entradas anteriores.
+- Insumos al día: medidas nuevas de D01 (0 archivos válidos sin aceptar) y L04 (p99 ≤ 3 s), estímulo de D01 sin duración, artefactos como servicios.
+- Tácticas contrastadas con el ArquiBook (caps. 8, 13 y 15, leídos en el navegador): todas las elegidas están en el árbol del libro. Se agregó LAT-12 «Programar los recursos» a ADR-004, y R-002b nombra la verificación de sanidad (DIS-07). El libro llama «recuperación» a la familia que la página de ASR rotula «corrección».
+- Lint adr-log/v2: 13 errores, todos de estructura (secciones de catálogos y plan de diagramas que el equipo quitó, y los ADR en §2 en vez de §4). Se aceptan.
+
