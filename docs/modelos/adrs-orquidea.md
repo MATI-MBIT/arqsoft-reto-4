@@ -286,7 +286,7 @@ ASR-L04 exige p99 ≤ 3 s por archivo pequeño con 5 masivos en proceso (A). En 
 
 ##### Decisión
 
-Separaremos dos carriles con tópico, pool y despliegue propios: el carril A procesa archivos pequeños en un flujo rápido, y el carril B procesa masivos en un flujo tipo batch. Un enrutador dentro de la recepción clasifica cada archivo por su tamaño en bytes, que conoce al terminar de recibirlo sin abrirlo (SUP-07), y lo publica en el tópico de su carril. El umbral entre carriles y el carril de los medianos quedan abiertos (§7). Lo hacemos porque el aislamiento por construcción es la única forma de sostener el +10 % de ASR-L04 sin depender de cómo se comporte la carga ajena.
+Separaremos dos carriles con tópico, pool y despliegue propios: el carril A procesa archivos pequeños en un flujo rápido, y el carril B procesa masivos en un flujo tipo batch. Un enrutador dentro de la recepción clasifica cada archivo por su tamaño en bytes, que conoce al terminar de recibirlo sin abrirlo (SUP-07), y lo publica en el tópico de su carril. El umbral entre carriles y el carril de los medianos quedan abiertos (§7). Lo hacemos porque el aislamiento por construcción es la única forma de sostener los 3 s de ASR-L04 con 5 masivos en proceso sin depender de cómo se comporte la carga ajena.
 
 ##### Consecuencias
 

@@ -80,7 +80,7 @@ esperan una cifra de BCR:
 - Críticos: D01 (foco), L04 y S06. M01 baja a alta. El resto queda documentado sin táctica ni experimento propios.
 - Decisiones con Nicolás sobre las contradicciones entre el prompt de la reunión, el correo de David (3-nov) y el repo:
   - Terceros: se mantienen los nombres del enunciado (STM, ANTA, MAMC, RNIC y ECD). Registraduría≈RNIC, Relaciones Exteriores≈MAMC, tasas≈STM.
-  - L04 conserva la medida del correo (+10 % de p99). Los 1 s, 3 s, 30 s y 5 min siguen en sus ASR y el experimento los reporta como referencia.
+  - L04 conserva la medida del correo (+10 % de p99). Reemplazado el mismo día por p99 ≤ 3 s (ver la entrada siguiente). Los 1 s, 3 s, 30 s y 5 min siguen en sus ASR y el experimento los reporta como referencia.
   - D01 cambia de medida: «0 archivos sin desenlace al cierre de la primera ventana tras el regreso del externo». Revierte la reformulación del 4-nov porque la respuesta ahora exige reproceso nocturno y notificación, lo que cierra la trampa de los pendientes eternos.
   - Vistas: cuatro (componentes, concurrencia, información, despliegue) más la de contexto, que BCR exigió. La vista de desarrollo sale porque era de M01.
 - Masivos: el prompt decía «más de 10 000 registros, ≤ 5 min». El correo no trae esa cifra; se usa la del enunciado (hasta 100 000, ≤ 5 min) y el vocabulario del repo (masivo = 5 001 a 100 000).
@@ -91,3 +91,12 @@ esperan una cifra de BCR:
 - Vistas recreadas desde cero por un agente sin el contexto del diseño anterior, que solo leyó los ADR, las fichas de los tres ASR críticos y el experimento. Hay 5 archivos y 15 páginas: contexto (1), componentes (4), concurrencia (4), información (4) y despliegue (2). Se eclosionaron Recepción, el Verificador criptográfico y el Reprocesador nocturno. Salieron vista-funcional, vista-dinamica-concurrencia y vista-desarrollo.
 - Lint de los diagramas (`lint_diagrama`, plugin arquitectura 1.20.0) sobre la copia combinada: 1 ERROR que no se resolvió al agotar el tope (B6 en DG-CMP-002: una arista pasa sobre la insignia ASR-S06 de la caché de revocación; la página tiene 23 cruces). Por archivo, la vista de componentes suma 3 AP-23, porque sus secuencias internas viven en la vista de concurrencia. La puerta 3 dio entre 16 y 21 puntos por página. La puerta 4 no corre en modo draw.io con varios archivos: se verificó a mano (5 creados / 5 declarados).
 - Una sola caja externa para STM, ANTA, MAMC y RNIC en el contexto y en la vista general. Revisar si BCR exige verlos por separado.
+
+### 2026-11-06 · ASR alineados con las seis partes y redacción corta
+
+- Revisión contra la definición de escenario (fuente, estímulo, artefacto, ambiente, respuesta y medida). Los 17 ASR quedan con una línea por parte; «Por qué es ASR» y «Cómo se verifica» en dos o tres frases.
+- D01 (Nicolás): la medida pasa a «0 archivos válidos rechazados o sin resultado definitivo al cierre de la primera ventana nocturna tras el regreso del externo». Contar sobre los válidos cierra el hueco de un sistema que deja de acusar; el plazo evita los pendientes eternos. Válido: se habría aceptado con el externo disponible. El duplicado sale del ASR y queda en HU-06. Título: «Ningún archivo se rechaza por la caída de un sistema externo». La fuente lleva los nombres completos de los sistemas externos.
+- L04 (Nicolás): la medida pasa del margen de +10 % frente a la corrida sin masivos a «p99 ≤ 3 s por archivo pequeño», con 5 masivos en el ambiente. Razón: el margen exigía comparar dos corridas y no se leía directo. El +10 % de BCR queda como complemento en la verificación y en el experimento (L-1), con una `[PREGUNTA → BCR]` para confirmar el cambio.
+- S06: una sola fuente, artefacto «emisión del resultado definitivo», un ambiente con la ECD como variable. El no repudio sale de la respuesta (sin medida propia): lo sostienen S06 y S04.
+- Sincronizados: tabla de ASR y contexto de ADR-002, ADR-004 y ADR-007 en el registro, hipótesis y criterios del experimento, leyendas de los cinco diagramas y el índice de vistas.
+
