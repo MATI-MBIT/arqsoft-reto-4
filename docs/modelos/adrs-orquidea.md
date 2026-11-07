@@ -13,15 +13,15 @@ Siete decisiones de arquitectura, agrupadas por el ASR crítico al que responden
 
 ## 0. Índice
 
-| ADR | Grupo | Título | Estado | Confianza | ASRs |
+| ADR | Grupo | Título | Estado | ASRs |
 |---|---|---|---|---|---|
-| ADR-001 | ASR-D01 | Pipeline asíncrono por etapas con acuse temprano sobre una cola durable | Propuesta | Media | ASR-D01, ASR-L04 |
-| ADR-002 | ASR-D01 | Monitor de terceros, pendientes durables y ventana nocturna de reproceso | Propuesta | Media | ASR-D01 |
-| ADR-003 | ASR-D01 | Llave de idempotencia por archivo, registrada antes del acuse | Propuesta | Media | ASR-D01 |
-| ADR-004 | ASR-L04 | Dos carriles aislados con enrutador por tamaño al recibir | Propuesta | Media | ASR-L04 |
-| ADR-005 | ASR-S06 | Verificación criptográfica completa en la recepción, con resultado retenido hasta verificar | Propuesta | Baja | ASR-S06 |
-| ADR-006 | ASR-S06 | Revocación en caché local, con verificación pendiente que se reprocesa en la ventana nocturna | Propuesta | Media | ASR-S06, ASR-D01 |
-| ADR-007 | ASR-S06 | Registro de evidencia de solo anexar, firmado por BCR | Propuesta | Media | ASR-S06 |
+| ADR-001 | ASR-D01 | Pipeline asíncrono por etapas con acuse temprano sobre una cola durable | Propuesta | ASR-D01, ASR-L04 |
+| ADR-002 | ASR-D01 | Monitor de terceros, pendientes durables y ventana nocturna de reproceso | Propuesta | ASR-D01 |
+| ADR-003 | ASR-D01 | Llave de idempotencia por archivo, registrada antes del acuse | Propuesta | ASR-D01 |
+| ADR-004 | ASR-L04 | Dos carriles aislados con enrutador por tamaño al recibir | Propuesta | ASR-L04 |
+| ADR-005 | ASR-S06 | Verificación criptográfica completa en la recepción, con resultado retenido hasta verificar | Propuesta | ASR-S06 |
+| ADR-006 | ASR-S06 | Revocación en caché local, con verificación pendiente que se reprocesa en la ventana nocturna | Propuesta | ASR-S06, ASR-D01 |
+| ADR-007 | ASR-S06 | Registro de evidencia de solo anexar, firmado por BCR | Propuesta | ASR-S06 |
 
 ## 1. Insumos
 
