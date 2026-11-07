@@ -9,19 +9,20 @@ nav_order: 0
 ---
 # ADRs — Orquídea
 
-Siete decisiones de arquitectura, agrupadas por el ASR crítico al que responden. Cada ADR dice qué se decidió, por qué, qué alternativas se descartaron y qué se acepta pagar. Cómo se dibuja cada decisión lo resuelven los diagramas.
+Ocho decisiones de arquitectura, agrupadas por el ASR crítico al que responden. Cada ADR dice qué se decidió, por qué, qué alternativas se descartaron y qué se acepta pagar. Cómo se dibuja cada decisión lo resuelven los diagramas.
 
 ## 0. Índice
 
 | ADR | Grupo | Título | Estado | ASRs |
-|---|---|---|---|---|---|
+|---|---|---|---|---|
 | ADR-001 | ASR-D01 | Pipeline asíncrono por etapas con acuse temprano sobre una cola durable | Propuesta | ASR-D01, ASR-L04 |
-| ADR-002 | ASR-D01 | Monitor de terceros, pendientes durables y ventana nocturna de reproceso | Propuesta | ASR-D01 |
-| ADR-003 | ASR-D01 | Llave de idempotencia por archivo, registrada antes del acuse | Propuesta | ASR-D01 |
-| ADR-004 | ASR-L04 | Dos carriles aislados con enrutador por tamaño al recibir | Propuesta | ASR-L04 |
-| ADR-005 | ASR-S06 | Verificación criptográfica completa en la recepción, con resultado retenido hasta verificar | Propuesta | ASR-S06 |
-| ADR-006 | ASR-S06 | Revocación en caché local, con verificación pendiente que se reprocesa en la ventana nocturna | Propuesta | ASR-S06, ASR-D01 |
-| ADR-007 | ASR-S06 | Registro de evidencia de solo anexar, firmado por BCR | Propuesta | ASR-S06 |
+| ADR-002 | ASR-D01 | Detección de terceros caídos, lentos o de vuelta: monitor con sondeo y timeout por llamada | Propuesta | ASR-D01 |
+| ADR-003 | ASR-D01 | Pendientes durables y ventana nocturna de reproceso, con reintento diario y notificación | Propuesta | ASR-D01 |
+| ADR-004 | ASR-D01 | Llave de idempotencia por archivo, registrada antes del acuse | Propuesta | ASR-D01 |
+| ADR-005 | ASR-L04 | Dos carriles aislados con enrutador por tamaño al recibir | Propuesta | ASR-L04 |
+| ADR-006 | ASR-S06 | Verificación criptográfica completa en la recepción, con resultado retenido hasta verificar | Propuesta | ASR-S06 |
+| ADR-007 | ASR-S06 | Revocación en caché local, con verificación pendiente que se reprocesa en la ventana nocturna | Propuesta | ASR-S06, ASR-D01 |
+| ADR-008 | ASR-S06 | Registro de evidencia de solo anexar, firmado por BCR | Propuesta | ASR-S06 |
 
 ## 1. Insumos
 
@@ -69,7 +70,7 @@ La reunión técnica del 6 de noviembre de 2026 acotó el diseño a tres ASR cr�
 
 ### 2.1 ASR-D01 · Ningún archivo se rechaza por la caída de un sistema externo (foco)
 
-Tres decisiones: separar la recepción del procesamiento (ADR-001), dejar lo pendiente en espera durable hasta la ventana nocturna (ADR-002) y no duplicar lo que se reenvía o se reprocesa (ADR-003). ADR-006, del grupo de seguridad, también contribuye: la verificación pendiente entra a la misma ventana.
+Cuatro decisiones, en el orden del ciclo de una falla: separar la recepción del procesamiento (ADR-001), detectar que un tercero cayó y que volvió (ADR-002), recuperarse dejando lo pendiente en espera durable hasta la ventana nocturna (ADR-003) y no duplicar lo que se reenvía o se reprocesa (ADR-004). ADR-007, del grupo de seguridad, también contribuye: la verificación pendiente entra a la misma ventana.
 
 #### ADR-001: Pipeline asíncrono por etapas con acuse temprano sobre una cola durable
 
@@ -86,10 +87,10 @@ Adoptaremos un pipeline de etapas asíncronas comunicadas por una cola durable. 
 ##### Consecuencias
 
 - (+) ASR-D01: el archivo queda custodiado y encolado antes del acuse; una caída posterior no lo pierde.
-- (+) ASR-L04: cada etapa consume de su propio tópico, y eso permite separar carriles (ADR-004).
+- (+) ASR-L04: cada etapa consume de su propio tópico, y eso permite separar carriles (ADR-005).
 - (−) El remitente recibe un acuse, no un resultado: el resultado definitivo llega después.
 - (−) Una cola que operar y un identificador de correlación que propagar de punta a punta.
-- (±) La cola entrega al menos una vez; los consumidores tienen que ser idempotentes (ADR-003).
+- (±) La cola entrega al menos una vez; los consumidores tienen que ser idempotentes (ADR-004).
 
 ##### Anexo de trazabilidad
 
@@ -106,8 +107,8 @@ Adoptaremos un pipeline de etapas asíncronas comunicadas por una cola durable. 
 
 | ID | Patrón | Variante | Táctica (curso) | Familia |
 |---|---|---|---|---|
-| EST-07 | — | — | Pipe and Filter (pipeline por etapas) | Estilo |
-| ESC-05 | — | — | Asincronía y colas | Escalabilidad · ritmo |
+| EST-07 | Pipe and Filter | — | Pipe and Filter (pipeline por etapas) | Estilo |
+| ESC-05 | Productor → cola → consumidores, con acuse | — | Asincronía y colas | Escalabilidad · ritmo |
 
 **A3. Alternativas**
 
@@ -137,29 +138,96 @@ Descartes: B, KO: con el tercero caído rechaza o deja colgado el archivo (ASR-D
 
 **A6. Relaciones:** reemplaza: — · refina: — · depende-de: — · conflicto-con: —
 
-#### ADR-002: Monitor de terceros, pendientes durables y ventana nocturna de reproceso
+#### ADR-002: Detección de terceros caídos, lentos o de vuelta: monitor con sondeo y timeout por llamada
+
+**Estado:** Propuesta · **Fecha:** 2026-11-06 · **Iteración ADD:** 1 · **Confianza:** Media — tácticas conocidas, pero el periodo de sondeo y el timeout dependen de qué latencia cuenta como extrema, que BCR no ha fijado
+
+##### Contexto
+
+ASR-D01 es de recuperación, y para recuperarse primero hay que saber que algo falló: sin detectar que un tercero cayó, la declaración se queda esperando o se rechaza; sin detectar que volvió, nada sabe cuándo reprocesar. BCR pide tratar un tercero lento igual que uno caído. STM, ANTA, MAMC, RNIC y la ECD están fuera del control de BCR (R-4): no se les puede pedir que emitan señales propias. ¿Cómo se detecta a tiempo que un tercero cayó, que está lento y que ya volvió?
+
+##### Decisión
+
+Un monitor de terceros sondeará a cada uno con ping/echo a un periodo fijo y publicará su estado: disponible, caído o de vuelta. Cada adaptador, además, vence un timeout en cada llamada y reporta al monitor la llamada vencida, así que la lentitud cuenta como caída. Antes de llamar, el orquestador consulta el estado; el reprocesador de ADR-003 lo consulta antes de cada ventana. Lo hacemos porque detectar la caída y el regreso, sin depender de que el tercero coopere, es la condición para recuperarse (ASR-D01).
+
+##### Consecuencias
+
+- (+) ASR-D01: la caída se detecta antes de que una declaración la sufra, y el regreso habilita el reproceso.
+- (+) Un tercero lento no retiene hilos: el timeout corta la espera.
+- (−) Tráfico de sondeo constante hacia cada tercero.
+- (−) El monitor también puede fallar; si cae, el timeout de cada adaptador sigue protegiendo.
+- (±) El periodo de sondeo y el timeout dependen de qué latencia es extrema (§4).
+
+##### Anexo de trazabilidad
+
+**Y-statement:** En el contexto de cuatro terceros y una ECD fuera del control de BCR, frente a ASR-D01, decidimos un monitor que sondea con ping/echo y un timeout en cada adaptador, y descartamos detectar solo por timeout y el heartbeat, para lograr detectar la caída, la lentitud y el regreso de cada tercero, aceptando tráfico de sondeo y un monitor que vigilar.
+
+**A1. ASRs atendidos**
+
+| ASR | Atributo | Medida | Efecto esperado | Rol |
+|---|---|---|---|---|
+| ASR-D01 | Disponibilidad | 0 archivos válidos sin aceptar tras la ventana | contribuye | primario |
+
+**A2. Tácticas**
+
+| ID | Patrón | Variante | Táctica (curso) | Familia |
+|---|---|---|---|---|
+| DIS-01 | Ping/Echo (Health Endpoint Monitoring) | — | Ping / echo: el monitor sondea a cada tercero | Disponibilidad · detectar |
+| DIS-03 | Monitor (Process Monitor) | — | Monitor: agrega sondeos y timeouts en un estado por tercero | Disponibilidad · detectar |
+| DIS-04 | Exception detection (Timeouts) | timeout | Excepción / timeout en cada adaptador | Disponibilidad · detectar |
+
+**A3. Alternativas**
+
+Drivers: ASR-D01, R-4, R-12, fijados antes de evaluar.
+
+| Criterio | A: Monitor con ping/echo + timeout (elegida) | B: Solo timeout por llamada | C: Heartbeat del tercero |
+|---|---|---|---|
+| Detecta la caída | ++ antes de que una declaración la sufra | + cuando una declaración la sufre | ++ por ausencia del latido |
+| Detecta el regreso | ++ el sondeo lo ve | −− solo llamando de nuevo, con declaraciones reales | ++ vuelve el latido |
+| Lentitud como caída | ++ el timeout la corta | ++ el timeout la corta | − el latido puede seguir aunque responda lento |
+| R-4 tercero fuera de control | ++ no le pide nada al tercero | ++ no le pide nada | KO el tercero tendría que emitir latidos |
+
+Descartes: B: no sabe cuándo volvió el tercero sin arriesgar declaraciones reales, y la ventana de ADR-003 necesita ese dato. C, KO: viola R-4, porque obliga a los terceros a emitir latidos.
+
+**A4. Sensibilidad, trade-offs y riesgos**
+
+| ID | Tipo | Descripción | Supuesto del que depende |
+|---|---|---|---|
+| S-002a | Sensibilidad | El tiempo de detección es aproximadamente el periodo de sondeo por los fallos seguidos que declaran la caída | BCR define qué latencia es extrema |
+| TO-002a | Trade-off | Periodo de sondeo corto: detección rápida ▲, tráfico hacia los terceros ▲ | Los terceros toleran el sondeo |
+| R-002a | Riesgo | El monitor no detecta a un tercero que responde a tiempo con datos errados; el libro pide para eso una verificación de sanidad (DIS-07) | La detección de fallas de contenido queda sin ASR (§4) |
+
+**A5. Confirmación**
+
+| Tipo | Qué se prueba | Umbral |
+|---|---|---|
+| Inyección de fallas | Cortar el tercero simulado y agregarle una latencia mayor que el timeout; después restablecerlo | El monitor lo marca caído y luego de vuelta; ninguna declaración se rechaza ni deja hilos bloqueados; se reporta el tiempo de detección |
+
+**A6. Relaciones:** reemplaza: — · refina: ADR-001 · depende-de: — · conflicto-con: —
+
+#### ADR-003: Pendientes durables y ventana nocturna de reproceso, con reintento diario y notificación
 
 **Estado:** Propuesta · **Fecha:** 2026-11-06 · **Iteración ADD:** 1 · **Confianza:** Media — mecanismo acordado con BCR el 6-nov; la hora de la ventana y los días de reintento siguen abiertos
 
 ##### Contexto
 
-ASR-D01 exige que todo archivo válido recibido durante la caída de STM, ANTA, MAMC, RNIC o la ECD quede aceptado al cierre de la primera ventana nocturna tras el regreso del externo. Las caídas pueden durar horas, R-13 prohíbe descartar, y BCR pregunta qué evita el estallido cuando un tercero vuelve con 500 000 declaraciones acumuladas (C-04). ADR-001 sacó el enriquecimiento del camino del acuse. ¿Cómo se sabe que un tercero cayó, dónde espera lo que lo necesita, y cuándo se reprocesa?
+ASR-D01 exige que todo archivo válido recibido durante la caída de un tercero quede aceptado al cierre de la primera ventana nocturna tras su regreso. Las caídas pueden durar horas, R-13 prohíbe descartar, y BCR pregunta qué evita el estallido cuando un tercero vuelve con 500 000 declaraciones acumuladas (C-04). ADR-001 sacó el enriquecimiento del camino del acuse, y ADR-002 dice cuándo un tercero cayó y cuándo volvió. ¿Dónde espera lo que necesita al tercero caído, y cuándo y cómo se reprocesa?
 
 ##### Decisión
 
-Un monitor sondeará a cada tercero y publicará su estado. Antes de llamar, el orquestador consulta ese estado: si el tercero está caído, o si su adaptador vence el timeout, la declaración queda pendiente en un tópico durable. Un reprocesador corre cada noche a hora fija y reintenta todo lo pendiente; si el tercero sigue caído, lo reprograma para la noche siguiente, y al agotar los días de reintento lo manda a notificar, sin sacarlo de los pendientes: se sigue reprocesando hasta que el tercero vuelva. Lo hacemos porque cumple ASR-D01 sin perder nada, y porque reprocesar en una ventana fija, a ritmo propio, evita el estallido (C-04).
+Cuando ADR-002 marca al tercero caído, o su adaptador vence el timeout, la declaración queda pendiente en un tópico durable y el archivo sigue acusado: no se rechaza. Un reprocesador corre cada noche a hora fija; si el tercero ya volvió, reprocesa lo pendiente a ritmo propio, y si sigue caído, lo reprograma para la noche siguiente. Al agotar los días de reintento, notifica al remitente sin sacar el archivo de los pendientes, y lo sigue reprocesando hasta que el tercero vuelva. Lo hacemos porque cumple ASR-D01 sin perder nada, y porque reprocesar en una ventana fija, a ritmo propio, evita el estallido (C-04).
 
 ##### Consecuencias
 
-- (+) ASR-D01: la caída nunca llega al acuse ni produce un rechazo; todo pendiente tiene ventana y desenlace.
+- (+) ASR-D01: la caída nunca produce un rechazo; todo pendiente tiene ventana, reintento y desenlace.
 - (+) El reproceso corre en el valle nocturno, a un ritmo que fija el reprocesador y no el regreso del tercero.
 - (−) Lo pendiente espera hasta la noche aunque el tercero vuelva en minutos (SUP-10).
-- (−) El monitor también puede fallar; si cae, el timeout de cada adaptador sigue protegiendo.
+- (−) Los pendientes de una caída larga ocupan almacenamiento hasta que el tercero vuelve.
 - (±) La hora de la ventana y los días de reintento los fija BCR (§4).
 
 ##### Anexo de trazabilidad
 
-**Y-statement:** En el contexto de cuatro terceros y una ECD que caen durante horas, frente a ASR-D01, decidimos un monitor de terceros con pendientes durables y una ventana nocturna de reproceso con reintento diario y notificación, y descartamos el circuit breaker con drenaje inmediato y el reintento síncrono, para lograr que todo archivo válido termine aceptado sin estallido al volver el tercero, aceptando que lo pendiente espere hasta la noche.
+**Y-statement:** En el contexto de terceros que caen durante horas y de la detección de ADR-002, frente a ASR-D01, decidimos pendientes durables con una ventana nocturna de reproceso, reintento diario y notificación sin abandonar el archivo, y descartamos el drenaje inmediato al volver el tercero y el reintento síncrono, para lograr que todo archivo válido termine aceptado sin estallido, aceptando que lo pendiente espere hasta la noche.
 
 **A1. ASRs atendidos**
 
@@ -171,21 +239,19 @@ Un monitor sondeará a cada tercero y publicará su estado. Antes de llamar, el 
 
 | ID | Patrón | Variante | Táctica (curso) | Familia |
 |---|---|---|---|---|
-| DIS-03 | Health Monitor | — | Monitor del estado de cada tercero | Disponibilidad · detectar |
-| DIS-04 | Timeout | timeout | Timeout en cada adaptador | Disponibilidad · detectar |
 | DIS-12 | Retry (+ Idempotent Receiver) | diferido-por-cola | Reintento diferido a la ventana nocturna | Disponibilidad · recuperar |
 | DIS-14 | Graceful Degradation (dependencia dura → blanda) | fallback | Degradación con gracia: acusar sin el tercero | Disponibilidad · recuperar |
 
 **A3. Alternativas**
 
-Drivers: ASR-D01, R-4, R-13, C-04, SUP-10, fijados antes de evaluar.
+Drivers: ASR-D01, R-13, C-04, SUP-10, fijados antes de evaluar.
 
-| Criterio | A: Monitor + pendientes + ventana nocturna (elegida) | B: Circuit breaker + drenaje inmediato con tasa limitada | C: Reintento síncrono con espera creciente |
+| Criterio | A: Pendientes + ventana nocturna (elegida) | B: Drenaje inmediato con tasa limitada al volver | C: Reintento síncrono con espera creciente |
 |---|---|---|---|
-| ASR-D01 todo válido aceptado | ++ cada pendiente tiene ventana, reintento y notificación | + queda pendiente, sin desenlace si el tercero no vuelve | − al agotar reintentos, rechaza o bloquea |
+| ASR-D01 todo válido aceptado | ++ cada pendiente tiene ventana, reintento y notificación | + se reprocesa al volver, sin desenlace si no vuelve | − al agotar reintentos, rechaza o bloquea |
 | C-04 estallido al volver | ++ el ritmo lo fija la ventana | + la tasa limitada lo contiene, si se calibra | −− todos reintentan a la vez |
 | SUP-10 inmediatez al volver | − espera hasta la noche | ++ reprocesa apenas vuelve | + reintenta en minutos |
-| R-12 prueba local | + un planificador y un monitor | − un breaker por adaptador y un gestor de drenaje | ++ una política de reintento |
+| R-12 prueba local | + un planificador | − un gestor de drenaje con su tasa | ++ una política de reintento |
 
 Descartes: B: gana en inmediatez, pero no da desenlace a lo que sigue pendiente después de días, y BCR acordó la ventana nocturna el 6-nov. C, KO: con caídas de horas agota los hilos y termina rechazando (ASR-D01, R-13).
 
@@ -193,26 +259,24 @@ Descartes: B: gana en inmediatez, pero no da desenlace a lo que sigue pendiente 
 
 | ID | Tipo | Descripción | Supuesto del que depende |
 |---|---|---|---|
-| S-002a | Sensibilidad | Cuánto tarda en dejar de llamarse a un tercero caído depende del sondeo y del timeout | BCR define qué latencia es extrema |
-| TO-002a | Trade-off | Ventana nocturna: control del ritmo ▲, inmediatez al volver el tercero ▼ | SUP-10 |
-| R-002a | Riesgo | Tras una caída de varios días, una sola ventana no alcanza a reprocesar lo acumulado | El reprocesador trabaja por lotes y la ventana dura lo suficiente |
-| R-002b | Riesgo | El monitor no detecta a un tercero que responde con datos errados; el libro pide para eso una verificación de sanidad (DIS-07) | La detección de fallas de contenido queda sin ASR (§4) |
+| TO-003a | Trade-off | Ventana nocturna: control del ritmo ▲, inmediatez al volver el tercero ▼ | SUP-10 |
+| R-003a | Riesgo | Tras una caída de varios días, una sola ventana no alcanza a reprocesar lo acumulado | El reprocesador trabaja por lotes y la ventana dura lo suficiente |
 
 **A5. Confirmación**
 
 | Tipo | Qué se prueba | Umbral |
 |---|---|---|
-| Inyección de fallas | Caer el tercero simulado, enviar archivos válidos, disparar la ventana con el tercero de vuelta y conciliar | 0 archivos válidos sin aceptar al cierre de la ventana |
+| Inyección de fallas | Caer el tercero simulado, enviar archivos válidos, disparar la ventana con el tercero caído y de vuelta, agotar los reintentos y restablecerlo | 0 archivos válidos sin aceptar al cierre de la primera ventana tras el regreso, también los notificados |
 
-**A6. Relaciones:** reemplaza: — · refina: ADR-001 · depende-de: ADR-003 · conflicto-con: —
+**A6. Relaciones:** reemplaza: — · refina: ADR-001 · depende-de: ADR-002, ADR-004 · conflicto-con: —
 
-#### ADR-003: Llave de idempotencia por archivo, registrada antes del acuse
+#### ADR-004: Llave de idempotencia por archivo, registrada antes del acuse
 
 **Estado:** Propuesta · **Fecha:** 2026-11-06 · **Iteración ADD:** 1 · **Confianza:** Media — depende de que el XSD traiga los cuatro campos de la llave (SUP-09)
 
 ##### Contexto
 
-El reproceso nocturno de ADR-002 y la entrega al menos una vez de ADR-001 pueden aplicar dos veces la misma declaración, y ASR-D01 cuenta como fallo un archivo válido que no termina aceptado una sola vez. La historia HU-06 pide además rechazar como duplicado el reenvío de un archivo pendiente, sin tocar el original. En la reunión se propuso la llave entidad + fecha + lote + consecutivo. ¿Cómo se reconoce un archivo ya recibido, y cómo se evita aplicar dos veces lo reprocesado?
+El reproceso nocturno de ADR-003 y la entrega al menos una vez de ADR-001 pueden aplicar dos veces la misma declaración, y ASR-D01 cuenta como fallo un archivo válido que no termina aceptado una sola vez. La historia HU-06 pide además rechazar como duplicado el reenvío de un archivo pendiente, sin tocar el original. En la reunión se propuso la llave entidad + fecha + lote + consecutivo. ¿Cómo se reconoce un archivo ya recibido, y cómo se evita aplicar dos veces lo reprocesado?
 
 ##### Decisión
 
@@ -257,8 +321,8 @@ Descartes: B: un lote firmado de nuevo cambia los bytes y se cuela como archivo 
 
 | ID | Tipo | Descripción | Supuesto del que depende |
 |---|---|---|---|
-| TO-003a | Trade-off | Unicidad antes del acuse: corrección ▲, una escritura más en el acuse ▼ | La escritura cabe en el tiempo del acuse |
-| R-003a | Riesgo | Falsos duplicados si la llave no es única en el negocio | SUP-09 |
+| TO-004a | Trade-off | Unicidad antes del acuse: corrección ▲, una escritura más en el acuse ▼ | La escritura cabe en el tiempo del acuse |
+| R-004a | Riesgo | Falsos duplicados si la llave no es única en el negocio | SUP-09 |
 
 **A5. Confirmación**
 
@@ -272,7 +336,7 @@ Descartes: B: un lote firmado de nuevo cambia los bytes y se cuela como archivo 
 
 Una decisión: dos carriles aislados, sobre el pipeline de ADR-001.
 
-#### ADR-004: Dos carriles aislados con enrutador por tamaño al recibir
+#### ADR-005: Dos carriles aislados con enrutador por tamaño al recibir
 
 **Estado:** Propuesta · **Fecha:** 2026-11-06 · **Iteración ADD:** 1 · **Confianza:** Media — el aislamiento se sostiene por construcción, pero el umbral entre carriles no está fijado y el quiebre con más de 5 masivos no se ha medido
 
@@ -306,9 +370,9 @@ Separaremos dos carriles, cada uno con su tópico, su pool y su despliegue: el c
 
 | ID | Patrón | Variante | Táctica (curso) | Familia |
 |---|---|---|---|---|
-| DIS-22 | — | — | Bulkhead (compartimentos) | Disponibilidad · prevenir |
-| LAT-03 | — | — | Priorizar eventos: enrutar por tamaño al recibir | Desempeño · controlar la demanda |
-| LAT-12 | — | — | Programar los recursos: cada carril con su pool y su política | Desempeño · gestionar recursos |
+| DIS-22 | Bulkhead | — | Bulkhead (compartimentos) | Disponibilidad · prevenir |
+| LAT-03 | Clasificador con carriles | — | Priorizar eventos: enrutar por tamaño al recibir | Desempeño · controlar la demanda |
+| LAT-12 | Scheduler con su política | — | Programar los recursos: cada carril con su pool y su política | Desempeño · gestionar recursos |
 
 **A3. Alternativas**
 
@@ -326,10 +390,10 @@ Descartes: B: la prioridad no expropia a un masivo que ya ocupa el pool, y ASR-L
 
 | ID | Tipo | Descripción | Supuesto del que depende |
 |---|---|---|---|
-| S-004a | Sensibilidad | El p99 de los pequeños depende del tamaño del pool del carril A | La carga normal es de 400 pequeños/min |
-| TO-004a | Trade-off | Carriles dedicados: latencia de pequeños ▲, eficiencia de capacidad ▼ | C-03 |
-| R-004a | Riesgo | Con más de 5 masivos el carril B se satura, aunque el A no lo note | Nadie ha dicho qué pasa con el sexto masivo |
-| NR-004a | No-riesgo | Enrutar por bytes no exige abrir el archivo | SUP-07 |
+| S-005a | Sensibilidad | El p99 de los pequeños depende del tamaño del pool del carril A | La carga normal es de 400 pequeños/min |
+| TO-005a | Trade-off | Carriles dedicados: latencia de pequeños ▲, eficiencia de capacidad ▼ | C-03 |
+| R-005a | Riesgo | Con más de 5 masivos el carril B se satura, aunque el A no lo note | Nadie ha dicho qué pasa con el sexto masivo |
+| NR-005a | No-riesgo | Enrutar por bytes no exige abrir el archivo | SUP-07 |
 
 **A5. Confirmación**
 
@@ -341,9 +405,9 @@ Descartes: B: la prioridad no expropia a un masivo que ya ocupa el pool, y ASR-L
 
 ### 2.3 ASR-S06 · Ningún archivo se acepta sin validación criptográfica completa
 
-Tres decisiones: verificar todo en la recepción y retener el resultado (ADR-005), comprobar la revocación sin depender en línea de la ECD (ADR-006) y conservar la evidencia que da el no repudio (ADR-007).
+Tres decisiones: verificar todo en la recepción y retener el resultado (ADR-006), comprobar la revocación sin depender en línea de la ECD (ADR-007) y conservar la evidencia que da el no repudio (ADR-008).
 
-#### ADR-005: Verificación criptográfica completa en la recepción, con resultado retenido hasta verificar
+#### ADR-006: Verificación criptográfica completa en la recepción, con resultado retenido hasta verificar
 
 **Estado:** Propuesta · **Fecha:** 2026-11-06 · **Iteración ADD:** 1 · **Confianza:** Baja — verificar 50 MB en streaming dentro del segundo no se ha medido (SUP-01)
 
@@ -360,7 +424,7 @@ Verificaremos en la recepción, con un parser en streaming sin DTD ni entidades 
 - (+) ASR-S06: ningún camino llega a aceptación sin verificación completa.
 - (−) Un acuse de custodia no prueba autenticidad: el remitente espera el resultado.
 - (−) Verificar en streaming un XML de 50 MB es lo más incierto del diseño (SUP-01).
-- (±) El estado «verificación pendiente» lo comparten ADR-005 y ADR-006.
+- (±) El estado «verificación pendiente» lo comparten ADR-006 y ADR-007.
 
 ##### Anexo de trazabilidad
 
@@ -377,8 +441,8 @@ Verificaremos en la recepción, con un parser en streaming sin DTD ni entidades 
 | ID | Patrón | Variante | Táctica (curso) | Familia |
 |---|---|---|---|---|
 | SEG-02 | Authenticator | un-factor | Autenticar actores: firma y firmante del archivo | Seguridad · resistir |
-| SEG-11 | — | — | Verificar integridad: lo verificado es lo procesado | Seguridad · detectar |
-| SEG-08 | — | — | Validar la entrada: parser sin DTD ni entidades externas | Seguridad · resistir |
+| SEG-11 | Verificación de firma | — | Verificar integridad: lo verificado es lo procesado | Seguridad · detectar |
+| SEG-08 | Validación antes de la lógica | — | Validar la entrada: parser sin DTD ni entidades externas | Seguridad · resistir |
 
 **A3. Alternativas**
 
@@ -396,9 +460,9 @@ Descartes: B: deja a un remitente de masivos sin acuse mientras se verifica. C, 
 
 | ID | Tipo | Descripción | Supuesto del que depende |
 |---|---|---|---|
-| S-005a | Sensibilidad | El tiempo de verificación crece con el tamaño del archivo | SUP-01 |
-| TO-005a | Trade-off | Acuse de custodia: recepción sin bloqueo ▲, autenticidad en el acuse ▼ | BCR acepta que ese acuse no certifique la firma |
-| R-005a | Riesgo | Un parser que arma el árbol completo reabre la firma envuelta y agota la memoria | El parser trabaja en streaming sobre el elemento firmado |
+| S-006a | Sensibilidad | El tiempo de verificación crece con el tamaño del archivo | SUP-01 |
+| TO-006a | Trade-off | Acuse de custodia: recepción sin bloqueo ▲, autenticidad en el acuse ▼ | BCR acepta que ese acuse no certifique la firma |
+| R-006a | Riesgo | Un parser que arma el árbol completo reabre la firma envuelta y agota la memoria | El parser trabaja en streaming sobre el elemento firmado |
 
 **A5. Confirmación**
 
@@ -409,28 +473,28 @@ Descartes: B: deja a un remitente de masivos sin acuse mientras se verifica. C, 
 
 **A6. Relaciones:** reemplaza: — · refina: ADR-001 · depende-de: — · conflicto-con: —
 
-#### ADR-006: Revocación en caché local, con verificación pendiente que se reprocesa en la ventana nocturna
+#### ADR-007: Revocación en caché local, con verificación pendiente que se reprocesa en la ventana nocturna
 
 **Estado:** Propuesta · **Fecha:** 2026-11-06 · **Iteración ADD:** 1 · **Confianza:** Media — la ventana de revocación depende de SUP-03
 
 ##### Contexto
 
-ASR-S06 exige comprobar la revocación antes de aceptar, y ASR-D01 cuenta a la ECD entre los sistemas cuya caída no puede dejar archivos válidos sin aceptar. Consultar a la ECD en línea por cada archivo ata la recepción a su disponibilidad. ADR-005 retiene el resultado hasta verificar, y ADR-002 ya reprocesa lo pendiente cada noche. ¿Cómo se comprueba la revocación sin depender en línea de la ECD, y qué pasa con un archivo cuya revocación no se pudo comprobar?
+ASR-S06 exige comprobar la revocación antes de aceptar, y ASR-D01 cuenta a la ECD entre los sistemas cuya caída no puede dejar archivos válidos sin aceptar. Consultar a la ECD en línea por cada archivo ata la recepción a su disponibilidad. ADR-006 retiene el resultado hasta verificar, y ADR-003 ya reprocesa lo pendiente cada noche. ¿Cómo se comprueba la revocación sin depender en línea de la ECD, y qué pasa con un archivo cuya revocación no se pudo comprobar?
 
 ##### Decisión
 
-Mantendremos localmente la lista de revocación de la ECD y las respuestas OCSP por certificado, refrescadas periódicamente. Si la información está vigente, la verificación es local. Si la ECD está caída y la información venció, el archivo recibe acuse en «verificación pendiente», no llega a resultado definitivo y entra a la ventana nocturna de ADR-002. Lo hacemos porque cumple ASR-S06 sin consultar a la ECD por archivo y reutiliza el desenlace que ASR-D01 ya exige.
+Mantendremos localmente la lista de revocación de la ECD y las respuestas OCSP por certificado, refrescadas periódicamente. Si la información está vigente, la verificación es local. Si la ECD está caída y la información venció, el archivo recibe acuse en «verificación pendiente», no llega a resultado definitivo y entra a la ventana nocturna de ADR-003. Lo hacemos porque cumple ASR-S06 sin consultar a la ECD por archivo y reutiliza el desenlace que ASR-D01 ya exige.
 
 ##### Consecuencias
 
 - (+) ASR-S06: nada se acepta con la revocación sin comprobar.
 - (+) ASR-D01: la caída de la ECD no detiene la recepción, y sus pendientes siguen el mismo camino que los demás.
-- (−) Un certificado revocado después del último refresco se acepta hasta el siguiente (R-006a).
+- (−) Un certificado revocado después del último refresco se acepta hasta el siguiente (R-007a).
 - (−) Con la ECD caída varios días, los archivos se acumulan en verificación pendiente.
 
 ##### Anexo de trazabilidad
 
-**Y-statement:** En el contexto de la verificación de ADR-005, frente a ASR-S06 y ASR-D01, decidimos la revocación en caché local con verificación pendiente reprocesada en la ventana nocturna, y descartamos la consulta OCSP en línea y la información embebida en la estampa, para lograr una verificación local que no acepta nada sin verificar, aceptando una ventana de revocación.
+**Y-statement:** En el contexto de la verificación de ADR-006, frente a ASR-S06 y ASR-D01, decidimos la revocación en caché local con verificación pendiente reprocesada en la ventana nocturna, y descartamos la consulta OCSP en línea y la información embebida en la estampa, para lograr una verificación local que no acepta nada sin verificar, aceptando una ventana de revocación.
 
 **A1. ASRs atendidos**
 
@@ -443,7 +507,7 @@ Mantendremos localmente la lista de revocación de la ECD y las respuestas OCSP 
 
 | ID | Patrón | Variante | Táctica (curso) | Familia |
 |---|---|---|---|---|
-| LAT-10 | — | — | Mantener copias de datos: lista de revocación en caché | Desempeño · gestionar recursos |
+| LAT-10 | Cache-aside | — | Mantener copias de datos: lista de revocación en caché | Desempeño · gestionar recursos |
 | DIS-14 | Graceful Degradation (dependencia dura → blanda) | fallback | Degradación con gracia: verificación pendiente | Disponibilidad · recuperar |
 
 **A3. Alternativas**
@@ -461,8 +525,8 @@ Descartes: B: ata la recepción a la disponibilidad de la ECD (ASR-D01). C: solo
 
 | ID | Tipo | Descripción | Supuesto del que depende |
 |---|---|---|---|
-| TO-006a | Trade-off | Periodo de refresco: disponibilidad ▲, ventana de revocación ▼ | SUP-03 |
-| R-006a | Riesgo | Un certificado robado y revocado se acepta durante la ventana | SUP-03 |
+| TO-007a | Trade-off | Periodo de refresco: disponibilidad ▲, ventana de revocación ▼ | SUP-03 |
+| R-007a | Riesgo | Un certificado robado y revocado se acepta durante la ventana | SUP-03 |
 
 **A5. Confirmación**
 
@@ -470,15 +534,15 @@ Descartes: B: ata la recepción a la disponibilidad de la ECD (ASR-D01). C: solo
 |---|---|---|
 | Inyección de fallas | ECD simulada caída con la información vencida | 0 archivos aceptados sin verificación completa |
 
-**A6. Relaciones:** reemplaza: — · refina: ADR-005 · depende-de: ADR-002 · conflicto-con: —
+**A6. Relaciones:** reemplaza: — · refina: ADR-006 · depende-de: ADR-003 · conflicto-con: —
 
-#### ADR-007: Registro de evidencia de solo anexar, firmado por BCR
+#### ADR-008: Registro de evidencia de solo anexar, firmado por BCR
 
 **Estado:** Propuesta · **Fecha:** 2026-11-06 · **Iteración ADD:** 1 · **Confianza:** Media — patrón conocido, con una entrada por archivo y no por declaración
 
 ##### Contexto
 
-El enunciado pide garantizar el no repudio. ASR-S06 lo sostiene, porque nada se acepta sin verificación completa, pero esa verificación solo prueba algo si queda como evidencia que el remitente no pueda negar. En la reunión del 6-nov se fijó la táctica del curso «registro de auditoría / no repudio». Si el resultado de ADR-005 solo queda en el repositorio, quien lo administra puede cambiarlo. ¿Dónde y cómo se conserva la prueba de que un archivo firmado llegó y se verificó?
+El enunciado pide garantizar el no repudio. ASR-S06 lo sostiene, porque nada se acepta sin verificación completa, pero esa verificación solo prueba algo si queda como evidencia que el remitente no pueda negar. En la reunión del 6-nov se fijó la táctica del curso «registro de auditoría / no repudio». Si el resultado de ADR-006 solo queda en el repositorio, quien lo administra puede cambiarlo. ¿Dónde y cómo se conserva la prueba de que un archivo firmado llegó y se verificó?
 
 ##### Decisión
 
@@ -493,7 +557,7 @@ Por cada archivo, la recepción anexará a un registro de evidencia, separado de
 
 ##### Anexo de trazabilidad
 
-**Y-statement:** En el contexto de la verificación de ADR-005, frente a ASR-S06, decidimos un registro de evidencia de solo anexar firmado por BCR, y descartamos guardar el resultado solo en el repositorio y encadenar por hash cada evento, para lograr no repudio con una entrada por archivo, aceptando una escritura y una firma más por archivo.
+**Y-statement:** En el contexto de la verificación de ADR-006, frente a ASR-S06, decidimos un registro de evidencia de solo anexar firmado por BCR, y descartamos guardar el resultado solo en el repositorio y encadenar por hash cada evento, para lograr no repudio con una entrada por archivo, aceptando una escritura y una firma más por archivo.
 
 **A1. ASRs atendidos**
 
@@ -505,7 +569,7 @@ Por cada archivo, la recepción anexará a un registro de evidencia, separado de
 
 | ID | Patrón | Variante | Táctica (curso) | Familia |
 |---|---|---|---|---|
-| SEG-18 | Audit Trail | firma | Registro de auditoría / no repudio | Seguridad · recuperar |
+| SEG-18 | Security Logger and Auditor | firma | Registro de auditoría / no repudio | Seguridad · recuperar |
 
 **A3. Alternativas**
 
@@ -522,8 +586,8 @@ Descartes: B: no da no repudio, porque quien administra la base puede alterar la
 
 | ID | Tipo | Descripción | Supuesto del que depende |
 |---|---|---|---|
-| TO-007a | Trade-off | Firma por entrada: no repudio ▲, costo de recepción ▼ | Una entrada por archivo |
-| R-007a | Riesgo | Si la llave de firma de BCR se compromete, la evidencia pierde valor | La llave vive fuera de la aplicación |
+| TO-008a | Trade-off | Firma por entrada: no repudio ▲, costo de recepción ▼ | Una entrada por archivo |
+| R-008a | Riesgo | Si la llave de firma de BCR se compromete, la evidencia pierde valor | La llave vive fuera de la aplicación |
 
 **A5. Confirmación**
 
@@ -531,17 +595,17 @@ Descartes: B: no da no repudio, porque quien administra la base puede alterar la
 |---|---|---|
 | Inspección | Cada archivo aceptado del experimento tiene su entrada firmada, con el hash de los bytes procesados | 100 % de los aceptados con entrada y firma válidas |
 
-**A6. Relaciones:** reemplaza: — · refina: ADR-005 · depende-de: — · conflicto-con: —
+**A6. Relaciones:** reemplaza: — · refina: ADR-006 · depende-de: — · conflicto-con: —
 
 ## 3. Matriz ASR × ADR
 
 S: satisface · C: contribuye.
 
-| ASR | Prioridad | ADR-001 | ADR-002 | ADR-003 | ADR-004 | ADR-005 | ADR-006 | ADR-007 | Hueco |
-|---|---|---|---|---|---|---|---|---|---|
-| ASR-D01 | Crítica | C | S | C | — | — | C | — | — |
-| ASR-L04 | Crítica | C | — | — | S | — | — | — | — |
-| ASR-S06 | Crítica | — | — | — | — | S | C | C | — |
+| ASR | Prioridad | ADR-001 | ADR-002 | ADR-003 | ADR-004 | ADR-005 | ADR-006 | ADR-007 | ADR-008 | Hueco |
+|---|---|---|---|---|---|---|---|---|---|---|
+| ASR-D01 | Crítica | C | C | S | C | — | — | C | — | — |
+| ASR-L04 | Crítica | C | — | — | — | S | — | — | — | — |
+| ASR-S06 | Crítica | — | — | — | — | — | S | C | C | — |
 
 ## 4. Abierto
 
@@ -553,12 +617,14 @@ S: satisface · C: contribuye.
 - ¿Qué latencia de un tercero cuenta como extrema?
 - ¿Qué desfase y qué antigüedad de la estampa se toleran?
 - ¿El XSD trae entidad, fecha, lote y consecutivo (SUP-09)?
-- ¿Qué pasa con el sexto masivo (R-004a)?
+- ¿Qué pasa con el sexto masivo (R-005a)?
 
 **Supuestos:** SUP-01, SUP-03, SUP-07, SUP-09 y SUP-10 (§1.3).
 
-**Riesgos abiertos:** R-002a una caída de varios días desborda una ventana. R-002b el monitor no detecta datos errados. R-003a falsos duplicados. R-005a firma envuelta con un parser de árbol completo. R-006a ventana de revocación. R-007a compromiso de la llave de firma de BCR.
+**Riesgos abiertos:** R-002a el monitor no detecta datos errados. R-003a una caída de varios días desborda una ventana. R-004a falsos duplicados. R-006a firma envuelta con un parser de árbol completo. R-007a ventana de revocación. R-008a compromiso de la llave de firma de BCR.
 
 **Fuera de alcance:** solo se desarrollan los tres ASR críticos del 6-nov; las decisiones de los demás ASR quedan en el historial de git. La autenticación TLS mutua (ADR-13 de BCR) sigue aprobada, pero no entra en esta iteración (R-14). La topología activo-activo (ADR-17 de BCR) es infraestructura. La integración con el Banco de la República queda fuera del reto.
+
+**Patrones de las tácticas.** La columna «Patrón» de cada A2 trae el patrón de la ficha de la táctica; si la táctica no tiene ficha, el que pide el catálogo del curso en su columna «Debe verse».
 
 **Sin catálogos ni plan de diagramas.** Por decisión del equipo (2026-11-06), el registro no lleva catálogo de elementos ni de conectores, plan de diagramas ni evidencia visual: los diagramas derivan sus elementos de las decisiones y las tácticas. Por eso no cumple completo el contrato `adr-log/v2`.

@@ -14,9 +14,9 @@ El experimento no tiene que cumplir los ASR. Si una medida no se alcanza, se rep
 
 | ASR | Hipótesis (la medida del ASR) | Decisiones que se prueban | Escenarios |
 |---|---|---|---|
-| ASR-D01 · disponibilidad, recuperación | Con un sistema externo caído, 0 archivos válidos sin aceptar al cierre de la primera ventana nocturna tras su regreso | [ADR-001, ADR-002 y ADR-003](modelos/adrs-orquidea.md) | D-1 a D-5 |
-| ASR-L04 · latencia | Con 5 masivos en proceso, p99 ≤ 3 s por archivo pequeño | [ADR-004](modelos/adrs-orquidea.md) | L-1 a L-4 |
-| ASR-S06 · seguridad, prevención | 0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas | [ADR-005, ADR-006 y ADR-007](modelos/adrs-orquidea.md) | S-1 a S-3 |
+| ASR-D01 · disponibilidad, recuperación | Con un sistema externo caído, 0 archivos válidos sin aceptar al cierre de la primera ventana nocturna tras su regreso | [ADR-001 a ADR-004](modelos/adrs-orquidea.md) | D-1 a D-5 |
+| ASR-L04 · latencia | Con 5 masivos en proceso, p99 ≤ 3 s por archivo pequeño | [ADR-005](modelos/adrs-orquidea.md) | L-1 a L-4 |
+| ASR-S06 · seguridad, prevención | 0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas | [ADR-006, ADR-007 y ADR-008](modelos/adrs-orquidea.md) | S-1 a S-3 |
 
 Quedan fuera la autenticación del canal (TLS mutuo), la integración con el Banco de la República, las reglas cambiarias completas y la entrega a las áreas de BCR.
 
@@ -30,7 +30,7 @@ Todo corre en Docker Compose sobre un solo equipo. El diagrama está en la vista
 | `kafka` | Cola durable en modo KRaft, nodo único, con los tópicos `carril-a`, `carril-b` y `pendientes` | D01, L04 |
 | `carril-a` | Procesa pequeños con su propio pool y su propio límite de CPU | L04 |
 | `carril-b` | Procesa masivos por lotes, con su propio pool y su propio límite de CPU | L04 |
-| `monitor-terceros` | Sondea al sistema externo simulado y publica su estado | D01 |
+| `monitor-terceros` | Sondea con ping/echo al sistema externo simulado y publica su estado: disponible, caído o de vuelta | D01 |
 | `reprocesador` | Corre la ventana de reproceso al llamar a un endpoint de prueba; reprograma lo pendiente y notifica lo que agotó los reintentos, sin sacarlo de los pendientes | D01, S06 |
 | `tercero-rnic-sim` | RNIC simulado: una tabla de personas ficticias que cruza cédula contra nombre | D01 |
 | `toxiproxy` | Proxy hacia el RNIC simulado, para cortarlo o agregarle latencia en mitad de la carga | D01 |
@@ -55,7 +55,9 @@ Cada archivo deja en `postgres` sus marcas de tiempo, con el reloj del equipo: e
 
 **Hipótesis.** Con el RNIC simulado caído durante la carga, todo archivo válido queda aceptado al cierre de la primera ventana nocturna tras su regreso.
 
-**Tácticas que se prueban.** Pipeline asíncrono con acuse temprano (ADR-001); monitor, timeout, reintento diferido a la ventana nocturna y degradación con gracia (ADR-002); llave de idempotencia en transacción local (ADR-003).
+**Tácticas que se prueban.** Pipeline asíncrono con acuse temprano (ADR-001). Detección: monitor con ping/echo a cada tercero y timeout por llamada (ADR-002). Recuperación: pendientes durables, reintento diferido a la ventana nocturna y degradación con gracia (ADR-003). Llave de idempotencia en transacción local (ADR-004).
+
+La detección va primero porque sin ella no hay recuperación: el monitor es el que dice que el RNIC cayó, para dejar pendiente, y que volvió, para reprocesar. Por eso cada escenario mide también cuándo la detecta.
 
 Las caídas de horas se comprimen: una «noche» dura lo que tarde la prueba en disparar la ventana a mano.
 
@@ -64,7 +66,7 @@ Las caídas de horas se comprimen: una «noche» dura lo que tarde la prueba en 
 | D-1 | Caída y regreso | 400 pequeños por minuto durante 20 min; a los 5 min `toxiproxy` corta el RNIC; a los 15 min se restablece y se dispara la ventana | Válidos aceptados al cierre de la ventana; rechazos por la caída; cédulas que no corresponden, rechazadas por la regla |
 | D-2 | Sigue caído en la ventana | Como D-1, pero la primera ventana corre con el RNIC caído y la segunda con el RNIC de vuelta | Pendientes reprogramados; válidos aceptados en la segunda ventana |
 | D-3 | Reintentos agotados | El RNIC sigue caído durante 2 ventanas, el máximo de días fijado solo para la prueba `[SUPUESTO → BCR]`; después se restablece | Archivos notificados que siguen pendientes y quedan aceptados en la ventana siguiente al regreso |
-| D-4 | Latencia extrema | `toxiproxy` agrega al RNIC una latencia mayor que el timeout del adaptador | El monitor lo marca caído; las declaraciones quedan pendientes, sin rechazos ni hilos bloqueados |
+| D-4 | Detección de lentitud y regreso | `toxiproxy` agrega al RNIC una latencia mayor que el timeout del adaptador; luego la quita | El monitor lo marca caído y después de vuelta; las declaraciones quedan pendientes, sin rechazos ni hilos bloqueados |
 | D-5 | Reenvío y reproceso sin duplicar | Con archivos pendientes, se reenvían 50 con la misma llave y 50 nuevos; luego se repiten eventos del reproceso | Reenvíos rechazados como duplicados; nuevos recibidos; ningún resultado escrito dos veces |
 
 | Métrica | Cómo se calcula |
@@ -73,7 +75,7 @@ Las caídas de horas se comprimen: una «noche» dura lo que tarde la prueba en 
 | Rechazos por la caída | Rechazos cuya causa es la falta de respuesta del externo |
 | Duplicados | Archivos con la misma llave aceptados más de una vez; resultados escritos dos veces |
 | Pendientes y ventana | Mensajes en `pendientes`; duración de cada ventana |
-| Detección de la caída | De la caída en `toxiproxy` al cambio de estado en el monitor |
+| Detección de la caída y del regreso | De la caída (o del regreso) en `toxiproxy` al cambio de estado en el monitor; también, cuántas declaraciones alcanzan a llamar al tercero caído antes de que se detecte |
 
 **Criterio.** Éxito: 0 archivos válidos sin aceptar en D-1 a D-4. Fracaso: un solo archivo válido rechazado, perdido o sin aceptar tras la ventana. Se reportan además los duplicados de D-5, la profundidad de pendientes, la duración de la ventana y el tiempo de detección.
 
@@ -81,7 +83,7 @@ Las caídas de horas se comprimen: una «noche» dura lo que tarde la prueba en 
 
 **Hipótesis.** Con 5 masivos en proceso, el p99 de los archivos pequeños es ≤ 3 s, desde que el archivo termina de llegar hasta que su resultado está disponible.
 
-**Tácticas que se prueban.** Carriles aislados (bulkhead), enrutamiento por tamaño al recibir y un pool con su política por carril (ADR-004).
+**Tácticas que se prueban.** Carriles aislados (bulkhead), enrutamiento por tamaño al recibir y un pool con su política por carril (ADR-005).
 
 | ID | Escenario | Qué se hace | Qué se observa |
 |---|---|---|---|
@@ -103,7 +105,7 @@ Las caídas de horas se comprimen: una «noche» dura lo que tarde la prueba en 
 
 **Hipótesis.** Ningún archivo con firma, firmante, cadena, estampa o revocación inválida, o que no se pudo verificar, llega a aceptación, con la ECD disponible o caída.
 
-**Tácticas que se prueban.** Autenticar la firma y el firmante, verificar la integridad y validar la entrada (ADR-005); revocación en caché con verificación pendiente (ADR-006); registro de evidencia firmado (ADR-007).
+**Tácticas que se prueban.** Autenticar la firma y el firmante, verificar la integridad y validar la entrada (ADR-006); revocación en caché con verificación pendiente (ADR-007); registro de evidencia firmado (ADR-008).
 
 BCR aceptó que este ASR es difícil de probar y que basta con que la arquitectura lo muestre con claridad. La prueba es mínima.
 
