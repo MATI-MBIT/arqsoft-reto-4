@@ -21,7 +21,7 @@ Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dic
 | # | ID | Atributo | Qué exige | Amb. | Prioridad | Impacto | Origen |
 |---|---|---|---|---|---|---|---|
 | 1 | [ASR-D01](#asr-d01) | Disponibilidad · recuperación | **Ningún archivo se rechaza por la caída de un sistema externo.** 0 archivos válidos rechazados o sin resultado tras la ventana nocturna | C1 | Crítica | Alto | `enunciado` · BCR |
-| 2 | [ASR-L04](#asr-l04) | Latencia | **Aislamiento de carga entre archivos masivos y pequeños.** Con 5 masivos, el p99 de los pequeños sube ≤ 10 % | A | Crítica | Alto | `enunciado` · BCR |
+| 2 | [ASR-L04](#asr-l04) | Latencia | **Aislamiento de carga entre archivos masivos y pequeños.** Aumento del p99 de los pequeños por los masivos ≤ 10 % | A | Crítica | Alto | `enunciado` · BCR |
 | 3 | [ASR-S06](#asr-s06) | Seguridad · prevención | **Ningún archivo se acepta sin validación criptográfica completa.** 0 aceptados sin verificar | A, C1 | Crítica | Alto | `enunciado` |
 | 4 | [ASR-M01](#asr-m01) | Modificabilidad · adaptativo | **Regla cambiaria nueva en ≤ 4 h-persona.** Sin recompilar | Despliegue | Alta | Alto | `enunciado` · BCR |
 | 5 | [ASR-S01](#asr-s01) | Seguridad · prevención | **Validación criptográfica en ≤ 200 ms.** p99 desde el último byte | A | Alta | Alto | `enunciado` |
@@ -207,9 +207,9 @@ sequenceDiagram
 | **Artefacto** | El procesamiento completo de los archivos pequeños |
 | **Ambiente** | A: 400 pequeños por minuto y 5 masivos concurrentes, sin fallas |
 | **Respuesta** | Cada archivo pequeño se resuelve casi tan rápido como sin masivos |
-| **Medida** | El p99 de los archivos pequeños con 5 masivos en proceso no supera en más de 10 % su p99 sin masivos: si sin masivos es 2 s, con masivos es ≤ 2,2 s. Se mide del último byte al resultado definitivo |
+| **Medida** | Aumento del p99 de los archivos pequeños por los masivos en proceso: ≤ 10 % |
 | **Por qué es ASR** | Obliga a decidir si pequeños y masivos comparten capacidad. Con +100 % bastaría una prioridad; con +10 %, el aislamiento tiene que ser por construcción. Nota de trampa: la medida es relativa; el piso absoluto son los 3 s del enunciado, que el experimento reporta |
-| **Cómo se verifica** | La misma carga A, sin masivos y con 5; se comparan los dos p99. Luego se suben los masivos hasta encontrar el quiebre |
+| **Cómo se verifica** | La misma carga A se corre sin masivos y con 5, midiendo el p99 del último byte al resultado definitivo. El aumento es la diferencia entre las dos corridas: si sin masivos da 2 s, con masivos no puede pasar de 2,2 s. Luego se suben los masivos hasta encontrar el quiebre |
 | **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` («jamás encolará ni degradará la latencia de los archivos de pocos registros») · BCR: N = 5 y margen de 10 % |
 
 ```mermaid
@@ -226,7 +226,7 @@ sequenceDiagram
     Note over O: ARTEFACTO · procesamiento completo del archivo pequeño
     O-->>P: RESPUESTA · resultado definitivo, sin esperar a los archivos masivos
     Note over P,O: t1 · resultado disponible
-    Note over P,O: MEDIDA · p99 con 5 masivos ≤ p99 sin masivos + 10 % (2 s → 2,2 s)
+    Note over P,O: MEDIDA · aumento del p99 por los masivos ≤ 10 %
     end
     rect rgb(255, 228, 225)
     Note over P,M: LO QUE EL ASR DESCARTA · pequeños y masivos en la misma fila.<br/>El archivo pequeño esperaría a que avancen los archivos masivos, como hoy en horas pico
