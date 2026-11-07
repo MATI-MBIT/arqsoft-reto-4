@@ -12,7 +12,7 @@ Los de Orquídea salen del enunciado del curso, del informe de consultoría del 
 
 Cada ASR tiene una sola medida y no nombra componentes ni tecnologías. En disponibilidad y seguridad, además, cada uno es de un solo tipo, según las familias del ArquiBook: en disponibilidad, detección, recuperación o prevención; en seguridad, prevención, detección, reacción o recuperación.
 
-El artefacto es la parte de Orquídea que recibe el estímulo: todo el sistema o uno de sus servicios. Los servicios son recepción y acuse, verificación criptográfica, procesamiento de archivos, reglas cambiarias, validación de estructura, integración con los sistemas externos, consulta, entrega a las áreas y registro de auditoría.
+El artefacto es la parte de Orquídea que recibe el estímulo: todo el sistema o uno de sus servicios. Los servicios son recepción y acuse, verificación criptográfica, procesamiento de archivos, reglas cambiarias, validación de estructura, integración con los sistemas externos, consulta, corrección y anulación, entrega a las áreas y registro de auditoría.
 
 Cuatro grupos de siglas se repiten en la página. BCR es la entidad que opera Orquídea. Los remitentes son los intermediarios del mercado cambiario (IMC) y los titulares de cuentas de compensación. STM, ANTA, MAMC y RNIC son los cuatro sistemas externos que aportan tasas, datos tributarios y aduaneros, datos migratorios e identidad. La ECD es la entidad de certificación digital que emite los certificados y las estampas cronológicas.
 
@@ -45,14 +45,13 @@ Van en orden de importancia, y cada ID lleva a su ficha. La columna «Amb.» dic
 Los tres primeros son **críticos**, y son los únicos que se desarrollan con táctica, decisión de arquitectura, vistas y experimento. BCR y el equipo los acotaron a tres en la reunión técnica del 6 de noviembre de 2026, para que la arquitectura y la experimentación quedaran centradas en ellos. La disponibilidad es el foco. Los demás ASR siguen documentados con su ficha, sin desarrollo propio.
 
 - **D01 va primero** porque Orquídea depende de cuatro sistemas y una ECD que BCR no controla, y sus caídas pueden durar horas. La información es reportable a otras entidades: ningún archivo puede perderse ni descartarse por una falla ajena.
-- **L04** es el reto tal como lo escribe el enunciado: procesar pequeños y masivos «sin generar encolamientos ni bloqueos mutuos». En la reunión se cerró como un requisito de latencia, no de disponibilidad: los archivos masivos de un remitente grande no pueden degradar la respuesta a los demás.
+- **L04** es el reto tal como lo escribe el enunciado: procesar pequeños y masivos «sin generar encolamientos ni bloqueos mutuos». En la reunión se cerró como un requisito de latencia, no de disponibilidad: los archivos masivos de un remitente grande no pueden degradar la respuesta a los demás. Su medida son los 3 s que el enunciado fija para los pequeños; los plazos de medianos (30 s) y masivos (5 min) no son críticos, pero el experimento los reporta, porque salen de la misma prueba.
 - **S06** protege lo que el enunciado exige del 100 % de los archivos: que ninguno sin verificar termine aceptado. Es lo que sostiene el no repudio, porque el remitente no puede negar un envío cuya firma, firmante y estampa se verificaron.
-- **M01** fue crítico hasta el 6 de noviembre y ahora es alto: sigue entre los seis que BCR priorizó, pero no tiene táctica ni experimento en esta iteración.
-- **S01, E01 e I01** completan los seis que BCR priorizó. S01 cronometra la verificación que S06 protege. E01 parte de un pico de 20 archivos por segundo, y el informe concluye que esa tasa no es la presión real. I01 comparte el problema de M01.
+- **M01** es alto: sigue entre los seis que BCR priorizó, pero no tiene táctica ni experimento en esta iteración.
+- **S01, E01 e I01** completan los seis que BCR priorizó. S01 cronometra la verificación que S06 protege. E01 parte de un pico de 20 archivos por segundo, y el informe concluye que esa tasa no es la presión real. I01 comparte con M01 el problema de absorber un cambio en ≤ 4 h-persona.
 
 Del 8 al 11 son requisitos explícitos del enunciado que BCR no listó y que pesan en la estructura. Del 12 al 17 completan el alcance. BCR evalúa tres de ellos (M02, S04 e I02) con su propia inspección de código en la Fase 4 de la hoja de ruta.
 
-Los 3 s del enunciado para pequeños son la medida de L04. Los plazos de medianos (30 s) y masivos (5 min) no son críticos, pero el experimento de L04 los reporta como referencia, porque se obtienen de la misma prueba.
 
 ### De qué historia de usuario sale cada ASR
 
@@ -167,9 +166,9 @@ Cada ficha trae, debajo de la tabla, un diagrama de secuencia con Orquídea como
 | **Estímulo** | Uno de ellos deja de responder, o responde con latencia extrema |
 | **Artefacto** | Orquídea, todo el sistema |
 | **Ambiente** | C1 - Sistema externo degradado, con la carga de A |
-| **Respuesta** | Sigue recibiendo y acusando. Lo que necesita al externo caído se reprocesa por lotes en la ventana nocturna; si el externo no vuelve en los días de reintento, se notifica al remitente y el archivo sigue pendiente hasta que vuelva |
+| **Respuesta** | Sigue recibiendo y acusando. Lo que necesita al externo caído se reprocesa por lotes en la ventana nocturna. Si el externo no vuelve en los días de reintento `[PREGUNTA → BCR]`, se notifica al remitente y el archivo sigue pendiente hasta que vuelva |
 | **Medida** | 100 % de los archivos válidos procesados dentro de los días de reintento |
-| **Cómo se verifica** | Se cae un externo simulado a mitad de una carga A y se envían archivos válidos y otros que una regla debe rechazar. Tras la ventana nocturna con el externo de vuelta, se concilian los válidos contra los aceptados |
+| **Cómo se verifica** | Se cae un externo simulado a mitad de la carga de A y se envían archivos válidos y otros que una regla debe rechazar. Al cerrar los días de reintento, se concilian los válidos enviados contra los procesados |
 | **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` («continuar operando sin rechazar archivos») · BCR: respuesta del 3-nov y reunión del 6-nov |
 
 ```mermaid
@@ -209,7 +208,7 @@ sequenceDiagram
 | **Ambiente** | A - Operación normal: 400 pequeños por minuto y 5 masivos concurrentes, sin fallas |
 | **Respuesta** | Cada archivo pequeño se resuelve sin esperar a los masivos |
 | **Medida** | p99 ≤ 3 s por archivo pequeño |
-| **Cómo se verifica** | Con 5 masivos en proceso se envían pequeños y se toma el tiempo de cada uno desde que termina de llegar hasta que su resultado está disponible; el p99 tiene que dar ≤ 3 s. Complemento: la misma carga sin masivos, para comprobar el margen de 10 % que propuso BCR. Luego se suben los masivos hasta encontrar el quiebre |
+| **Cómo se verifica** | Con 5 masivos en proceso se envían pequeños y se toma el tiempo de cada uno desde que termina de llegar hasta su resultado definitivo; el p99 tiene que dar ≤ 3 s. Complemento: la misma carga sin masivos, para comprobar el margen de 10 % que propuso BCR. Luego se suben los masivos hasta encontrar el quiebre |
 | **Prioridad · Impacto · Origen** | Crítica · Alto · `enunciado` · BCR |
 
 ```mermaid
@@ -284,7 +283,7 @@ sequenceDiagram
 | **De dónde sale el número** | Del enunciado; BCR precisó que son h-persona con desarrollo y pruebas, sin la aprobación regulatoria |
 | **Quién lo hace** | El equipo de TI de BCR `[SUPUESTO → BCR]` |
 | **Cómo se verifica** | Juicio de expertos, con el protocolo al final de las fichas. Complemento: activar una regla con la carga de A y contar las h-persona y las funciones modificadas |
-| **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` · fue crítico hasta el 6-nov |
+| **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` |
 
 ```mermaid
 sequenceDiagram
@@ -381,7 +380,7 @@ sequenceDiagram
 
 | Parte | Descripción |
 |---|---|
-| **Fuente** | El área de TI de BCR |
+| **Fuente** | El equipo de TI de BCR |
 | **Estímulo** | Integrar la versión nueva del contrato de API de STM, ANTA, MAMC o RNIC · Tipo: adaptativo |
 | **Artefacto** | El servicio de integración con los sistemas externos |
 | **Ambiente** | Desarrollo · socio conocido de antemano · tercero fuera de control |
@@ -394,7 +393,7 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant T as FUENTE · área de TI de BCR
+    participant T as FUENTE · equipo de TI de BCR
     participant O as Orquídea en producción
     box rgb(240,240,240) Fuera de BCR
     participant N as Sistema externo · STM, ANTA, MAMC o RNIC
@@ -425,7 +424,7 @@ sequenceDiagram
 | **Artefacto** | El servicio de procesamiento de archivos |
 | **Ambiente** | C2 - Falla interna, durante B - Carga pico |
 | **Respuesta** | Cada declaración acusada termina con un solo resultado definitivo |
-| **Medida** | 0 declaraciones acusadas sin exactamente un resultado definitivo, por conciliación |
+| **Medida** | 100 % de las declaraciones acusadas con exactamente un resultado definitivo, por conciliación |
 | **Cómo se verifica** | Detener nodos durante la prueba de E01 y conciliar las declaraciones acusadas contra las resueltas |
 | **Prioridad · Impacto · Origen** | Alta · Alto · `enunciado` («sin pérdida de mensajes») |
 
@@ -440,7 +439,7 @@ sequenceDiagram
     Note over O: FUENTE Y ESTÍMULO · un nodo interno falla<br/>con archivos con acuse emitido en curso
     Note over O: ARTEFACTO · el servicio de procesamiento de archivos
     O-->>R: RESPUESTA · exactamente un resultado definitivo por declaración
-    Note over R,O: MEDIDA · 0 declaraciones acusadas sin exactamente un resultado definitivo,<br/>por conciliación entre las declaraciones con acuse y las resueltas
+    Note over R,O: MEDIDA · 100 % de las declaraciones acusadas con exactamente un resultado definitivo,<br/>por conciliación entre las declaraciones con acuse y las resueltas
     end
     rect rgb(255, 228, 225)
     Note over R,O: LO QUE EL ASR DESCARTA · acusar antes de que el archivo quede a salvo,<br/>o reprocesar sin saber qué se aplicó: declaraciones perdidas o dobles
@@ -719,7 +718,7 @@ sequenceDiagram
 | **Artefacto** | El servicio de entrega de datos a las áreas |
 | **Ambiente** | Desarrollo · socio conocido de antemano · propio |
 | **Respuesta** | El área recibe los datos en su formato, con el mismo significado |
-| **Medida** | 0 funciones del flujo principal modificadas para integrarla |
+| **Medida** | 0 funciones del flujo principal modificadas para integrar al área |
 | **De dónde sale el número** | Del informe de consultoría; BCR lo aceptó como secundario |
 | **Quién lo hace** | El equipo de TI de BCR `[SUPUESTO → BCR]` |
 | **Cómo se verifica** | BCR lo evalúa en la Fase 4 con inspección del código |
