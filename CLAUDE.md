@@ -89,6 +89,11 @@ reto:
   número), porque el cliente prioriza con esos ID y Helix numera por atributo.
 - El ASR va en el espacio del problema: no nombra componentes, colas ni
   tecnologías, aunque el cliente ya haya aprobado los ADR.
+- El artefacto es una parte de Orquídea, no un proceso: uno de sus servicios
+  funcionales (recepción y acuse, verificación criptográfica, procesamiento de
+  archivos, reglas cambiarias, validación de estructura, integración con los
+  sistemas externos, consulta, entrega a las áreas, registro de auditoría) o
+  «Orquídea, todo el sistema» (Nicolás, 2026-11-06).
 
 ## Lo que no va en `docs/`
 

@@ -99,4 +99,4 @@ esperan una cifra de BCR:
 - L04 (Nicolás): la medida pasa del margen de +10 % frente a la corrida sin masivos a «p99 ≤ 3 s por archivo pequeño», con 5 masivos en el ambiente. Razón: el margen exigía comparar dos corridas y no se leía directo. El +10 % de BCR queda como complemento en la verificación y en el experimento (L-1), con una `[PREGUNTA → BCR]` para confirmar el cambio.
 - S06: una sola fuente, artefacto «emisión del resultado definitivo», un ambiente con la ECD como variable. El no repudio sale de la respuesta (sin medida propia): lo sostienen S06 y S04.
 - Sincronizados: tabla de ASR y contexto de ADR-002, ADR-004 y ADR-007 en el registro, hipótesis y criterios del experimento, leyendas de los cinco diagramas y el índice de vistas.
-
+- Artefactos (Nicolás): la definición pide «la parte del sistema estimulada», y estaban escritos como procesos. Los 17 pasan a un servicio funcional de Orquídea o a «todo el sistema»: D01 es todo el sistema, porque la caída de un externo recorre de la recepción al resultado; L04, E01, L03, L05, D02 y D03 son el servicio de procesamiento de archivos. Sigue sin nombrarse ningún componente del diseño.

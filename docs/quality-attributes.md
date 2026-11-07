@@ -10,7 +10,7 @@ Un ASR, o requisito arquitectónicamente significativo, es el que obligaría a r
 
 Los de Orquídea salen del enunciado del curso, del informe de consultoría del Grupo 1 y de la respuesta que BCR envió el 3 de noviembre de 2026. El enunciado manda, y la respuesta de BCR es vinculante donde fija una cifra. Las decisiones de arquitectura (ADR) que BCR aprobó responden a estos requisitos, no al revés.
 
-Cada ASR tiene una sola medida y ninguno nombra componentes ni tecnologías. Cuando una medida se puede cumplir sin lograr lo que pide, la ficha lo advierte en una «nota de trampa».
+Cada ASR tiene una sola medida y ninguno nombra componentes ni tecnologías. El artefacto es la parte de Orquídea que recibe el estímulo: uno de sus servicios (recepción y acuse, verificación criptográfica, procesamiento de archivos, reglas cambiarias, validación de estructura, integración con los sistemas externos, consulta, entrega a las áreas o registro de auditoría) o todo el sistema. Cuando una medida se puede cumplir sin lograr lo que pide, la ficha lo advierte en una «nota de trampa».
 
 Cuatro grupos de siglas se repiten en la página. BCR es la entidad que opera Orquídea. Los remitentes son los intermediarios del mercado cambiario (IMC) y los titulares de cuentas de compensación. STM, ANTA, MAMC y RNIC son los cuatro sistemas externos que aportan tasas, datos tributarios y aduaneros, datos migratorios e identidad. La ECD es la entidad de certificación digital que emite los certificados y las estampas cronológicas.
 
@@ -163,7 +163,7 @@ Cada ficha trae, debajo de la tabla, un diagrama de secuencia con Orquídea como
 |---|---|
 | **Fuente** | Los sistemas externos que BCR no controla: el Sistema de Tasas de Mercado (STM), la Agencia Nacional Tributaria y Aduanera (ANTA), el Ministerio de Asuntos Migratorios y Consulares (MAMC), el Registro Nacional de Identificación Ciudadana (RNIC) y la entidad de certificación digital (ECD) |
 | **Estímulo** | Uno de ellos deja de responder, o responde con latencia extrema, durante horas |
-| **Artefacto** | El procesamiento de los archivos que necesitan datos del sistema caído, de la recepción al resultado definitivo |
+| **Artefacto** | Orquídea, todo el sistema |
 | **Ambiente** | C1: un sistema externo caído, con la carga de A |
 | **Respuesta** | Sigue recibiendo y acusando. Lo que necesita al externo queda pendiente y se reprocesa cada noche hasta que vuelva; si no vuelve en los días de reintento, se notifica al remitente |
 | **Medida** | 0 archivos válidos rechazados o sin resultado definitivo al cierre de la primera ventana nocturna tras el regreso del externo |
@@ -183,7 +183,7 @@ sequenceDiagram
     rect rgb(222, 236, 255)
     R->>O: Envía un archivo válido
     O-->>R: Acuse, sin esperar al externo
-    Note over O: ARTEFACTO · procesamiento de los archivos que necesitan al externo<br/>lo que falta queda pendiente
+    Note over O: ARTEFACTO · Orquídea, todo el sistema<br/>lo que falta queda pendiente
     loop Cada noche, en la ventana de reproceso
         alt El externo volvió
             O-->>R: RESPUESTA · resultado definitivo
@@ -204,7 +204,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | Los remitentes de archivos pequeños |
 | **Estímulo** | Envían archivos pequeños, con arribo estocástico, mientras 5 masivos están en proceso |
-| **Artefacto** | El procesamiento completo de los archivos pequeños |
+| **Artefacto** | El servicio de procesamiento de archivos |
 | **Ambiente** | A: 400 pequeños por minuto y 5 masivos concurrentes, sin fallas |
 | **Respuesta** | Cada archivo pequeño se resuelve sin esperar a los masivos |
 | **Medida** | p99 ≤ 3 s por archivo pequeño |
@@ -223,7 +223,7 @@ sequenceDiagram
     rect rgb(222, 236, 255)
     P->>O: ESTÍMULO · archivo pequeño de 1 a 50 registros
     Note over P,O: t0 · último byte recibido
-    Note over O: ARTEFACTO · procesamiento completo del archivo pequeño
+    Note over O: ARTEFACTO · el servicio de procesamiento de archivos
     O-->>P: RESPUESTA · resultado definitivo, sin esperar a los archivos masivos
     Note over P,O: t1 · resultado disponible
     Note over P,O: MEDIDA · p99 de t1 − t0 ≤ 3 s
@@ -239,7 +239,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | Un remitente, o un tercero que lo suplanta |
 | **Estímulo** | Envía un archivo cuya firma, firmante, cadena, estampa o revocación no es válida o no se puede verificar |
-| **Artefacto** | La emisión del resultado definitivo |
+| **Artefacto** | El servicio de verificación criptográfica |
 | **Ambiente** | Carga de A, con la ECD disponible (A) o caída (C1) |
 | **Respuesta** | El archivo puede acusarse, pero no se acepta hasta verificarse; si falla, se rechaza con la causa |
 | **Medida** | 0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas |
@@ -259,7 +259,7 @@ sequenceDiagram
     O-->>R: Acuse de recibo, que puede salir antes de verificar
     E--xO: Caída, y la información de revocación ya venció
     rect rgb(222, 236, 255)
-    Note over O: ARTEFACTO · emisión del resultado definitivo
+    Note over O: ARTEFACTO · el servicio de verificación criptográfica
     alt La verificación termina y falla
         O-->>R: RESPUESTA · rechazo con la causa
     else La verificación sigue incompleta
@@ -278,7 +278,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | La Junta Directiva de BCR |
 | **Estímulo** | Cambia una regla cambiaria sobre datos que ya llegan · Tipo: adaptativo |
-| **Artefacto** | La aplicación de las reglas cambiarias |
+| **Artefacto** | El servicio de reglas cambiarias |
 | **Ambiente** | Ligado en despliegue, sin recompilar |
 | **Respuesta** | La regla se implementa, se prueba, entra a producción y rige desde su fecha |
 | **Medida** | ≤ 4 h-persona desde la especificación aprobada hasta producción |
@@ -304,7 +304,7 @@ sequenceDiagram
     Note over J,O: MEDIDA · esfuerzo entre t0 y t1 ≤ 4 h-persona, con desarrollo y pruebas
     end
     R->>O: Archivos recibidos desde la fecha de vigencia
-    Note over O: ARTEFACTO · aplicación de reglas cambiarias<br/>la regla nueva rige para estos archivos
+    Note over O: ARTEFACTO · el servicio de reglas cambiarias<br/>la regla nueva rige para estos archivos
     rect rgb(255, 228, 225)
     Note over J,R: LO QUE EL ASR DESCARTA · reglas escritas en el código del sistema.<br/>Cada cambio de la Circular obligaría a recompilar y redesplegar todo
     end
@@ -316,7 +316,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | Un remitente |
 | **Estímulo** | Envía un archivo firmado de hasta 50 MB, con arribo estocástico |
-| **Artefacto** | La verificación de la firma, la estampa y el certificado |
+| **Artefacto** | El servicio de verificación criptográfica |
 | **Ambiente** | A, sin fallas |
 | **Respuesta** | Determina si la firma, la estampa y el certificado son válidos y vigentes |
 | **Medida** | p99 ≤ 200 ms del último byte al resultado de la validación |
@@ -335,7 +335,7 @@ sequenceDiagram
     rect rgb(222, 236, 255)
     R->>O: ESTÍMULO · archivo firmado y con estampa, de hasta 50 MB
     Note over R,O: t0 · último byte recibido
-    Note over O: ARTEFACTO · verificación de firma, estampa<br/>y vigencia o revocación del certificado
+    Note over O: ARTEFACTO · el servicio de verificación criptográfica<br/>y vigencia o revocación del certificado
     Note over O: t1 · resultado de la validación, válido o inválido con su causa
     Note over R,O: MEDIDA · p99 de t1 − t0 ≤ 200 ms en el 100 % de los archivos
     end
@@ -351,7 +351,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | Los remitentes, en cierres de mercado y vencimientos |
 | **Estímulo** | Envían 1 200 archivos pequeños por minuto durante 45 min, en ráfaga `[SUPUESTO → BCR]` |
-| **Artefacto** | El procesamiento completo de los archivos pequeños |
+| **Artefacto** | El servicio de procesamiento de archivos |
 | **Ambiente** | B: pico de 45 min con 5 masivos, sin fallas |
 | **Respuesta** | Cada archivo pequeño se resuelve sin que el retraso se acumule |
 | **Medida** | p99 ≤ 5 s del último byte al resultado definitivo, en cada minuto de la ventana |
@@ -370,7 +370,7 @@ sequenceDiagram
     loop Durante 45 minutos
         R->>O: ESTÍMULO · 1 200 archivos pequeños por minuto, en ráfaga
         Note over R,O: t0 de cada archivo · último byte
-        Note over O: ARTEFACTO · procesamiento completo de los archivos pequeños
+        Note over O: ARTEFACTO · el servicio de procesamiento de archivos
         O-->>R: RESPUESTA · resultado definitivo de cada uno
         Note over R,O: t1 de cada archivo
     end
@@ -387,7 +387,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | El área de TI de BCR |
 | **Estímulo** | Integrar la versión nueva del contrato de API de STM, ANTA, MAMC o RNIC · Tipo: adaptativo |
-| **Artefacto** | El enriquecimiento con ese sistema externo |
+| **Artefacto** | El servicio de integración con los sistemas externos |
 | **Ambiente** | Desarrollo · socio conocido de antemano · tercero fuera de control |
 | **Respuesta** | La versión nueva entra a producción, y sus datos se interpretan con el significado que les da el externo |
 | **Medida** | ≤ 4 h-persona desde que se recibe el contrato hasta producción |
@@ -414,7 +414,7 @@ sequenceDiagram
     Note over T,O: MEDIDA · esfuerzo entre t0 y t1 ≤ 4 h-persona
     end
     N->>O: Respuestas con el nuevo contrato de API
-    Note over O: ARTEFACTO · enriquecimiento y validación con ese sistema externo
+    Note over O: ARTEFACTO · el servicio de integración con los sistemas externos
     O->>O: RESPUESTA · interpreta como el sistema externo quiso, o rechaza con diagnóstico
     rect rgb(255, 228, 225)
     Note over T,N: LO QUE EL ASR DESCARTA · que el formato del sistema externo se filtre al resto del flujo.<br/>Cada cambio de contrato de API tocaría validación, reglas y transformación
@@ -427,7 +427,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | Un nodo interno de procesamiento |
 | **Estímulo** | Falla con archivos acusados en curso |
-| **Artefacto** | Las declaraciones de los archivos acusados |
+| **Artefacto** | El servicio de procesamiento de archivos |
 | **Ambiente** | C2 sobre B: la falla ocurre en el pico |
 | **Respuesta** | Cada declaración acusada termina con un solo resultado definitivo |
 | **Medida** | 0 declaraciones acusadas sin resultado o con más de uno, por conciliación |
@@ -444,7 +444,7 @@ sequenceDiagram
     O-->>R: Acuses, cada uno es una promesa
     rect rgb(222, 236, 255)
     Note over O: FUENTE Y ESTÍMULO · un nodo interno falla<br/>con archivos con acuse emitido en curso
-    Note over O: ARTEFACTO · declaraciones de archivos con acuse emitido
+    Note over O: ARTEFACTO · el servicio de procesamiento de archivos
     O-->>R: RESPUESTA · exactamente un resultado definitivo por declaración
     Note over R,O: MEDIDA · 0 declaraciones con acuse emitido sin resultado o con más de uno,<br/>por conciliación entre las declaraciones con acuse y las resueltas
     end
@@ -459,7 +459,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | Un remitente |
 | **Estímulo** | Termina de enviar un archivo de hasta 50 MB |
-| **Artefacto** | La recepción y el acuse |
+| **Artefacto** | El servicio de recepción y acuse |
 | **Ambiente** | A, sin fallas |
 | **Respuesta** | Entrega un acuse que confirma el inicio del procesamiento |
 | **Medida** | p99 ≤ 1 s del último byte al acuse. El percentil es `[SUPUESTO → BCR]` |
@@ -475,7 +475,7 @@ sequenceDiagram
     rect rgb(222, 236, 255)
     R->>O: ESTÍMULO · archivo de cualquier tamaño, hasta 50 MB
     Note over R,O: t0 · último byte recibido, la subida no cuenta
-    Note over O: ARTEFACTO · recepción y acuse<br/>registra el evento e incluye la validación de S01
+    Note over O: ARTEFACTO · el servicio de recepción y acuse<br/>registra el evento e incluye la validación de S01
     O-->>R: RESPUESTA · acuse que confirma el inicio del procesamiento
     Note over R,O: t1 · acuse entregado
     Note over R,O: MEDIDA · p99 de t1 − t0 ≤ 1 s
@@ -492,7 +492,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | Un remitente autenticado |
 | **Estímulo** | Intenta consultar, corregir o anular operaciones que reportó otro remitente |
-| **Artefacto** | La consulta, la corrección y la anulación |
+| **Artefacto** | El servicio de consulta, corrección y anulación |
 | **Ambiente** | A, sin fallas |
 | **Respuesta** | Solo accede a lo que reportó él; lo demás se niega |
 | **Medida** | 0 accesos efectivos a operaciones de otro remitente, sobre el catálogo de pruebas |
@@ -507,7 +507,7 @@ sequenceDiagram
     Note over A,O: AMBIENTE A · 400 archivos pequeños por minuto y 5 archivos masivos · sin fallas
     rect rgb(222, 236, 255)
     A->>O: ESTÍMULO · consulta, corrige o anula una operación que reportó el remitente B
-    Note over O: ARTEFACTO · consulta, corrección y anulación
+    Note over O: ARTEFACTO · el servicio de consulta, corrección y anulación
     O-->>A: RESPUESTA · negado
     A->>O: Consulta una operación que reportó él mismo
     O-->>A: La operación
@@ -524,7 +524,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | El equipo de TI de BCR |
 | **Estímulo** | Activa o revierte una regla, un XSD o un contrato de API con archivos en curso |
-| **Artefacto** | La recepción y el acuse |
+| **Artefacto** | El servicio de recepción y acuse |
 | **Ambiente** | E: cambio en producción con la carga de A |
 | **Respuesta** | Sigue recibiendo y acusando durante el cambio |
 | **Medida** | p99 ≤ 1 s del último byte al acuse mientras dura el cambio |
@@ -546,7 +546,7 @@ sequenceDiagram
         O-->>R: RESPUESTA · acuse
         Note over O,R: t1 · acuse
     end
-    Note over O: ARTEFACTO · recepción y acuse<br/>cada archivo se evalúa con una sola versión
+    Note over O: ARTEFACTO · el servicio de recepción y acuse<br/>cada archivo se evalúa con una sola versión
     Note over O,R: MEDIDA · p99 de t1 − t0 ≤ 1 s durante el cambio, como en A
     end
     rect rgb(255, 228, 225)
@@ -560,7 +560,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | Un remitente |
 | **Estímulo** | Envía un archivo de 100 000 registros con otros 4 masivos en proceso |
-| **Artefacto** | El procesamiento completo del archivo masivo |
+| **Artefacto** | El servicio de procesamiento de archivos |
 | **Ambiente** | A, sin fallas |
 | **Respuesta** | El archivo llega a resultado definitivo |
 | **Medida** | ≤ 5 min del último byte al resultado definitivo, para cada uno de los 5 masivos |
@@ -576,7 +576,7 @@ sequenceDiagram
     rect rgb(222, 236, 255)
     R->>O: ESTÍMULO · archivo masivo de 100 000 registros y 50 MB
     Note over R,O: t0 · último byte recibido
-    Note over O: ARTEFACTO · procesamiento completo del archivo masivo<br/>unos 333 registros por segundo
+    Note over O: ARTEFACTO · el servicio de procesamiento de archivos<br/>unos 333 registros por segundo
     O-->>R: RESPUESTA · aceptación total, parcial o rechazo
     Note over R,O: t1 · resultado disponible
     Note over R,O: MEDIDA · t1 − t0 ≤ 5 min para cada uno de los 5 archivos masivos
@@ -592,7 +592,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | Un nodo interno de procesamiento |
 | **Estímulo** | Falla con declaraciones en curso |
-| **Artefacto** | El procesamiento de esas declaraciones |
+| **Artefacto** | El servicio de procesamiento de archivos |
 | **Ambiente** | C2: falla interna con la carga de A |
 | **Respuesta** | Las declaraciones vuelven a avanzar sin intervención |
 | **Medida** | ≤ 10 s desde la falla hasta que avanza la última declaración afectada |
@@ -609,7 +609,7 @@ sequenceDiagram
     R->>O: Archivos en proceso
     rect rgb(222, 236, 255)
     Note over O: FUENTE Y ESTÍMULO · un nodo interno se cae<br/>con declaraciones en curso · t0
-    Note over O: ARTEFACTO · las declaraciones que tenía en curso
+    Note over O: ARTEFACTO · el servicio de procesamiento de archivos
     Note over O: RESPUESTA · otro nodo las retoma<br/>t1 · la última afectada vuelve a avanzar
     Note over R,O: MEDIDA · t1 − t0 ≤ 10 s
     end
@@ -626,7 +626,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | Un remitente |
 | **Estímulo** | Envía un archivo mediano (51 a 5 000 registros) |
-| **Artefacto** | El procesamiento completo del archivo mediano |
+| **Artefacto** | El servicio de procesamiento de archivos |
 | **Ambiente** | A, con 5 masivos en proceso |
 | **Respuesta** | El archivo llega a resultado definitivo |
 | **Medida** | p99 ≤ 30 s del último byte al resultado definitivo. El percentil es `[SUPUESTO → BCR]` |
@@ -644,7 +644,7 @@ sequenceDiagram
     rect rgb(222, 236, 255)
     P->>O: ESTÍMULO · archivo mediano de 51 a 5 000 registros
     Note over P,O: t0 · último byte recibido
-    Note over O: ARTEFACTO · procesamiento completo del archivo mediano
+    Note over O: ARTEFACTO · el servicio de procesamiento de archivos
     O-->>P: RESPUESTA · resultado definitivo
     Note over P,O: t1 · resultado disponible
     Note over P,O: MEDIDA · p99 de t1 − t0 ≤ 30 s
@@ -660,7 +660,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | La Junta Directiva de BCR |
 | **Estímulo** | Cambia el XSD sin tocar el modelo canónico `[SUPUESTO → BCR]` · Tipo: adaptativo |
-| **Artefacto** | La validación de la estructura de los archivos |
+| **Artefacto** | El servicio de validación de estructura (XSD) |
 | **Ambiente** | Ligado en despliegue |
 | **Respuesta** | La versión nueva entra a producción, y la anterior sigue validándose mientras convivan `[SUPUESTO → BCR]` |
 | **Medida** | ≤ 4 h-persona desde el XSD aprobado hasta producción |
@@ -686,7 +686,7 @@ sequenceDiagram
     Note over J,O: MEDIDA · esfuerzo entre t0 y t1 ≤ 4 h-persona
     end
     R->>O: Archivos con la versión nueva y con la anterior
-    Note over O: ARTEFACTO · validación de estructura<br/>valida las dos versiones mientras convivan
+    Note over O: ARTEFACTO · el servicio de validación de estructura (XSD)<br/>valida las dos versiones mientras convivan
     rect rgb(255, 228, 225)
     Note over J,R: LO QUE EL ASR DESCARTA · un esquema fijo en el código,<br/>o una versión nueva que rechaza a los remitentes que aún no migran
     end
@@ -698,7 +698,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | Alguien con acceso al almacenamiento |
 | **Estímulo** | Modifica, borra o reordena registros de auditoría ya escritos |
-| **Artefacto** | La auditoría de recepción, acuses y resultados |
+| **Artefacto** | El registro de auditoría |
 | **Ambiente** | A, sin fallas |
 | **Respuesta** | La verificación de integridad señala la alteración y dónde ocurrió |
 | **Medida** | 100 % de las alteraciones del catálogo detectadas en la verificación siguiente |
@@ -714,7 +714,7 @@ sequenceDiagram
     Note over X,Au: AMBIENTE A · 400 archivos pequeños por minuto y 5 archivos masivos · sin fallas
     rect rgb(222, 236, 255)
     X->>O: ESTÍMULO · modifica, borra o reordena registros de auditoría ya escritos
-    Note over O: ARTEFACTO · auditoría de recepción, acuses y resultados
+    Note over O: ARTEFACTO · el registro de auditoría
     O->>O: Verificación de integridad siguiente
     O-->>Au: RESPUESTA · alteración señalada, con el registro donde ocurrió
     Note over X,Au: MEDIDA · 100 % de las alteraciones del catálogo detectadas
@@ -730,7 +730,7 @@ sequenceDiagram
 |---|---|
 | **Fuente** | Un área de BCR |
 | **Estímulo** | Pide los datos en un formato nuevo · Tipo: aditivo |
-| **Artefacto** | La entrega de datos a las áreas |
+| **Artefacto** | El servicio de entrega de datos a las áreas |
 | **Ambiente** | Desarrollo · socio conocido de antemano · propio |
 | **Respuesta** | El área recibe los datos en su formato, con el mismo significado |
 | **Medida** | 0 funciones del flujo principal modificadas para integrarla |
@@ -749,7 +749,7 @@ sequenceDiagram
     A->>T: ESTÍMULO · pide los datos en un formato nuevo, base analítica, índice de búsqueda o archivo plano
     rect rgb(222, 236, 255)
     T->>O: Integra el consumidor nuevo
-    Note over O: ARTEFACTO · entrega de datos transformados
+    Note over O: ARTEFACTO · el servicio de entrega de datos a las áreas
     O-->>A: RESPUESTA · datos del modelo canónico en su formato, con el mismo significado
     Note over A,O: MEDIDA · 0 funciones del flujo principal modificadas
     end
