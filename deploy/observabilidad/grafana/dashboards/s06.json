@@ -1,0 +1,646 @@
+{
+ "uid": "s06",
+ "title": "ASR-S06 · Ningún archivo se acepta sin validación criptográfica completa",
+ "description": "Verificación completa (ADR-006), revocación en caché (ADR-007), evidencia (ADR-008)",
+ "tags": [
+  "reto4",
+  "s06"
+ ],
+ "timezone": "browser",
+ "refresh": "5s",
+ "schemaVersion": 39,
+ "version": 1,
+ "time": {
+  "from": "now-30m",
+  "to": "now"
+ },
+ "annotations": {
+  "list": [
+   {
+    "name": "Falla inyectada",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "red",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Falla inyectada: ' || datos::text AS text FROM registro.evento WHERE tipo = 'falla.inyectada' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Falla inyectada: ' || datos::text AS text FROM registro.evento WHERE tipo = 'falla.inyectada' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "Tercero restablecido",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "green",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Tercero restablecido: ' || datos::text AS text FROM registro.evento WHERE tipo = 'falla.restablecida' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Tercero restablecido: ' || datos::text AS text FROM registro.evento WHERE tipo = 'falla.restablecida' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "Ventana nocturna",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "blue",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Ventana nocturna: ' || datos::text AS text FROM registro.evento WHERE tipo = 'ventana.inicio' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Ventana nocturna: ' || datos::text AS text FROM registro.evento WHERE tipo = 'ventana.inicio' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "Monitor: caído",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "orange",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Monitor: caído: ' || (datos->>'tercero') AS text FROM registro.evento WHERE tipo = 'tercero.caido' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Monitor: caído: ' || (datos->>'tercero') AS text FROM registro.evento WHERE tipo = 'tercero.caido' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "Monitor: de vuelta",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "purple",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Monitor: de vuelta: ' || (datos->>'tercero') AS text FROM registro.evento WHERE tipo = 'tercero.de_vuelta' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Monitor: de vuelta: ' || (datos->>'tercero') AS text FROM registro.evento WHERE tipo = 'tercero.de_vuelta' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "CRL vencida",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "red",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'CRL vencida: ' || '' AS text FROM registro.evento WHERE tipo = 'revocacion.vencida' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'CRL vencida: ' || '' AS text FROM registro.evento WHERE tipo = 'revocacion.vencida' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "CRL refrescada",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "green",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'CRL refrescada: ' || '' AS text FROM registro.evento WHERE tipo = 'revocacion.refrescada' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'CRL refrescada: ' || '' AS text FROM registro.evento WHERE tipo = 'revocacion.refrescada' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   }
+  ]
+ },
+ "panels": [
+  {
+   "type": "row",
+   "title": "Veredicto en vivo de ASR-S06 (registro de eventos, ventana del tablero)",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 24,
+    "h": 1
+   },
+   "panels": [],
+   "id": 1
+  },
+  {
+   "type": "stat",
+   "title": "Catálogo enviado",
+   "description": "",
+   "gridPos": {
+    "x": 0,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM registro.archivos WHERE $__timeFilter(enviado) AND caso NOT IN ('valido','reenvio')",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "blue"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 2
+  },
+  {
+   "type": "stat",
+   "title": "Catálogo aceptado",
+   "description": "La medida de ASR-S06: debe ser 0",
+   "gridPos": {
+    "x": 4,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM registro.archivos WHERE $__timeFilter(enviado) AND caso NOT IN ('valido','reenvio') AND resultado IN ('TOTAL','PARCIAL')",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "green"
+       },
+       {
+        "value": 1,
+        "color": "red"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 3
+  },
+  {
+   "type": "stat",
+   "title": "En verificación pendiente",
+   "description": "Acusados con la revocación sin verificar: la ECD caída y la copia local vencida (ADR-007)",
+   "gridPos": {
+    "x": 8,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM registro.archivos WHERE $__timeFilter(enviado) AND estado_acuse = 'VERIFICACION_PENDIENTE'",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "blue"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 4
+  },
+  {
+   "type": "stat",
+   "title": "Aceptados antes de verificar",
+   "description": "Debe ser 0: el resultado queda retenido hasta verificar (ADR-006)",
+   "gridPos": {
+    "x": 12,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM registro.archivos WHERE $__timeFilter(enviado) AND estado_acuse = 'VERIFICACION_PENDIENTE' AND resultado IN ('TOTAL','PARCIAL') AND (verificacion_completada IS NULL OR resultado_en < verificacion_completada)",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "green"
+       },
+       {
+        "value": 1,
+        "color": "red"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 5
+  },
+  {
+   "type": "stat",
+   "title": "Aceptados con evidencia válida",
+   "description": "Entrada firmada por BCR con el hash de los bytes procesados (ADR-008)",
+   "gridPos": {
+    "x": 16,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM registro.archivos WHERE $__timeFilter(enviado) AND resultado IN ('TOTAL','PARCIAL') AND evidencia_firma_valida AND evidencia_hash_coincide",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "green"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 6
+  },
+  {
+   "type": "stat",
+   "title": "Aceptados sin evidencia válida",
+   "description": "",
+   "gridPos": {
+    "x": 20,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM registro.archivos WHERE $__timeFilter(enviado) AND resultado IN ('TOTAL','PARCIAL') AND auditado IS NOT NULL AND NOT (evidencia_firma_valida AND evidencia_hash_coincide)",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "green"
+       },
+       {
+        "value": 1,
+        "color": "red"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 7
+  },
+  {
+   "type": "row",
+   "title": "Rechazos y verificación pendiente",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 5,
+    "w": 24,
+    "h": 1
+   },
+   "panels": [],
+   "id": 8
+  },
+  {
+   "type": "table",
+   "title": "Catálogo criptográfico: causa de rechazo por caso",
+   "description": "",
+   "gridPos": {
+    "x": 0,
+    "y": 6,
+    "w": 12,
+    "h": 9
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT caso, count(*) AS enviados, string_agg(DISTINCT coalesce(causa_rechazo, estado_acuse, 'sin respuesta'), ', ') AS causas, count(*) FILTER (WHERE resultado IN ('TOTAL','PARCIAL')) AS aceptados FROM registro.archivos WHERE $__timeFilter(enviado) AND caso NOT IN ('valido','reenvio') GROUP BY caso ORDER BY caso",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "options": {
+    "showHeader": true
+   },
+   "id": 9
+  },
+  {
+   "type": "timeseries",
+   "title": "Rechazos por causa (Prometheus)",
+   "description": "",
+   "gridPos": {
+    "x": 12,
+    "y": 6,
+    "w": 12,
+    "h": 9
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (causa) (increase(orquidea_rechazos_total[1m]))",
+     "legendFormat": "{{causa}}",
+     "range": true
+    }
+   ],
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "showPoints": "never"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 10
+  },
+  {
+   "type": "timeseries",
+   "title": "Acuses por segundo según su estado",
+   "description": "",
+   "gridPos": {
+    "x": 0,
+    "y": 15,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (estado) (rate(orquidea_acuses_total[30s]))",
+     "legendFormat": "{{estado}}",
+     "range": true
+    }
+   ],
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "showPoints": "never"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 11
+  },
+  {
+   "type": "table",
+   "title": "Verificación pendiente: cuándo se verificó y cómo terminó",
+   "description": "",
+   "gridPos": {
+    "x": 12,
+    "y": 15,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT llave, caso, acusado, verificacion_completada, resultado, causa_rechazo FROM registro.archivos WHERE $__timeFilter(enviado) AND estado_acuse = 'VERIFICACION_PENDIENTE' ORDER BY acusado DESC LIMIT 200",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "options": {
+    "showHeader": true
+   },
+   "id": 12
+  }
+ ],
+ "templating": {
+  "list": []
+ }
+}

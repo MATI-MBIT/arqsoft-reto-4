@@ -1,0 +1,54 @@
+Null display is "—".
+
+== Ejecución
+         id         | asr | escenario |                                                                                                                                  variables                                                                                                                                  |            inicio             |              fin              |            cierre             |   medicion   | valida | motivo 
+--------------------+-----+-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------+-------------------------------+-------------------------------+--------------+--------+--------
+ d5-20261107-161130 | D01 | D-5       | {"dias": 2, "modo": "corte", "tasa": 400, "vars": "DURACION_S=480;CAIDA_EN_S=120;REENVIAR=50;NUEVOS=50;REENVIAR_EN_S=360;VENTANAS=arriba;REPETIR=50", "ruteo": "tamano", "masivos": 0, "tercero": "rnic", "ventanas": "arriba", "escenario": "D-5", "costo_regla_us": 1000} | 2026-11-07 22:08:38.935552+00 | 2026-11-07 22:16:39.408552+00 | 2026-11-07 22:18:32.550823+00 | 00:08:00.473 | t      | —
+
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+
+== Criterios de ASR-D01
+                                        criterio                                         | casos | cumplen | fallan | veredicto 
+-----------------------------------------------------------------------------------------+-------+---------+--------+-----------
+ Medida · archivos válidos procesados dentro de los días de reintento = 100 %            |  3670 |    3670 |      0 | PASA
+ D-3 · lo notificado sigue pendiente y se procesa al volver el RNIC                      |     0 |       0 |      0 | NO APLICA
+ Ningún archivo válido rechazado por la caída (resultado distinto del esperado)          |  3670 |    3670 |      0 | PASA
+ Archivos con cédulas que no corresponden: rechazados por la regla, con su número exacto |  2384 |    2384 |      0 | PASA
+ D-5 · cada archivo tiene un solo resultado definitivo (0 escritos dos veces)            |  3672 |    3672 |      0 | PASA
+ D-5 · cada reenvío con la misma llave se rechaza como duplicado                         |    50 |      50 |      0 | PASA
+ S-3 · cada aceptado tiene su evidencia firmada con el hash de los bytes procesados      |  3670 |    3670 |      0 | PASA
+
+
+== Recorrido de los archivos válidos
+ validos_enviados | acusados | pasaron_por_pendientes | resueltos_en_carril | resueltos_en_ventana | notificados | sin_resultado | max_intentos 
+------------------+----------+------------------------+---------------------+----------------------+-------------+---------------+--------------
+             3670 |     3670 |                   2451 |                1219 |                 2451 |           0 |             0 |            0
+
+
+== Detección (ADR-002): de la falla al cambio de estado en el monitor
+ tipo  | tercero |             falla             | deteccion_ms | llamadas_antes_de_detectar | llamadas_vencidas |         restablecida          | regreso_ms 
+-------+---------+-------------------------------+--------------+----------------------------+-------------------+-------------------------------+------------
+ corte | rnic    | 2026-11-07 22:10:39.017681+00 |          420 |                          3 |                 4 | 2026-11-07 22:16:39.484677+00 |         25
+
+
+== Ventanas nocturnas
+ numero | rnic_al_abrir |            inicio            |    duracion     | resueltos | reprogramados | notificados | liberados | omitidos 
+--------+---------------+------------------------------+-----------------+-----------+---------------+-------------+-----------+----------
+      1 | DISPONIBLE    | 2026-11-07 22:16:42.57973+00 | 00:01:06.953038 | 2453      | 0             | 0           | 0         | 0
+
+
+== Repeticiones inyectadas (D-5): resultados repetidos que el UPDATE evitó
+ repeticiones | repetidos_evitados 
+--------------+--------------------
+           50 |                 50
+
+
+== Escapes: archivos válidos que no se procesaron dentro de los días
+ llave | esperado | estado_acuse | resultado | rechazadas | invalidas | intentos_al_resolver | pendiente_desde | resultado_en 
+-------+----------+--------------+-----------+------------+-----------+----------------------+-----------------+--------------
+
+validez: hueco máximo 1.1 s · 0 suspensiones · 0 % de solicitudes fallidas

@@ -1,0 +1,18 @@
+# Raspado cada 2 s. El veredicto no sale de aquí, sale del registro de eventos:
+# Prometheus agrega y pierde la llave del archivo. Sirve para ver la ejecución en
+# vivo y para cortarla si se daña.
+global:
+  scrape_interval: 2s
+  evaluation_interval: 2s
+
+scrape_configs:
+  - job_name: orquidea
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - recepcion:8080
+          - carril-a:8080
+          - carril-b:8080
+          - monitor-terceros:8080
+          - reprocesador:8080
+          - remitente-sim:8080

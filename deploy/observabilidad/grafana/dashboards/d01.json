@@ -1,0 +1,812 @@
+{
+ "uid": "d01",
+ "title": "ASR-D01 · Ningún archivo se rechaza por la caída de un sistema externo",
+ "description": "Detección (ADR-002), pendientes y ventana nocturna (ADR-003), idempotencia (ADR-004)",
+ "tags": [
+  "reto4",
+  "d01"
+ ],
+ "timezone": "browser",
+ "refresh": "5s",
+ "schemaVersion": 39,
+ "version": 1,
+ "time": {
+  "from": "now-30m",
+  "to": "now"
+ },
+ "annotations": {
+  "list": [
+   {
+    "name": "Falla inyectada",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "red",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Falla inyectada: ' || datos::text AS text FROM registro.evento WHERE tipo = 'falla.inyectada' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Falla inyectada: ' || datos::text AS text FROM registro.evento WHERE tipo = 'falla.inyectada' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "Tercero restablecido",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "green",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Tercero restablecido: ' || datos::text AS text FROM registro.evento WHERE tipo = 'falla.restablecida' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Tercero restablecido: ' || datos::text AS text FROM registro.evento WHERE tipo = 'falla.restablecida' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "Ventana nocturna",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "blue",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Ventana nocturna: ' || datos::text AS text FROM registro.evento WHERE tipo = 'ventana.inicio' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Ventana nocturna: ' || datos::text AS text FROM registro.evento WHERE tipo = 'ventana.inicio' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "Monitor: caído",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "orange",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Monitor: caído: ' || (datos->>'tercero') AS text FROM registro.evento WHERE tipo = 'tercero.caido' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Monitor: caído: ' || (datos->>'tercero') AS text FROM registro.evento WHERE tipo = 'tercero.caido' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "Monitor: de vuelta",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "purple",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Monitor: de vuelta: ' || (datos->>'tercero') AS text FROM registro.evento WHERE tipo = 'tercero.de_vuelta' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Monitor: de vuelta: ' || (datos->>'tercero') AS text FROM registro.evento WHERE tipo = 'tercero.de_vuelta' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   }
+  ]
+ },
+ "panels": [
+  {
+   "type": "row",
+   "title": "Veredicto en vivo de ASR-D01 (registro de eventos, ventana del tablero)",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 24,
+    "h": 1
+   },
+   "panels": [],
+   "id": 1
+  },
+  {
+   "type": "stat",
+   "title": "Válidos enviados",
+   "description": "",
+   "gridPos": {
+    "x": 0,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM registro.archivos WHERE $__timeFilter(enviado) AND caso = 'valido' AND esperado IN ('TOTAL','PARCIAL')",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "blue"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 2
+  },
+  {
+   "type": "stat",
+   "title": "Válidos procesados",
+   "description": "Con resultado definitivo igual al que habrían tenido con el RNIC disponible",
+   "gridPos": {
+    "x": 4,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM registro.archivos WHERE $__timeFilter(enviado) AND caso = 'valido' AND esperado IN ('TOTAL','PARCIAL') AND resultado = esperado AND rechazadas = invalidas",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "green"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 3
+  },
+  {
+   "type": "stat",
+   "title": "Pendientes ahora",
+   "description": "Archivos en espera durable de la ventana nocturna (ADR-003)",
+   "gridPos": {
+    "x": 8,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM operacion.pendiente WHERE estado = 'PENDIENTE'",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "green"
+       },
+       {
+        "value": 1,
+        "color": "orange"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 4
+  },
+  {
+   "type": "stat",
+   "title": "Rechazados por la caída",
+   "description": "Debe ser 0: la caída nunca produce un rechazo",
+   "gridPos": {
+    "x": 12,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM registro.archivos WHERE $__timeFilter(enviado) AND caso = 'valido' AND esperado IN ('TOTAL','PARCIAL') AND resultado IS NOT NULL AND (resultado <> esperado OR rechazadas <> invalidas)",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "green"
+       },
+       {
+        "value": 1,
+        "color": "red"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 5
+  },
+  {
+   "type": "stat",
+   "title": "Resultados escritos dos veces",
+   "description": "Debe ser 0: la llave de idempotencia (ADR-004)",
+   "gridPos": {
+    "x": 16,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM registro.archivos WHERE $__timeFilter(enviado) AND caso = 'valido' AND resultados > 1",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "green"
+       },
+       {
+        "value": 1,
+        "color": "red"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 6
+  },
+  {
+   "type": "stat",
+   "title": "Notificados al remitente",
+   "description": "Pendientes que agotaron los días de reintento: se notifica y siguen pendientes",
+   "gridPos": {
+    "x": 20,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM registro.archivos WHERE $__timeFilter(enviado) AND caso = 'valido' AND notificado IS NOT NULL",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "blue"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 7
+  },
+  {
+   "type": "row",
+   "title": "El recorrido de los archivos",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 5,
+    "w": 24,
+    "h": 1
+   },
+   "panels": [],
+   "id": 8
+  },
+  {
+   "type": "timeseries",
+   "title": "Archivos por cada 10 s: recibidos, resueltos en carril, en pendientes y resueltos en ventana",
+   "description": "Con el RNIC caído, la recepción sigue acusando y lo que necesita al RNIC va a pendientes; la ventana lo resuelve",
+   "gridPos": {
+    "x": 0,
+    "y": 6,
+    "w": 16,
+    "h": 9
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT $__timeGroupAlias(ts, '10s'), count(*) AS \"recibidos\" FROM registro.evento WHERE tipo = 'archivo.recibido' AND $__timeFilter(ts) GROUP BY 1 ORDER BY 1",
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT $__timeGroupAlias(ts, '10s'), count(*) AS \"resueltos en carril\" FROM registro.evento WHERE tipo = 'archivo.resultado' AND datos->>'componente' LIKE 'carril%' AND $__timeFilter(ts) GROUP BY 1 ORDER BY 1",
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code"
+    },
+    {
+     "refId": "C",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT $__timeGroupAlias(ts, '10s'), count(*) AS \"a pendientes\" FROM registro.evento WHERE tipo = 'archivo.pendiente' AND datos->>'componente' <> 'reprocesador' AND $__timeFilter(ts) GROUP BY 1 ORDER BY 1",
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code"
+    },
+    {
+     "refId": "D",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT $__timeGroupAlias(ts, '10s'), count(*) AS \"resueltos en ventana\" FROM registro.evento WHERE tipo = 'archivo.resultado' AND datos->>'componente' = 'reprocesador' AND $__timeFilter(ts) GROUP BY 1 ORDER BY 1",
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "showPoints": "never"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 9
+  },
+  {
+   "type": "timeseries",
+   "title": "Estado de cada tercero según el monitor (0 disponible · 1 de vuelta · 2 caído)",
+   "description": "Ping/echo cada SONDEO_MS; caído con SONDEO_N fallos seguidos (ADR-002)",
+   "gridPos": {
+    "x": 16,
+    "y": 6,
+    "w": 8,
+    "h": 9
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (tercero) (orquidea_tercero_estado)",
+     "legendFormat": "{{tercero}}",
+     "range": true
+    }
+   ],
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "showPoints": "never"
+     },
+     "min": 0,
+     "max": 2
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 10
+  },
+  {
+   "type": "timeseries",
+   "title": "Pendientes en espera (Prometheus)",
+   "description": "",
+   "gridPos": {
+    "x": 0,
+    "y": 15,
+    "w": 8,
+    "h": 7
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max(orquidea_pendientes)",
+     "legendFormat": "pendientes",
+     "range": true
+    }
+   ],
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "showPoints": "never"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 11
+  },
+  {
+   "type": "timeseries",
+   "title": "Llamadas vencidas del adaptador del RNIC por cada 10 s",
+   "description": "Timeout por llamada (DIS-04): la lentitud cuenta como caída",
+   "gridPos": {
+    "x": 8,
+    "y": 15,
+    "w": 8,
+    "h": 7
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT $__timeGroupAlias(ts, '10s'), count(*) AS \"vencidas\" FROM registro.evento WHERE tipo = 'adaptador.vencida' AND $__timeFilter(ts) GROUP BY 1 ORDER BY 1",
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "showPoints": "never"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 12
+  },
+  {
+   "type": "timeseries",
+   "title": "Acuses por segundo según su estado",
+   "description": "",
+   "gridPos": {
+    "x": 16,
+    "y": 15,
+    "w": 8,
+    "h": 7
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (estado) (rate(orquidea_acuses_total[30s]))",
+     "legendFormat": "{{estado}}",
+     "range": true
+    }
+   ],
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "showPoints": "never"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 13
+  },
+  {
+   "type": "row",
+   "title": "Detección y ventanas",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 22,
+    "w": 24,
+    "h": 1
+   },
+   "panels": [],
+   "id": 14
+  },
+  {
+   "type": "table",
+   "title": "Fallas inyectadas: de la falla al cambio de estado en el monitor",
+   "description": "",
+   "gridPos": {
+    "x": 0,
+    "y": 23,
+    "w": 12,
+    "h": 7
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT falla, tipo, tercero, deteccion_ms, llamadas_antes_de_detectar, restablecida, regreso_ms FROM registro.fallas WHERE $__timeFilter(falla) ORDER BY falla",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "options": {
+    "showHeader": true
+   },
+   "id": 15
+  },
+  {
+   "type": "table",
+   "title": "Ventanas nocturnas",
+   "description": "",
+   "gridPos": {
+    "x": 12,
+    "y": 23,
+    "w": 12,
+    "h": 7
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT numero, rnic_al_abrir, inicio, fin - inicio AS duracion, desenlace->>'resueltos' AS resueltos, desenlace->>'reprogramados' AS reprogramados, desenlace->>'notificados' AS notificados FROM registro.ventanas WHERE $__timeFilter(inicio) ORDER BY inicio",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "options": {
+    "showHeader": true
+   },
+   "id": 16
+  }
+ ],
+ "templating": {
+  "list": []
+ }
+}

@@ -1,0 +1,4 @@
+[
+  { "name": "rnic", "listen": "0.0.0.0:8666", "upstream": "tercero-rnic-sim:8080", "enabled": true },
+  { "name": "ecd",  "listen": "0.0.0.0:8667", "upstream": "ecd-sim:8080",          "enabled": true }
+]

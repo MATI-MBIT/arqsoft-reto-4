@@ -1,0 +1,58 @@
+Null display is "—".
+
+== Ejecución
+         id         | asr | escenario |                                                                                      variables                                                                                      |            inicio             |              fin              |            cierre             |    medicion     | valida | motivo 
+--------------------+-----+-----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------+-------------------------------+-------------------------------+-----------------+--------+--------
+ l2-20261107-161130 | L04 | L-2       | {"dias": 2, "modo": "corte", "tasa": 400, "vars": "DURACION_S=600", "ruteo": "tamano", "masivos": 0, "tercero": "rnic", "ventanas": "", "escenario": "L-2", "costo_regla_us": 1000} | 2026-11-07 22:31:25.238833+00 | 2026-11-07 22:41:25.628151+00 | 2026-11-07 22:42:00.111948+00 | 00:10:00.389318 | t      | —
+
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+
+== Criterio de ASR-L04
+                      criterio                      | casos | cumplen | fallan | p99_ms | veredicto 
+----------------------------------------------------+-------+---------+--------+--------+-----------
+ Línea base (L-2) · p99 de los pequeños sin masivos |  4002 |    4002 |      0 |    482 | OBSERVA
+
+
+== Latencia de los pequeños (ms), del último byte al resultado definitivo
+         tramo          | pequenos | sin_resultado | p50 | p95 | p99 | maximo 
+------------------------+----------+---------------+-----+-----+-----+--------
+ sin masivos en proceso |     4002 |             0 |  36 | 363 | 482 |    552
+
+
+== Referencia del enunciado: acuse de los pequeños frente a 1 s
+ acuses | p99_ms | maximo_ms | mayores_de_1s 
+--------+--------+-----------+---------------
+   4002 |      7 |        34 |             0
+
+
+== Masivos: carril, subida, acuse y duración frente a la referencia de 5 min
+ llave | carril | registros | bytes | subida | acuse_ms | duracion | resultado | rechazadas | invalidas | referencia 
+-------+--------+-----------+-------+--------+----------+----------+-----------+------------+-----------+------------
+
+
+== Masivos en proceso
+ desde |             hasta             | masivos | terminados 
+-------+-------------------------------+---------+------------
+ —     | 2026-11-07 22:42:00.111948+00 |       0 |          0
+
+
+== Latencia por minuto de la medición (p99 de los pequeños que llegaron en ese minuto)
+         minuto         | pequenos | p99_ms | max_ms 
+------------------------+----------+--------+--------
+ 2026-11-07 22:31:00+00 |      214 |    495 |    520
+ 2026-11-07 22:32:00+00 |      404 |    481 |    500
+ 2026-11-07 22:33:00+00 |      447 |    492 |    552
+ 2026-11-07 22:34:00+00 |      381 |    491 |    517
+ 2026-11-07 22:35:00+00 |      358 |    456 |    528
+ 2026-11-07 22:36:00+00 |      386 |    473 |    527
+ 2026-11-07 22:37:00+00 |      419 |    468 |    512
+ 2026-11-07 22:38:00+00 |      404 |    460 |    527
+ 2026-11-07 22:39:00+00 |      416 |    485 |    517
+ 2026-11-07 22:40:00+00 |      400 |    484 |    505
+ 2026-11-07 22:41:00+00 |      173 |    472 |    509
+
+validez: hueco máximo 1.2 s · 0 suspensiones · 0 % de solicitudes fallidas

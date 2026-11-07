@@ -120,3 +120,13 @@ esperan una cifra de BCR:
 - Fichas sin «Por qué es ASR» (Nicolás): se quitó la fila de las 17 fichas y la mención a la «nota de trampa» de la introducción.
 - Vistas recreadas desde cero por un agente que solo leyó los ADR, las fichas críticas, el experimento y el glosario. Componentes eclosionados: Recepción, Integración con terceros y Verificador criptográfico. Lint: 0 ERROR en la copia combinada de 15 páginas; DG-CMP-002 queda con 16 cruces tras agotar el tope. Puerta 3 con PNG de draw.io: entre 16 y 20 puntos por página.
 - Pulido editorial de la página de ASR (escribir-y-pulir-textos, con veredicto de revisar-texto por otra mano: DEFECTOS = 27 sobre la versión previa, de los que 12 quedaron sin objeto al quitar «Por qué es ASR»). Cerrados: andamiaje de M01, premisa de I01, párrafo de los 3 s junto a L04, frase larga de D01 con la `[PREGUNTA]` de los días, verificación de D01 alineada con la medida, «equipo de TI» en I01, nombre completo del servicio de consulta, «resultado definitivo» en L04, medida de D03 en positivo, antecedente de I02 y «carga de A». Quedan abiertos para el equipo: «validación» frente a «verificación» criptográfica en los títulos de S01 y S06, qué es la Fase 4 de BCR y cuál es la presión real según el informe (E01).
+
+### 2026-11-07 · Prototipo del experimento construido
+
+- Pedido de Nicolás: entender la estrategia de los experimentos de los retos 1 y 2 y construir el experimento y las pruebas de los tres ASR críticos, con observabilidad para capturar la evidencia.
+- Se heredó la estructura: monorepo Gradle, `load/plan.tsv` + un solo orquestador, registro de eventos como fuente del veredicto, veredicto en SQL, tableros de Grafana generados por script y chequeo de validez por ejecución.
+- Servicios: recepción (custodia, verificación en streaming, llave, evidencia, enrutador), carril A y carril B (misma imagen), monitor de terceros, reprocesador de la ventana nocturna, y simuladores del RNIC, de la ECD y de los remitentes. Kafka KRaft, PostgreSQL y Toxiproxy para cortar o hacer lento al tercero.
+- La firma del prototipo es envuelta sobre bytes (ECDSA), no XMLDSig con canonicalización (P-2). El costo de las reglas cambiarias se simula con 1 ms de CPU por declaración (P-1).
+- Prueba unitaria del camino criptográfico: los nueve casos del catálogo se rechazan con su causa.
+- Humo del 2026-11-07 (16:00 a 16:11): los tres ASR pasan; ejecuciones válidas.
+- La primera prueba manual de un masivo midió 10 min en vez de 105 s porque el equipo se suspendió: el orquestador invalida toda ejecución con suspensión.

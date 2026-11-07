@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: monitor
+  config:
+    import: classpath:comun.yml
+orquidea:
+  terceros: ${TERCEROS:rnic=http://localhost:8666,ecd=http://localhost:8667}
+  sondeo-ms: ${SONDEO_MS:1000}
+  sondeo-timeout-ms: ${SONDEO_TIMEOUT_MS:800}
+  sondeo-n: ${SONDEO_N:3}

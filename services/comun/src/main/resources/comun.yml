@@ -1,0 +1,56 @@
+# Configuración que comparten todos los servicios. Cada uno la importa desde su
+# application.yml con spring.config.import.
+server:
+  port: 8080
+  tomcat:
+    threads:
+      max: 200
+spring:
+  main:
+    banner-mode: off
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5434/reto4}
+    username: ${DB_USER:reto4}
+    password: ${DB_PASSWORD:reto4}
+    hikari:
+      maximum-pool-size: ${DB_POOL:10}
+  kafka:
+    bootstrap-servers: ${KAFKA:localhost:9092}
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        linger.ms: 0
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      max-poll-records: 1
+      properties:
+        # Un masivo puede tardar minutos en su carril: el consumidor no se da por muerto.
+        max.poll.interval.ms: 1800000
+    listener:
+      ack-mode: record
+orquidea:
+  monitor-url: ${MONITOR_URL:}
+  rnic-url: ${RNIC_URL:http://localhost:8666}
+  rnic-timeout-ms: ${RNIC_TIMEOUT_MS:1000}
+  custodia-dir: ${CUSTODIA_DIR:/custodia}
+  costo-regla-us: ${COSTO_REGLA_US:0}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    tags:
+      application: ${orquidea.componente:${spring.application.name}}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+        orquidea.procesamiento: true
+        orquidea.acuse: true
+      maximum-expected-value:
+        orquidea.procesamiento: 600s

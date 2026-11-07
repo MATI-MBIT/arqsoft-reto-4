@@ -58,7 +58,7 @@ front matter la clave `helix_section`:
 | `requirements.md` | `Requirements & Quality` | Insumo | Hecho |
 | `glossary.md` | `Objective → Glossary` | Insumo | Hecho |
 | `quality-attributes.md` | `Requirements & Quality → Quality Scenarios` | Sale de los insumos | Hecho |
-| `experiments.md` | `Experiments` | Valida decisiones | Propuesta (diseño, sin correr) |
+| `experiments.md` | `Experiments` | Valida decisiones | Diseño; prototipo construido y corrido |
 | `results.md` | `Experiments → Results & analysis` | Resultados | Pendiente |
 | `modelos/` | No se carga en Helix | ADR (`adrs-orquidea.md`), vistas, draw.io y PNG | Hecho (ADR en Propuesta) |
 
@@ -99,6 +99,27 @@ reto:
   archivos, reglas cambiarias, validación de estructura, integración con los
   sistemas externos, consulta, entrega a las áreas, registro de auditoría) o
   «Orquídea, todo el sistema» (Nicolás, 2026-11-06).
+
+## El prototipo del experimento
+
+Vive en este repositorio con la estructura de los retos 1 y 2: `services/`
+(Java 21 + Spring Boot, monorepo Gradle), `deploy/` (Compose, PostgreSQL, Kafka
+KRaft, Toxiproxy, inyector, Prometheus y Grafana), `load/` (k6, `plan.tsv` y el
+orquestador `experimento.sh`) y `analisis/` (veredicto en SQL, gráficas y
+resultados). `make help` lista todo; `make humo` lo prueba en ~12 min.
+
+- **Qué se corre es dato** (`load/plan.tsv`); **cómo, código** (`load/experimento.sh`).
+- **El veredicto sale de `registro.evento`**, cruzado por la llave del archivo con
+  las vistas de `deploy/postgres/03-vistas.sql`. Prometheus y Grafana son para ver.
+- Cada ejecución deja en `analisis/resultados/<id>/` el veredicto, los eventos en
+  CSV, la salida de k6 y el enlace al tablero fijado en su ventana.
+- Con batería el orquestador no arranca (`FORZAR_BATERIA=1` lo fuerza): una
+  suspensión del equipo contamina la medición.
+- Supuestos (P-1 a P-16), lo construido y lo que pide cambiar en
+  `docs/experiments.md`: `notas/plan-implementacion-experimento.md`.
+- Los contenedores con nombre fijo llevan el prefijo `reto4-` (`reto4-kafka`,
+  `reto4-toxiproxy`, `reto4-inyector`): en el equipo hay contenedores de otros
+  proyectos con los nombres cortos.
 
 ## Lo que no va en `docs/`
 

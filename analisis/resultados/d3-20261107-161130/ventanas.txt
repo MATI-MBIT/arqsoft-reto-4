@@ -1,0 +1,3 @@
+{"numero":1,"estado":"TERMINADA","resueltos":0,"liberados":0,"reprogramados":2438,"notificados":0,"rechazados":0,"omitidos":0,"duracionMs":900}
+{"numero":2,"estado":"TERMINADA","resueltos":0,"liberados":0,"reprogramados":2438,"notificados":2438,"rechazados":0,"omitidos":0,"duracionMs":1313}
+{"numero":3,"estado":"TERMINADA","resueltos":2438,"liberados":0,"reprogramados":0,"notificados":0,"rechazados":0,"omitidos":0,"duracionMs":66734}

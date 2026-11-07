@@ -1,0 +1,9 @@
+apiVersion: 1
+providers:
+  - name: experimento
+    folder: Reto 4 - Orquidea
+    type: file
+    disableDeletion: true
+    allowUiUpdates: false
+    options:
+      path: /var/lib/grafana/dashboards

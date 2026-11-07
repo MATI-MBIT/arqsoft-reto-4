@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: reprocesador
+  config:
+    import: classpath:comun.yml
+orquidea:
+  ecd-url: ${ECD_URL:http://localhost:8667}
+  revocacion-vigencia-s: ${REVOCACION_VIGENCIA_S:3600}
+  dias-reintento: ${DIAS_REINTENTO:2}
+  ritmo-declaraciones-s: ${RITMO_DECLARACIONES_S:5000}

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: carril
+  config:
+    import: classpath:comun.yml
+orquidea:
+  carril: ${CARRIL:A}
+  topico: ${TOPICO:carril-a}
+  concurrencia: ${CONCURRENCIA:4}
+  lote: ${LOTE:500}

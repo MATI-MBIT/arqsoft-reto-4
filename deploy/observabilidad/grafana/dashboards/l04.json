@@ -1,0 +1,724 @@
+{
+ "uid": "l04",
+ "title": "ASR-L04 · Aislamiento de carga entre archivos masivos y pequeños",
+ "description": "Dos carriles aislados con enrutador por tamaño (ADR-005)",
+ "tags": [
+  "reto4",
+  "l04"
+ ],
+ "timezone": "browser",
+ "refresh": "5s",
+ "schemaVersion": 39,
+ "version": 1,
+ "time": {
+  "from": "now-30m",
+  "to": "now"
+ },
+ "annotations": {
+  "list": [
+   {
+    "name": "Falla inyectada",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "red",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Falla inyectada: ' || datos::text AS text FROM registro.evento WHERE tipo = 'falla.inyectada' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Falla inyectada: ' || datos::text AS text FROM registro.evento WHERE tipo = 'falla.inyectada' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "Tercero restablecido",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "green",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Tercero restablecido: ' || datos::text AS text FROM registro.evento WHERE tipo = 'falla.restablecida' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Tercero restablecido: ' || datos::text AS text FROM registro.evento WHERE tipo = 'falla.restablecida' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "Ventana nocturna",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "blue",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Ventana nocturna: ' || datos::text AS text FROM registro.evento WHERE tipo = 'ventana.inicio' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Ventana nocturna: ' || datos::text AS text FROM registro.evento WHERE tipo = 'ventana.inicio' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "Monitor: caído",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "orange",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Monitor: caído: ' || (datos->>'tercero') AS text FROM registro.evento WHERE tipo = 'tercero.caido' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Monitor: caído: ' || (datos->>'tercero') AS text FROM registro.evento WHERE tipo = 'tercero.caido' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "Monitor: de vuelta",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "purple",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Monitor: de vuelta: ' || (datos->>'tercero') AS text FROM registro.evento WHERE tipo = 'tercero.de_vuelta' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Monitor: de vuelta: ' || (datos->>'tercero') AS text FROM registro.evento WHERE tipo = 'tercero.de_vuelta' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   },
+   {
+    "name": "Masivo",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "registro"
+    },
+    "enable": true,
+    "iconColor": "blue",
+    "rawQuery": "SELECT extract(epoch FROM ts) * 1000 AS time, 'Masivo: ' || (datos->>'bytes') AS text FROM registro.evento WHERE (datos->>'bytes')::bigint > 1000000 AND tipo = 'archivo.recepcion.inicio' AND $__timeFilter(ts) ORDER BY ts",
+    "target": {
+     "rawSql": "SELECT ts AS time, 'Masivo: ' || (datos->>'bytes') AS text FROM registro.evento WHERE (datos->>'bytes')::bigint > 1000000 AND tipo = 'archivo.recepcion.inicio' AND $__timeFilter(ts) ORDER BY ts",
+     "format": "table"
+    }
+   }
+  ]
+ },
+ "panels": [
+  {
+   "type": "row",
+   "title": "Veredicto en vivo de ASR-L04 (registro de eventos, ventana del tablero)",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 24,
+    "h": 1
+   },
+   "panels": [],
+   "id": 1
+  },
+  {
+   "type": "stat",
+   "title": "p99 de los pequeños",
+   "description": "Del último byte al resultado definitivo. Umbral: 3 s",
+   "gridPos": {
+    "x": 0,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT percentile_cont(0.99) WITHIN GROUP (ORDER BY latencia_ms) FROM registro.archivos WHERE $__timeFilter(enviado) AND tipo = 'pequeno' AND caso = 'valido' AND latencia_ms IS NOT NULL",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "green"
+       },
+       {
+        "value": 3000,
+        "color": "red"
+       }
+      ]
+     },
+     "unit": "ms",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 2
+  },
+  {
+   "type": "stat",
+   "title": "p50 de los pequeños",
+   "description": "",
+   "gridPos": {
+    "x": 4,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY latencia_ms) FROM registro.archivos WHERE $__timeFilter(enviado) AND tipo = 'pequeno' AND caso = 'valido' AND latencia_ms IS NOT NULL",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "blue"
+       }
+      ]
+     },
+     "unit": "ms",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 3
+  },
+  {
+   "type": "stat",
+   "title": "Pequeños resueltos",
+   "description": "",
+   "gridPos": {
+    "x": 8,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM registro.archivos WHERE $__timeFilter(enviado) AND tipo = 'pequeno' AND caso = 'valido' AND latencia_ms IS NOT NULL",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "blue"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 4
+  },
+  {
+   "type": "stat",
+   "title": "Pequeños sobre 3 s",
+   "description": "",
+   "gridPos": {
+    "x": 12,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM registro.archivos WHERE $__timeFilter(enviado) AND tipo = 'pequeno' AND caso = 'valido' AND latencia_ms IS NOT NULL AND latencia_ms > 3000",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "green"
+       },
+       {
+        "value": 1,
+        "color": "orange"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 5
+  },
+  {
+   "type": "stat",
+   "title": "Masivos en proceso",
+   "description": "",
+   "gridPos": {
+    "x": 16,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT count(*) FROM registro.archivos WHERE $__timeFilter(enviado) AND tipo = 'masivo' AND resultado_en IS NULL",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "blue"
+       }
+      ]
+     },
+     "unit": "none",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 6
+  },
+  {
+   "type": "stat",
+   "title": "p99 del acuse",
+   "description": "Referencia del enunciado: 1 s desde el último byte",
+   "gridPos": {
+    "x": 20,
+    "y": 1,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT percentile_cont(0.99) WITHIN GROUP (ORDER BY acuse_ms) FROM registro.archivos WHERE $__timeFilter(enviado) AND tipo = 'pequeno' AND caso = 'valido' AND latencia_ms IS NOT NULL",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "green"
+       },
+       {
+        "value": 1000,
+        "color": "red"
+       }
+      ]
+     },
+     "unit": "ms",
+     "noValue": "0"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "background",
+    "graphMode": "none",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 7
+  },
+  {
+   "type": "row",
+   "title": "Los pequeños frente al umbral, y lo que hacen los carriles",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 5,
+    "w": 24,
+    "h": 1
+   },
+   "panels": [],
+   "id": 8
+  },
+  {
+   "type": "timeseries",
+   "title": "Latencia de cada pequeño (un punto por archivo) y el umbral de 3 s",
+   "description": "Cada punto es un archivo pequeño. Las anotaciones marcan cada masivo que empieza a llegar",
+   "gridPos": {
+    "x": 0,
+    "y": 6,
+    "w": 24,
+    "h": 10
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT recibido AS time, latencia_ms AS \"pequeño\" FROM registro.archivos WHERE $__timeFilter(recibido) AND tipo = 'pequeno' AND caso = 'valido' AND latencia_ms IS NOT NULL ORDER BY 1",
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "custom": {
+      "drawStyle": "points",
+      "pointSize": 4,
+      "thresholdsStyle": {
+       "mode": "line+area"
+      }
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "value": null,
+        "color": "transparent"
+       },
+       {
+        "value": 3000,
+        "color": "red"
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "hidden"
+    },
+    "tooltip": {
+     "mode": "single"
+    }
+   },
+   "id": 9
+  },
+  {
+   "type": "timeseries",
+   "title": "CPU de cada contenedor (fracción de su límite)",
+   "description": "Cada carril tiene su propio límite de CPU: el bulkhead de ADR-005",
+   "gridPos": {
+    "x": 0,
+    "y": 16,
+    "w": 8,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (application) (process_cpu_usage)",
+     "legendFormat": "{{application}}",
+     "range": true
+    }
+   ],
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "showPoints": "never"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 10
+  },
+  {
+   "type": "timeseries",
+   "title": "Archivos en proceso por carril",
+   "description": "Hilos consumidores ocupados: el carril A no debe saturarse por los masivos",
+   "gridPos": {
+    "x": 8,
+    "y": 16,
+    "w": 8,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (application) (orquidea_procesamiento_en_curso)",
+     "legendFormat": "{{application}}",
+     "range": true
+    }
+   ],
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "showPoints": "never"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 11
+  },
+  {
+   "type": "timeseries",
+   "title": "Duración del procesamiento en el carril (p99, Prometheus)",
+   "description": "",
+   "gridPos": {
+    "x": 16,
+    "y": 16,
+    "w": 8,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "histogram_quantile(0.99, sum by (le, componente, tipo) (rate(orquidea_procesamiento_seconds_bucket[1m])))",
+     "legendFormat": "{{componente}} {{tipo}}",
+     "range": true
+    }
+   ],
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "showPoints": "never"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 12
+  },
+  {
+   "type": "row",
+   "title": "Masivos",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 24,
+    "w": 24,
+    "h": 1
+   },
+   "panels": [],
+   "id": 13
+  },
+  {
+   "type": "table",
+   "title": "Masivos: carril, subida, acuse y duración frente a la referencia de 5 min",
+   "description": "",
+   "gridPos": {
+    "x": 0,
+    "y": 25,
+    "w": 24,
+    "h": 7
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "registro"
+     },
+     "rawSql": "SELECT llave, carril, registros, bytes, recibido - recepcion_inicio AS subida, acuse_ms, resultado_en - recibido AS duracion, resultado FROM registro.archivos WHERE $__timeFilter(enviado) AND tipo = 'masivo' ORDER BY enviado",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "registro"
+   },
+   "options": {
+    "showHeader": true
+   },
+   "id": 14
+  }
+ ],
+ "templating": {
+  "list": []
+ }
+}

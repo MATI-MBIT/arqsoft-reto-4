@@ -1,0 +1,12 @@
+# Catálogo de versiones del prototipo del experimento (reto 4).
+[versions]
+springBoot = "3.5.16"
+dependencyManagement = "1.1.7"
+bouncycastle = "1.78.1"
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+dependency-management = { id = "io.spring.dependency-management", version.ref = "dependencyManagement" }
+
+[libraries]
+bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }

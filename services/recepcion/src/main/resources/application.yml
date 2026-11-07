@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: recepcion
+  config:
+    import: classpath:comun.yml
+  servlet:
+    multipart:
+      enabled: false
+orquidea:
+  ecd-url: ${ECD_URL:http://localhost:8667}
+  revocacion-vigencia-s: ${REVOCACION_VIGENCIA_S:3600}
+  estampa-desfase-s: ${ESTAMPA_DESFASE_S:300}
+  estampa-antiguedad-h: ${ESTAMPA_ANTIGUEDAD_H:24}
+  ruteo: ${RUTEO:tamano}
+  umbral-bytes: ${UMBRAL_BYTES:30000}

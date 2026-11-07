@@ -1,0 +1,8 @@
+# Una imagen, tres papeles: ROL=rnic | ecd | remitente.
+spring:
+  application:
+    name: ${ROL:simulador}
+  config:
+    import: classpath:comun.yml
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration

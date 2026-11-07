@@ -1,0 +1,25 @@
+# Dos fuentes: Prometheus para ver la ejecución en vivo, y el registro de eventos
+# en PostgreSQL para ver cada archivo cruzado con su desenlace, que es la evidencia.
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    uid: prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    jsonData:
+      timeInterval: 2s
+  - name: Registro de eventos
+    uid: registro
+    type: grafana-postgresql-datasource
+    access: proxy
+    url: postgres:5432
+    user: reto4
+    secureJsonData:
+      password: reto4
+    jsonData:
+      database: reto4
+      sslmode: disable
+      postgresVersion: 1700
+      timescaledb: false

@@ -1,0 +1,51 @@
+# Plan de ejecuciones del experimento de Orquídea (ASR-D01, ASR-L04, ASR-S06).
+#
+# Esto es DATO, no código: cada fila es una ejecución y dice a qué escenario de
+# docs/experiments.md sirve. Agregar un punto de medida es agregar una línea. El
+# orquestador (load/experimento.sh) lo lee y lo ejecuta en orden.
+#
+# grupo      para correr por partes: ./load/experimento.sh d01
+# id         nombre de la ejecución; la carpeta de resultados le agrega la hora
+# asr        D01 | L04 | S06: decide qué veredicto (analisis/<asr>.sql) se calcula
+# escenario  el de docs/experiments.md (D-1 ... S-3)
+# criterio   decide = entra al veredicto del ASR | observa = solo se registra
+# vars       K=V;K=V. Segundos medidos desde el fin del calentamiento. Por omisión:
+#            WARMUP_S=60 · DURACION_S=600 · TASA=400 (pequeños por minuto) · GRACIA_S=30
+#            TERCERO=rnic · CAIDA_EN_S=-1 (sin falla) · MODO=corte | lentitud · LATENCIA_MS=3000
+#            RESTABLECER_EN_S=-1 (se restablece en la primera ventana «arriba»)
+#            VENCER=0 (S-2: vence la copia local de la CRL al caer la ECD)
+#            VENTANAS= (lista: «abajo» corre la ventana con el tercero caído, «arriba» con él de vuelta)
+#            REENVIAR=0 · NUEVOS=0 · REENVIAR_EN_S=-1 (D-5) · REPETIR=0 (D-5, después de las ventanas)
+#            MASIVOS=0 · MASIVOS_EN_S=120 · RUTEO=tamano | unico (L-3, sin carriles)
+#            CATALOGO=0 (veces cada caso del catálogo) · CATALOGO_EN_S=60 · CASOS= (todos)
+#            DIAS=2 (días de reintento antes de notificar) · COSTO_REGLA_US=1000
+#
+# Tres niveles: humo (~12 min, ¿circula?), rapido (todo comprimido, para probar
+# cada cambio) y los grupos de decisión d01, l04 y s06, que entran a docs/results.md.
+#
+# grupo	id	asr	escenario	criterio	vars	pregunta
+humo	humo-d	D01	D-2	observa	WARMUP_S=20;DURACION_S=150;CAIDA_EN_S=30;VENTANAS=abajo,arriba;REENVIAR=10;NUEVOS=10;REENVIAR_EN_S=90;REPETIR=10;GRACIA_S=15	¿Circula D01 de punta a punta: caída, pendientes, ventanas, reenvío y repetición?
+humo	humo-l	L04	L-1	observa	WARMUP_S=20;DURACION_S=150;MASIVOS=2;MASIVOS_EN_S=20;GRACIA_S=15	¿Circula L04: pequeños y dos masivos en su carril?
+humo	humo-s	S06	S-2	observa	WARMUP_S=20;DURACION_S=120;CATALOGO=1;CATALOGO_EN_S=10;TERCERO=ecd;VENCER=1;CAIDA_EN_S=60;VENTANAS=abajo,arriba;CASOS=revocado;GRACIA_S=15	¿Circula S06: catálogo, ECD caída y verificación pendiente?
+rapido	r-d1	D01	D-1	observa	WARMUP_S=30;DURACION_S=360;CAIDA_EN_S=60;RESTABLECER_EN_S=240;VENTANAS=arriba	D-1 comprimido
+rapido	r-d2	D01	D-2	observa	WARMUP_S=30;DURACION_S=240;CAIDA_EN_S=60;VENTANAS=abajo,arriba	D-2 comprimido
+rapido	r-d3	D01	D-3	observa	WARMUP_S=30;DURACION_S=240;CAIDA_EN_S=60;VENTANAS=abajo,abajo,arriba	D-3 comprimido
+rapido	r-d4	D01	D-4	observa	WARMUP_S=30;DURACION_S=240;CAIDA_EN_S=60;MODO=lentitud;RESTABLECER_EN_S=180;VENTANAS=arriba	D-4 comprimido
+rapido	r-d5	D01	D-5	observa	WARMUP_S=30;DURACION_S=240;CAIDA_EN_S=60;REENVIAR=50;NUEVOS=50;REENVIAR_EN_S=180;VENTANAS=arriba;REPETIR=50	D-5 comprimido
+rapido	r-l1	L04	L-1	observa	WARMUP_S=30;DURACION_S=360;MASIVOS=5;MASIVOS_EN_S=60	L-1 comprimido
+rapido	r-l3	L04	L-3	observa	WARMUP_S=30;DURACION_S=360;MASIVOS=5;MASIVOS_EN_S=60;RUTEO=unico	L-3 comprimido
+rapido	r-s1	S06	S-1	observa	WARMUP_S=30;DURACION_S=180;CATALOGO=2;CATALOGO_EN_S=60	S-1 comprimido
+rapido	r-s2	S06	S-2	observa	WARMUP_S=30;DURACION_S=180;TERCERO=ecd;VENCER=1;CAIDA_EN_S=60;VENTANAS=abajo,arriba;CATALOGO=3;CATALOGO_EN_S=90;CASOS=revocado	S-2 comprimido
+d01	d1	D01	D-1	decide	DURACION_S=1200;CAIDA_EN_S=300;RESTABLECER_EN_S=900;VENTANAS=arriba	¿Con el RNIC caído 10 min, el 100 % de los válidos se procesa en la primera ventana tras su regreso?
+d01	d2	D01	D-2	decide	DURACION_S=480;CAIDA_EN_S=120;VENTANAS=abajo,arriba	¿Si la primera ventana corre con el RNIC caído, los pendientes se reprograman y se procesan en la segunda?
+d01	d3	D01	D-3	observa	DURACION_S=480;CAIDA_EN_S=120;VENTANAS=abajo,abajo,arriba	¿Al agotar los 2 días se notifica sin sacar de pendientes, y lo notificado se procesa al volver?
+d01	d4	D01	D-4	decide	DURACION_S=480;CAIDA_EN_S=120;MODO=lentitud;LATENCIA_MS=3000;RESTABLECER_EN_S=360;VENTANAS=arriba	¿Un RNIC más lento que el timeout se detecta como caído y de vuelta, sin rechazos?
+d01	d5	D01	D-5	decide	DURACION_S=480;CAIDA_EN_S=120;REENVIAR=50;NUEVOS=50;REENVIAR_EN_S=360;VENTANAS=arriba;REPETIR=50	¿Los reenvíos con la misma llave se rechazan y los eventos repetidos no escriben dos veces?
+l04	l1	L04	L-1	decide	DURACION_S=600;MASIVOS=5;MASIVOS_EN_S=120	¿Con 5 masivos en proceso, el p99 de los pequeños es ≤ 3 s?
+l04	l2	L04	L-2	observa	DURACION_S=600	¿Cuál es el p99 de los pequeños sin masivos (línea base del 10 % de BCR)?
+l04	l3	L04	L-3	observa	DURACION_S=600;MASIVOS=5;MASIVOS_EN_S=120;RUTEO=unico	¿Qué p99 tienen los pequeños sin carriles, con un solo tópico y un solo pool?
+l04	l4-6	L04	L-4	observa	DURACION_S=600;MASIVOS=6;MASIVOS_EN_S=120	¿Se sostiene el p99 con 6 masivos?
+l04	l4-8	L04	L-4	observa	DURACION_S=600;MASIVOS=8;MASIVOS_EN_S=120	¿Se sostiene el p99 con 8 masivos?
+l04	l4-10	L04	L-4	observa	DURACION_S=600;MASIVOS=10;MASIVOS_EN_S=120	¿Se sostiene el p99 con 10 masivos?
+s06	s1	S06	S-1	decide	DURACION_S=300;CATALOGO=3;CATALOGO_EN_S=60	¿Algún archivo del catálogo criptográfico llega a aceptación, mezclado con la carga normal?
+s06	s2	S06	S-2	decide	DURACION_S=360;TERCERO=ecd;VENCER=1;CAIDA_EN_S=60;VENTANAS=abajo,arriba;CATALOGO=3;CATALOGO_EN_S=120;CASOS=revocado	¿Con la ECD caída y la CRL vencida, algo se acepta antes de verificar la revocación?

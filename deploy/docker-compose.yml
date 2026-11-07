@@ -1,0 +1,237 @@
+# Topología del experimento local de Orquídea (DG-DEP-002): un contenedor por
+# pieza, en una sola máquina. Los puertos del host sirven para k6, el orquestador
+# y para mirar cada servicio a mano.
+#
+#   recepcion :8081 · carril-a :8082 · carril-b :8083 · monitor-terceros :8084
+#   reprocesador :8085 · remitente-sim :8090 · tercero-rnic-sim :8091 · ecd-sim :8092
+#   toxiproxy :8474 · PostgreSQL :5434 · Prometheus :9090 · Grafana :3000
+#
+# Los carriles A y B son la misma imagen con su propio contenedor, su propio pool
+# (CONCURRENCIA) y su propio límite de CPU: el bulkhead de ADR-005. Los parámetros
+# que BCR no ha fijado entran por variables de entorno, con valores de prueba.
+name: reto4
+
+x-servicio: &servicio
+  restart: "no"
+  depends_on:
+    postgres: { condition: service_healthy }
+    kafka: { condition: service_healthy }
+  volumes:
+    - custodia:/custodia
+    - ./pki:/pki:ro
+  environment: &entorno
+    DB_URL: jdbc:postgresql://postgres:5432/reto4
+    KAFKA: kafka:9092
+    PKI_DIR: /pki
+    CUSTODIA_DIR: /custodia
+    MONITOR_URL: http://monitor-terceros:8080
+    RNIC_URL: http://toxiproxy:8666
+    ECD_URL: http://toxiproxy:8667
+    RNIC_TIMEOUT_MS: "${RNIC_TIMEOUT_MS:-1000}"
+    COSTO_REGLA_US: "${COSTO_REGLA_US:-1000}"
+
+x-simulador: &simulador
+  restart: "no"
+  image: reto4/simuladores
+  build: { context: .., dockerfile: deploy/Dockerfile, args: { SERVICE: simuladores } }
+  depends_on:
+    postgres: { condition: service_healthy }
+  volumes:
+    - ./pki:/pki:ro
+
+services:
+  # --- Infraestructura -------------------------------------------------------
+  postgres:
+    image: postgres:17-alpine
+    command: ["postgres", "-c", "max_connections=300", "-c", "synchronous_commit=on"]
+    environment:
+      POSTGRES_DB: reto4
+      POSTGRES_USER: reto4
+      POSTGRES_PASSWORD: reto4
+    ports: ["5434:5432"]
+    volumes:
+      - ./postgres/01-esquema.sql:/docker-entrypoint-initdb.d/01-esquema.sql:ro
+      - ./postgres/03-vistas.sql:/docker-entrypoint-initdb.d/03-vistas.sql:ro
+      - ../analisis:/analisis:ro
+      - datos:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reto4 -d reto4"]
+      interval: 2s
+      retries: 30
+
+  # La cola durable de ADR-001: Kafka en modo KRaft, nodo único (C-01).
+  kafka:
+    image: apache/kafka:3.9.1
+    container_name: reto4-kafka
+    hostname: kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_HEAP_OPTS: "-Xms512m -Xmx1g"
+    volumes:
+      - kafka:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 >/dev/null 2>&1"]
+      interval: 5s
+      retries: 30
+
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy:2.12.0
+    container_name: reto4-toxiproxy
+    command: ["-host=0.0.0.0", "-config=/config/toxiproxy.json"]
+    ports: ["8474:8474"]
+    volumes:
+      - ./toxiproxy/toxiproxy.json:/config/toxiproxy.json:ro
+
+  # --- Orquídea --------------------------------------------------------------
+  recepcion:
+    <<: *servicio
+    image: reto4/recepcion
+    build: { context: .., dockerfile: deploy/Dockerfile, args: { SERVICE: recepcion } }
+    cpus: 2
+    environment:
+      <<: *entorno
+      RUTEO: "${RUTEO:-tamano}"
+      UMBRAL_BYTES: "${UMBRAL_BYTES:-30000}"
+      REVOCACION_VIGENCIA_S: "${REVOCACION_VIGENCIA_S:-3600}"
+      DB_POOL: "20"
+      JAVA_OPTS: "-Xms512m -Xmx1g"
+    ports: ["8081:8080"]
+
+  carril-a:
+    <<: *servicio
+    image: reto4/carril
+    build: { context: .., dockerfile: deploy/Dockerfile, args: { SERVICE: carril } }
+    cpus: "${CPUS_CARRIL_A:-2}"
+    environment:
+      <<: *entorno
+      ORQUIDEA_COMPONENTE: carril-a
+      CARRIL: A
+      TOPICO: carril-a
+      CONCURRENCIA: "${CONCURRENCIA_A:-8}"
+      LOTE: "500"
+    ports: ["8082:8080"]
+
+  carril-b:
+    <<: *servicio
+    image: reto4/carril
+    cpus: "${CPUS_CARRIL_B:-3}"
+    environment:
+      <<: *entorno
+      ORQUIDEA_COMPONENTE: carril-b
+      CARRIL: B
+      TOPICO: carril-b
+      CONCURRENCIA: "${CONCURRENCIA_B:-5}"
+      LOTE: "1000"
+    ports: ["8083:8080"]
+
+  monitor-terceros:
+    <<: *servicio
+    image: reto4/monitor
+    build: { context: .., dockerfile: deploy/Dockerfile, args: { SERVICE: monitor } }
+    environment:
+      <<: *entorno
+      ORQUIDEA_COMPONENTE: monitor-terceros
+      TERCEROS: rnic=http://toxiproxy:8666,ecd=http://toxiproxy:8667
+      SONDEO_MS: "${SONDEO_MS:-1000}"
+      SONDEO_TIMEOUT_MS: "${SONDEO_TIMEOUT_MS:-800}"
+      SONDEO_N: "${SONDEO_N:-3}"
+      JAVA_OPTS: "-Xms128m -Xmx256m"
+    ports: ["8084:8080"]
+
+  reprocesador:
+    <<: *servicio
+    image: reto4/reprocesador
+    build: { context: .., dockerfile: deploy/Dockerfile, args: { SERVICE: reprocesador } }
+    cpus: 2
+    environment:
+      <<: *entorno
+      DIAS_REINTENTO: "${DIAS_REINTENTO:-2}"
+      RITMO_DECLARACIONES_S: "${RITMO_DECLARACIONES_S:-5000}"
+    ports: ["8085:8080"]
+
+  # --- Simuladores -----------------------------------------------------------
+  remitente-sim:
+    <<: *simulador
+    cpus: 2
+    environment:
+      ROL: remitente
+      ORQUIDEA_COMPONENTE: remitente-sim
+      DB_URL: jdbc:postgresql://postgres:5432/reto4
+      PKI_DIR: /pki
+      RECEPCION_URL: http://recepcion:8080
+      INVALIDAS: "0.05"
+      JAVA_OPTS: "-Xms512m -Xmx2g"
+    ports: ["8090:8080"]
+
+  tercero-rnic-sim:
+    <<: *simulador
+    environment:
+      ROL: rnic
+      ORQUIDEA_COMPONENTE: tercero-rnic-sim
+      DB_URL: jdbc:postgresql://postgres:5432/reto4
+      JAVA_OPTS: "-Xms128m -Xmx384m"
+    ports: ["8091:8080"]
+
+  ecd-sim:
+    <<: *simulador
+    environment:
+      ROL: ecd
+      ORQUIDEA_COMPONENTE: ecd-sim
+      DB_URL: jdbc:postgresql://postgres:5432/reto4
+      PKI_DIR: /pki
+      JAVA_OPTS: "-Xms64m -Xmx128m"
+    ports: ["8092:8080"]
+
+  inyector:
+    build: { context: ./inyector }
+    image: reto4/inyector
+    container_name: reto4-inyector
+    environment:
+      PGHOST: postgres
+      PGUSER: reto4
+      PGPASSWORD: reto4
+      PGDATABASE: reto4
+      TOXIPROXY: http://toxiproxy:8474
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  # --- Observabilidad --------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v3.15.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-remote-write-receiver   # k6 empuja aquí sus métricas
+      - --storage.tsdb.retention.time=15d
+    ports: ["9090:9090"]
+    volumes:
+      - ./observabilidad/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus:/prometheus
+
+  grafana:
+    image: grafana/grafana:13.2.3
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/d01.json
+    ports: ["3000:3000"]
+    volumes:
+      - ./observabilidad/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observabilidad/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on: [prometheus, postgres]
+
+volumes:
+  datos:
+  kafka:
+  custodia:
+  prometheus:

@@ -16,3 +16,16 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# Prototipo del experimento
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+bin/
+*.iml
+gradle.properties
+deploy/pki/
+analisis/resultados/*/eventos-*.csv
+analisis/resultados/humo-*
+analisis/resultados/resumen-*.tsv
+__pycache__/
