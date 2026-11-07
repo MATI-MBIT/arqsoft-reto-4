@@ -16,7 +16,7 @@ Ocho decisiones de arquitectura, agrupadas por el ASR crítico al que responden.
 | ADR | Grupo | Título | Estado | ASRs |
 |---|---|---|---|---|
 | ADR-001 | ASR-D01 | Pipeline asíncrono por etapas con acuse temprano sobre una cola durable | Propuesta | ASR-D01, ASR-L04 |
-| ADR-002 | ASR-D01 | Detección de terceros caídos, lentos o de vuelta: monitor con sondeo y timeout por llamada | Propuesta | ASR-D01 |
+| ADR-002 | ASR-D01 | Detección de terceros caídos, lentos o de vuelta: monitor con ping/echo y timeout por llamada | Propuesta | ASR-D01 |
 | ADR-003 | ASR-D01 | Pendientes durables y ventana nocturna de reproceso, con reintento diario y notificación | Propuesta | ASR-D01 |
 | ADR-004 | ASR-D01 | Llave de idempotencia por archivo, registrada antes del acuse | Propuesta | ASR-D01 |
 | ADR-005 | ASR-L04 | Dos carriles aislados con enrutador por tamaño al recibir | Propuesta | ASR-L04 |
@@ -107,8 +107,8 @@ Adoptaremos un pipeline de etapas asíncronas comunicadas por una cola durable. 
 
 | ID | Patrón | Variante | Táctica (curso) | Familia |
 |---|---|---|---|---|
-| EST-07 | Pipe and Filter | — | Pipe and Filter (pipeline por etapas) | Estilo |
-| ESC-05 | Productor → cola → consumidores, con acuse | — | Asincronía y colas | Escalabilidad · ritmo |
+| EST-07 | Pipe and Filter | — | Pipe and Filter | Estilo |
+| ESC-05 | Asynchrony / queues | — | Asincronía y colas | Escalabilidad · ritmo |
 
 **A3. Alternativas**
 
@@ -138,7 +138,7 @@ Descartes: B, KO: con el tercero caído rechaza o deja colgado el archivo (ASR-D
 
 **A6. Relaciones:** reemplaza: — · refina: — · depende-de: — · conflicto-con: —
 
-#### ADR-002: Detección de terceros caídos, lentos o de vuelta: monitor con sondeo y timeout por llamada
+#### ADR-002: Detección de terceros caídos, lentos o de vuelta: monitor con ping/echo y timeout por llamada
 
 **Estado:** Propuesta · **Fecha:** 2026-11-06 · **Iteración ADD:** 1 · **Confianza:** Media — tácticas conocidas, pero el periodo de sondeo y el timeout dependen de qué latencia cuenta como extrema, que BCR no ha fijado
 
@@ -172,9 +172,9 @@ Un monitor de terceros sondeará a cada uno con ping/echo a un periodo fijo y pu
 
 | ID | Patrón | Variante | Táctica (curso) | Familia |
 |---|---|---|---|---|
-| DIS-01 | Ping/Echo (Health Endpoint Monitoring) | — | Ping / echo: el monitor sondea a cada tercero | Disponibilidad · detectar |
-| DIS-03 | Monitor (Process Monitor) | — | Monitor: agrega sondeos y timeouts en un estado por tercero | Disponibilidad · detectar |
-| DIS-04 | Exception detection (Timeouts) | timeout | Excepción / timeout en cada adaptador | Disponibilidad · detectar |
+| DIS-01 | Ping/Echo | — | Ping / echo | Disponibilidad · detectar |
+| DIS-03 | Monitor | — | Monitor | Disponibilidad · detectar |
+| DIS-04 | Timeouts | timeout | Excepción / timeout | Disponibilidad · detectar |
 
 **A3. Alternativas**
 
@@ -239,8 +239,8 @@ Cuando ADR-002 marca al tercero caído, o su adaptador vence el timeout, la decl
 
 | ID | Patrón | Variante | Táctica (curso) | Familia |
 |---|---|---|---|---|
-| DIS-12 | Retry (+ Idempotent Receiver) | diferido-por-cola | Reintento diferido a la ventana nocturna | Disponibilidad · recuperar |
-| DIS-14 | Graceful Degradation (dependencia dura → blanda) | fallback | Degradación con gracia: acusar sin el tercero | Disponibilidad · recuperar |
+| DIS-12 | Retry | diferido-por-cola | Reintento | Disponibilidad · recuperar |
+| DIS-14 | Graceful Degradation | fallback | Degradación con gracia | Disponibilidad · recuperar |
 
 **A3. Alternativas**
 
@@ -303,7 +303,7 @@ Registraremos la llave del archivo, con restricción de unicidad, en la misma tr
 
 | ID | Patrón | Variante | Táctica (curso) | Familia |
 |---|---|---|---|---|
-| DIS-17 | Transaction (ACID) | local | Transacción local: archivo y llave juntos | Disponibilidad · prevenir |
+| DIS-17 | Transaction (ACID) | local | Transacciones | Disponibilidad · prevenir |
 
 **A3. Alternativas**
 
@@ -370,9 +370,9 @@ Separaremos dos carriles, cada uno con su tópico, su pool y su despliegue: el c
 
 | ID | Patrón | Variante | Táctica (curso) | Familia |
 |---|---|---|---|---|
-| DIS-22 | Bulkhead | — | Bulkhead (compartimentos) | Disponibilidad · prevenir |
-| LAT-03 | Clasificador con carriles | — | Priorizar eventos: enrutar por tamaño al recibir | Desempeño · controlar la demanda |
-| LAT-12 | Scheduler con su política | — | Programar los recursos: cada carril con su pool y su política | Desempeño · gestionar recursos |
+| DIS-22 | Bulkhead | — | Bulkhead | Disponibilidad · prevenir |
+| LAT-03 | Prioritize events | — | Priorizar eventos | Desempeño · controlar la demanda |
+| LAT-12 | Schedule resources | — | Programar los recursos | Desempeño · gestionar recursos |
 
 **A3. Alternativas**
 
@@ -440,9 +440,9 @@ Verificaremos en la recepción, con un parser en streaming sin DTD ni entidades 
 
 | ID | Patrón | Variante | Táctica (curso) | Familia |
 |---|---|---|---|---|
-| SEG-02 | Authenticator | un-factor | Autenticar actores: firma y firmante del archivo | Seguridad · resistir |
-| SEG-11 | Verificación de firma | — | Verificar integridad: lo verificado es lo procesado | Seguridad · detectar |
-| SEG-08 | Validación antes de la lógica | — | Validar la entrada: parser sin DTD ni entidades externas | Seguridad · resistir |
+| SEG-02 | Authenticator | un-factor | Autenticar actores | Seguridad · resistir |
+| SEG-11 | Verify message integrity | — | Verificar integridad | Seguridad · detectar |
+| SEG-08 | Validate input | — | Validar la entrada | Seguridad · resistir |
 
 **A3. Alternativas**
 
@@ -507,8 +507,8 @@ Mantendremos localmente la lista de revocación de la ECD y las respuestas OCSP 
 
 | ID | Patrón | Variante | Táctica (curso) | Familia |
 |---|---|---|---|---|
-| LAT-10 | Cache-aside | — | Mantener copias de datos: lista de revocación en caché | Desempeño · gestionar recursos |
-| DIS-14 | Graceful Degradation (dependencia dura → blanda) | fallback | Degradación con gracia: verificación pendiente | Disponibilidad · recuperar |
+| LAT-10 | Maintain multiple copies of data | — | Mantener múltiples copias de datos | Desempeño · gestionar recursos |
+| DIS-14 | Graceful Degradation | fallback | Degradación con gracia | Disponibilidad · recuperar |
 
 **A3. Alternativas**
 
@@ -569,7 +569,7 @@ Por cada archivo, la recepción anexará a un registro de evidencia, separado de
 
 | ID | Patrón | Variante | Táctica (curso) | Familia |
 |---|---|---|---|---|
-| SEG-18 | Security Logger and Auditor | firma | Registro de auditoría / no repudio | Seguridad · recuperar |
+| SEG-18 | Security Logger and Auditor | firma | Registro de auditoría | Seguridad · recuperar |
 
 **A3. Alternativas**
 
@@ -625,6 +625,6 @@ S: satisface · C: contribuye.
 
 **Fuera de alcance:** solo se desarrollan los tres ASR críticos del 6-nov; las decisiones de los demás ASR quedan en el historial de git. La autenticación TLS mutua (ADR-13 de BCR) sigue aprobada, pero no entra en esta iteración (R-14). La topología activo-activo (ADR-17 de BCR) es infraestructura. La integración con el Banco de la República queda fuera del reto.
 
-**Patrones de las tácticas.** La columna «Patrón» de cada A2 trae el patrón de la ficha de la táctica; si la táctica no tiene ficha, el que pide el catálogo del curso en su columna «Debe verse».
+**Nombres de las tácticas.** En cada A2, «Táctica (curso)» es el nombre exacto del catálogo del curso, y «Patrón» el nombre canónico en inglés: el de la ficha de la táctica o, si no tiene ficha, el de Bass. Cómo se aplica cada táctica lo dice la decisión del ADR.
 
 **Sin catálogos ni plan de diagramas.** Por decisión del equipo (2026-11-06), el registro no lleva catálogo de elementos ni de conectores, plan de diagramas ni evidencia visual: los diagramas derivan sus elementos de las decisiones y las tácticas. Por eso no cumple completo el contrato `adr-log/v2`.
