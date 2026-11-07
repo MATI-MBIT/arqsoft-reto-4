@@ -127,8 +127,11 @@ def d01():
     for fa, fb in fallas:
         c.append(f"<rect x='{xs(float(fa)):.1f}' y='{arriba}' width='{xs(float(fb)) - xs(float(fa)):.1f}' height='{alto - arriba - abajo}' fill='{FRANJA}'/>")
         c.append(texto(xs(float(fa)) + 6, arriba + 16, "RNIC caído", 11, UMBRAL))
-    for k in range(0, 6):
-        v = maxy / 5 * k
+    # Marcas redondas: un paso de 1, 2 o 5 por una potencia de 10.
+    base = 10 ** math.floor(math.log10(maxy / 5))
+    paso = next(m * base for m in (1, 2, 5, 10) if m * base >= maxy / 5)
+    for k in range(0, int(maxy // paso) + 1):
+        v = paso * k
         c.append(f"<line x1='{izq}' x2='{ancho - der}' y1='{ys(v):.1f}' y2='{ys(v):.1f}' stroke='{REJILLA}'/>")
         c.append(texto(izq - 8, ys(v) + 4, f"{v:.0f}", 11, TINTA_3, "end"))
     for m in range(0, int((t1 - t0) // 60) + 1, 5):

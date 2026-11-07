@@ -130,3 +130,9 @@ esperan una cifra de BCR:
 - Prueba unitaria del camino criptográfico: los nueve casos del catálogo se rechazan con su causa.
 - Humo del 2026-11-07 (16:00 a 16:11): los tres ASR pasan; ejecuciones válidas.
 - La primera prueba manual de un masivo midió 10 min en vez de 105 s porque el equipo se suspendió: el orquestador invalida toda ejecución con suspensión.
+- Plan de decisión del 2026-11-07 (16:11 a 18:46, ciclo `20261107-161130`): 13 ejecuciones, todas válidas (hueco máximo 1,5 s, sin suspensiones, 0 % de fallos en k6). Resultados en `docs/results.md`.
+  - ASR-D01 pasa en D-1, D-2, D-4 y D-5 (100 % de los válidos); D-3 notifica 2 437 y los procesa al volver. Detección de 0,2 a 0,5 s con corte y 1,4 s con lentitud.
+  - ASR-L04 pasa: p99 de 491 ms con 5 masivos, 482 ms sin masivos (+1,9 %), de 468 a 478 ms con 6, 8 y 10. Sin carriles (L-3), 118 s.
+  - ASR-S06 pasa: 0 de 27 del catálogo aceptados y 0 de 2 048 aceptados antes de verificar con la ECD caída.
+  - Hallazgo: en el carril B los masivos esperan turno por hilo (partición por llave); uno de cada tanda pasa la referencia de 5 min. Se propone repartirlos entre hilos libres.
+  - El inyector anotaba el restablecimiento después de aplicarlo: el regreso de D-4 quedó en −8 ms. Corregido para las ejecuciones siguientes.

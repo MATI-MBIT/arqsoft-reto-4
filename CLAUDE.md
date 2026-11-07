@@ -59,7 +59,7 @@ front matter la clave `helix_section`:
 | `glossary.md` | `Objective → Glossary` | Insumo | Hecho |
 | `quality-attributes.md` | `Requirements & Quality → Quality Scenarios` | Sale de los insumos | Hecho |
 | `experiments.md` | `Experiments` | Valida decisiones | Diseño; prototipo construido y corrido |
-| `results.md` | `Experiments → Results & analysis` | Resultados | Pendiente |
+| `results.md` | `Experiments → Results & analysis` | Resultados | Hecho (13 ejecuciones del 7-nov) |
 | `modelos/` | No se carga en Helix | ADR (`adrs-orquidea.md`), vistas, draw.io y PNG | Hecho (ADR en Propuesta) |
 
 **ASR críticos (reunión con BCR del 6-nov-2026):** solo tres, D01 (foco), L04 y S06.

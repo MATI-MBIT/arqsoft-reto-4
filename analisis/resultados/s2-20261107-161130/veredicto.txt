@@ -1,0 +1,41 @@
+Null display is "—".
+
+== Ejecución
+         id         | asr | escenario |                                                                                                                                              variables                                                                                                                                              |            inicio             |             fin              |            cierre             |    medicion     | valida | motivo 
+--------------------+-----+-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------+------------------------------+-------------------------------+-----------------+--------+--------
+ s2-20261107-161130 | S06 | S-2       | {"dias": 2, "modo": "corte", "tasa": 400, "vars": "DURACION_S=360;TERCERO=ecd;VENCER=1;CAIDA_EN_S=60;VENTANAS=abajo,arriba;CATALOGO=3;CATALOGO_EN_S=120;CASOS=revocado", "ruteo": "tamano", "masivos": 0, "tercero": "ecd", "ventanas": "abajo,arriba", "escenario": "S-2", "costo_regla_us": 1000} | 2026-11-07 23:36:58.768974+00 | 2026-11-07 23:42:59.63347+00 | 2026-11-07 23:44:04.573039+00 | 00:06:00.864496 | t      | —
+
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+
+== Criterios de ASR-S06
+                                         criterio                                         | casos | cumplen | fallan | veredicto 
+------------------------------------------------------------------------------------------+-------+---------+--------+-----------
+ Medida · archivos del catálogo aceptados (total o parcial)                               |     3 |       3 |      0 | PASA
+ Medida · archivos en verificación pendiente aceptados antes de completar la verificación |  2051 |    2051 |      0 | PASA
+ Cada caso del catálogo se rechaza con su causa                                           |     3 |       3 |      0 | PASA
+ S-2 · lo verificado en la ventana llega a resultado; lo revocado se rechaza              |  2051 |    2051 |      0 | PASA
+ S-3 · cada aceptado tiene su evidencia firmada con el hash de los bytes procesados       |  2842 |    2842 |      0 | PASA
+
+
+== Catálogo: causa de rechazo por caso
+   caso   | enviados |        causas        | aceptados | respuesta_max_ms 
+----------+----------+----------------------+-----------+------------------
+ revocado |        3 | CERTIFICADO_REVOCADO |         0 |                3
+
+
+== S-2: verificación pendiente
+   caso   | acusados_en_verificacion_pendiente | verificados_en_ventana | aceptados_despues | rechazados_en_ventana |  espera_minima  |  espera_maxima  
+----------+------------------------------------+------------------------+-------------------+-----------------------+-----------------+-----------------
+ revocado |                                  3 |                      0 |                 0 |                     3 | —               | —
+ valido   |                               2048 |                   2048 |              2048 |                     0 | 00:00:10.161159 | 00:05:24.564228
+
+
+== Evidencia (S-3)
+ aceptados | con_entrada | firma_valida | hash_coincide 
+-----------+-------------+--------------+---------------
+      2842 |        2842 |         2842 |          2842
+
+validez: hueco máximo 1.5 s · 0 suspensiones · 0 % de solicitudes fallidas

@@ -1,0 +1,9 @@
+firma-alterada {"porStatus":{"422":3},"enviados":3}
+resumen-recalculado {"porStatus":{"422":3},"enviados":3}
+firma-envuelta {"porStatus":{"422":3},"enviados":3}
+firmante-distinto {"porStatus":{"422":3},"enviados":3}
+revocado {"porStatus":{"422":3},"enviados":3}
+ca-no-aceptada {"porStatus":{"422":3},"enviados":3}
+estampa-desfasada {"porStatus":{"422":3},"enviados":3}
+estampa-vencida {"porStatus":{"422":3},"enviados":3}
+entidad-externa {"porStatus":{"422":3},"enviados":3}

@@ -1,0 +1,28 @@
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 6       0.904855/s
+    checks_succeeded...: 100.00% 6 out of 6
+    checks_failed......: 0.00%   0 out of 6
+
+    ✓ acusado
+
+    HTTP
+    http_req_duration..............: med=6.17s p(95)=6.52s max=6.62s
+      { expected_response:true }...: med=6.17s p(95)=6.52s max=6.62s
+    http_req_failed................: 0.00%  0 out of 6
+    http_reqs......................: 6      0.904855/s
+
+    EXECUTION
+    iteration_duration.............: med=6.17s p(95)=6.52s max=6.63s
+    iterations.....................: 6      0.904855/s
+    vus............................: 6      min=6      max=6
+    vus_max........................: 6      min=6      max=6
+
+    NETWORK
+    data_received..................: 2.0 kB 299 B/s
+    data_sent......................: 822 B  124 B/s
+
+
+
