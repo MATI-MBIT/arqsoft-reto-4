@@ -1,12 +1,19 @@
 {%- comment -%}
-Muestra una página de un archivo draw.io con el visor de diagrams.net.
+Muestra una página de un archivo draw.io con el visor de diagrams.net y, debajo,
+un enlace que abre esa misma página en draw.io desde el archivo publicado en main.
 Parámetros:
-  xml  — el contenido del .drawio (capturado con include_relative)
-  page — índice de la página dentro del archivo, desde 0
+  xml     — el contenido del .drawio (capturado con include_relative)
+  page    — índice de la página dentro del archivo, desde 0
+  archivo — opcional: nombre del .drawio sin extensión; por defecto, el de la
+            página que lo incluye (vista-componentes.md → drawio/vista-componentes.drawio)
 {%- endcomment -%}
+{%- assign drawio_pagina = include.page | default: 0 -%}
+{%- assign drawio_base = include.archivo | default: page.name | remove: '.md' -%}
+{%- capture drawio_raw -%}https://raw.githubusercontent.com/MATI-MBIT/arqsoft-reto-4/main/docs{{ page.dir }}drawio/{{ drawio_base }}.drawio{%- endcapture -%}
 {%- capture drawio_cfg -%}
-{"highlight":"#0000ff","nav":true,"resize":true,"page":{{ include.page | default: 0 }},"toolbar":"zoom lightbox","edit":"_blank","xml":{{ include.xml | jsonify }}}
+{"highlight":"#0000ff","nav":true,"resize":true,"page":{{ drawio_pagina }},"toolbar":"zoom lightbox","edit":"_blank","xml":{{ include.xml | jsonify }}}
 {%- endcapture -%}
-<div class="drawio-vista" style="border:1px solid #e1e4e8;border-radius:4px;margin:1rem 0;overflow:auto;background:#fff">
+<div class="drawio-vista" style="border:1px solid #e1e4e8;border-radius:4px;margin:1rem 0 0.25rem;overflow:auto;background:#fff">
 <div class="mxgraph" style="max-width:100%" data-mxgraph="{{ drawio_cfg | escape }}"></div>
 </div>
+<p class="drawio-abrir" style="margin:0 0 1rem;font-size:0.9em"><a href="https://app.diagrams.net/?page={{ drawio_pagina }}#U{{ drawio_raw | url_encode }}" target="_blank" rel="noopener">Abrir en draw.io ↗</a></p>

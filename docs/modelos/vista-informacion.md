@@ -8,7 +8,7 @@ nav_order: 4
 
 Qué guarda Orquídea, dónde lo guarda y quién es su dueño, y por qué estados pasan el archivo, la declaración y cada tercero en el monitor. La vista se alinea con los componentes de la [vista de componentes](vista-componentes.md) (DG-CMP-003).
 
-Cada diagrama se dibuja en el navegador a partir del archivo [`vista-informacion.drawio`](drawio/vista-informacion.drawio). Con la lupa se amplía, y con el botón de pantalla completa se lee mejor un diagrama grande. El lápiz lo abre en diagrams.net para editarlo. Debajo de cada diagrama hay un enlace a su imagen fija, exportada del mismo archivo, para los visores que no dibujan el `.drawio`.
+Cada diagrama se dibuja en el navegador a partir del archivo [`vista-informacion.drawio`](drawio/vista-informacion.drawio). Con la lupa se amplía, y con el botón de pantalla completa se lee mejor un diagrama grande. El enlace «Abrir en draw.io», debajo de cada diagrama, abre esa misma página en diagrams.net desde el archivo publicado en el repositorio, para verla completa o editar una copia. Debajo de cada diagrama hay un enlace a su imagen fija, exportada del mismo archivo, para los visores que no dibujan el `.drawio`.
 
 Todos los diagramas usan la convención de la vista de componentes. Cada elemento lleva la insignia de los ASR en cuyo alcance está: llena si es artefacto del ASR y punteada si participa sin modificarse. Al pie de cada diagrama van sus convenciones y la tabla de trazabilidad de los ASR críticos hacia sus elementos.
 

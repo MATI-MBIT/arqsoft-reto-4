@@ -8,7 +8,7 @@ nav_order: 1
 
 Quién envía archivos a Orquídea, quién usa sus resultados y de qué sistemas externos depende.
 
-Cada diagrama se dibuja en el navegador a partir del archivo [`vista-contexto.drawio`](drawio/vista-contexto.drawio). Con la lupa se amplía, y con el botón de pantalla completa se lee mejor un diagrama grande. El lápiz lo abre en diagrams.net para editarlo. Debajo de cada diagrama hay un enlace a su imagen fija, exportada del mismo archivo, para los visores que no dibujan el `.drawio`.
+Cada diagrama se dibuja en el navegador a partir del archivo [`vista-contexto.drawio`](drawio/vista-contexto.drawio). Con la lupa se amplía, y con el botón de pantalla completa se lee mejor un diagrama grande. El enlace «Abrir en draw.io», debajo de cada diagrama, abre esa misma página en diagrams.net desde el archivo publicado en el repositorio, para verla completa o editar una copia. Debajo de cada diagrama hay un enlace a su imagen fija, exportada del mismo archivo, para los visores que no dibujan el `.drawio`.
 
 {% capture vista %}{% include_relative drawio/vista-contexto.drawio %}{% endcapture %}
 

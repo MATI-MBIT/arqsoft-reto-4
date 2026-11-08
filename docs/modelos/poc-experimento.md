@@ -8,7 +8,7 @@ nav_order: 6
 
 Esta página muestra el prototipo con que se pone a prueba la arquitectura de los tres ASR críticos. El primer diagrama muestra las piezas construidas y cómo se conectan; el segundo abre el bus de eventos con sus tres tópicos; el tercero muestra qué pasa en cada ejecución del experimento, desde que se prepara hasta que sale su veredicto. El diseño del experimento está en la página de [experimentos](../experiments.md).
 
-Cada diagrama se dibuja en el navegador a partir del archivo [`poc-experimento.drawio`](drawio/poc-experimento.drawio). Con la lupa se amplía, y con el botón de pantalla completa se lee mejor un diagrama grande. El lápiz lo abre en diagrams.net para editarlo. Debajo de cada diagrama hay un enlace a su imagen fija, exportada del mismo archivo, para los visores que no dibujan el `.drawio`.
+Cada diagrama se dibuja en el navegador a partir del archivo [`poc-experimento.drawio`](drawio/poc-experimento.drawio). Con la lupa se amplía, y con el botón de pantalla completa se lee mejor un diagrama grande. El enlace «Abrir en draw.io», debajo de cada diagrama, abre esa misma página en diagrams.net desde el archivo publicado en el repositorio, para verla completa o editar una copia. Debajo de cada diagrama hay un enlace a su imagen fija, exportada del mismo archivo, para los visores que no dibujan el `.drawio`.
 
 {% capture vista %}{% include_relative drawio/poc-experimento.drawio %}{% endcapture %}
 
