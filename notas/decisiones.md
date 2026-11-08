@@ -136,3 +136,10 @@ esperan una cifra de BCR:
   - ASR-S06 pasa: 0 de 27 del catálogo aceptados y 0 de 2 048 aceptados antes de verificar con la ECD caída.
   - Hallazgo: en el carril B los masivos esperan turno por hilo (partición por llave); uno de cada tanda pasa la referencia de 5 min. Se propone repartirlos entre hilos libres.
   - El inyector anotaba el restablecimiento después de aplicarlo: el regreso de D-4 quedó en −8 ms. Corregido para las ejecuciones siguientes.
+
+### 2026-11-07 · Evidencia visual de los resultados
+
+- Pedido de Nicolás: resultados concretos, dinámicos y claros, con pantallazos y videos como en el reto 2, validando que cada video cuente lo que se prueba.
+- Por ASR, en `docs/results.md`: foto testigo anotada de la ejecución de decisión, «Cómo leerla», «Qué ocurre» con números que casan con la foto, y un clip time-lapse plegado.
+- Los clips se graban con `load/evidencias.sh grabar` y el renderizador de Grafana en el servidor; se validan sacando cuadros con `analisis/evidencia/cuadros.swift`.
+- El primer clip sin carriles de L04 contaba lo contrario del veredicto (p99 de 597 ms, 0 sobre 3 s) porque la pantalla solo contaba los pequeños resueltos. Se corrigió `ev-l04` para contar los que esperan con su espera hasta ahora y se volvió a grabar.

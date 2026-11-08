@@ -94,3 +94,53 @@ FROM registro.evento i
 LEFT JOIN LATERAL (SELECT ts, datos FROM registro.evento x WHERE x.tipo = 'ventana.fin'
                    AND x.datos ->> 'numero' = i.datos ->> 'numero' AND x.ts >= i.ts ORDER BY ts LIMIT 1) f ON true
 WHERE i.tipo = 'ventana.inicio';
+
+-- Cada evento en una frase, para las pantallas de evidencia (ev-d01, ev-l04, ev-s06).
+CREATE OR REPLACE FUNCTION registro.archivo_corto(llave text) RETURNS text LANGUAGE sql IMMUTABLE AS $$
+    SELECT CASE WHEN llave IS NULL THEN '' ELSE split_part(llave, '|', 1) || ' #' || ltrim(split_part(llave, '|', 4), '0') END
+$$;
+
+CREATE OR REPLACE FUNCTION registro.describir(tipo text, d jsonb) RETURNS text LANGUAGE sql IMMUTABLE AS $$
+    SELECT CASE tipo
+        WHEN 'falla.inyectada' THEN CASE d ->> 'tipo'
+                WHEN 'lentitud' THEN '⚡ El ' || upper(d ->> 'tercero') || ' se vuelve lento: ' || (d ->> 'latenciaMs') || ' ms por respuesta'
+                ELSE '⚡ Se corta el ' || upper(d ->> 'tercero') END
+        WHEN 'falla.restablecida' THEN '✔ Se restablece el ' || upper(d ->> 'tercero')
+        WHEN 'tercero.caido' THEN 'Monitor: el ' || upper(d ->> 'tercero') || ' está CAÍDO'
+        WHEN 'tercero.de_vuelta' THEN 'Monitor: el ' || upper(d ->> 'tercero') || ' está DE VUELTA'
+        WHEN 'tercero.disponible' THEN 'Monitor: el ' || upper(d ->> 'tercero') || ' está DISPONIBLE'
+        WHEN 'ventana.inicio' THEN 'Abre la ventana nocturna ' || (d ->> 'numero') || ' (RNIC ' || (d ->> 'rnic') || ')'
+        WHEN 'ventana.fin' THEN 'Cierra la ventana ' || (d ->> 'numero') || ': ' || (d ->> 'resueltos') || ' resueltos · '
+                || (d ->> 'reprogramados') || ' reprogramados · ' || (d ->> 'notificados') || ' notificados · '
+                || (d ->> 'liberados') || ' liberados'
+        WHEN 'revocacion.vencida' THEN '⚡ Se vence la copia local de la CRL'
+        WHEN 'revocacion.refrescada' THEN 'La recepción refresca la CRL de la ECD'
+        WHEN 'repeticion.inyectada' THEN '⚡ Se repite en la cola un mensaje ya procesado'
+        WHEN 'archivo.enviado' THEN CASE WHEN (d ->> 'reenvio')::boolean THEN '⚡ El remitente reenvía el archivo con la misma llave'
+                ELSE 'El remitente envía el archivo: ' || (d ->> 'registros') || ' declaraciones, ' || (d ->> 'invalidas')
+                     || ' con cédula errada' || CASE WHEN d ->> 'caso' <> 'valido' THEN ' · caso ' || (d ->> 'caso') ELSE '' END END
+        WHEN 'archivo.recibido' THEN 'Llega el último byte (t0): ' || round((d ->> 'bytes')::numeric / 1024) || ' KB'
+        WHEN 'evidencia.registrada' THEN 'Evidencia anexada y firmada por BCR'
+        WHEN 'archivo.acusado' THEN 'Acuse en ' || (d ->> 'acuseMs') || ' ms: ' || (d ->> 'estado') || ' → ' || (d ->> 'carril')
+        WHEN 'archivo.duplicado' THEN 'RECHAZADO como duplicado: la llave ya existe'
+        WHEN 'archivo.rechazado' THEN 'RECHAZADO: ' || (d ->> 'causa')
+        WHEN 'archivo.procesamiento.inicio' THEN 'Empieza a procesarlo ' || (d ->> 'componente') || ' desde la declaración ' || (d ->> 'desdeN')
+        WHEN 'adaptador.vencida' THEN 'La llamada al RNIC vence el timeout'
+        WHEN 'archivo.pendiente' THEN 'Queda PENDIENTE desde la declaración ' || (d ->> 'desdeN') || ' (' || (d ->> 'motivo') || ', intento '
+                || (d ->> 'intentos') || ')'
+        WHEN 'pendiente.reprogramado' THEN 'Se reprograma para la siguiente ventana (intento ' || (d ->> 'intentos') || ')'
+        WHEN 'remitente.notificado' THEN 'Se notifica al remitente; el archivo sigue pendiente'
+        WHEN 'verificacion.completada' THEN 'Revocación verificada en la ventana → se libera a ' || (d ->> 'carril')
+        WHEN 'archivo.resultado' THEN 'Resultado definitivo ' || (d ->> 'resultado') || ': ' || (d ->> 'aceptadas') || ' aceptadas, '
+                || (d ->> 'rechazadas') || ' rechazadas por la regla · ' || (d ->> 'componente')
+        WHEN 'pendiente.resuelto' THEN 'El pendiente queda resuelto en la ventana'
+        WHEN 'resultado.repetido_evitado' THEN 'Mensaje repetido: no se escribe un segundo resultado'
+        ELSE tipo END
+$$;
+
+-- Los hechos de un archivo, en orden, con su hora de Bogotá.
+CREATE OR REPLACE VIEW registro.recorrido AS
+SELECT e.archivo AS llave, e.ts, to_char(e.ts AT TIME ZONE 'America/Bogota', 'HH24:MI:SS.MS') AS hora,
+       e.componente AS quien, registro.describir(e.tipo, e.datos) AS que, e.tipo
+FROM registro.evento e
+WHERE e.archivo IS NOT NULL AND e.tipo NOT IN ('archivo.recepcion.inicio', 'evidencia.auditada');

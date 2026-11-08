@@ -517,7 +517,8 @@
      "custom": {
       "lineWidth": 2,
       "fillOpacity": 10,
-      "showPoints": "never"
+      "showPoints": "never",
+      "pointSize": 6
      }
     },
     "overrides": []
@@ -565,7 +566,8 @@
      "custom": {
       "lineWidth": 2,
       "fillOpacity": 10,
-      "showPoints": "never"
+      "showPoints": "never",
+      "pointSize": 6
      },
      "min": 0,
      "max": 2
@@ -615,7 +617,8 @@
      "custom": {
       "lineWidth": 2,
       "fillOpacity": 10,
-      "showPoints": "never"
+      "showPoints": "never",
+      "pointSize": 6
      }
     },
     "overrides": []
@@ -664,7 +667,8 @@
      "custom": {
       "lineWidth": 2,
       "fillOpacity": 10,
-      "showPoints": "never"
+      "showPoints": "never",
+      "pointSize": 6
      }
     },
     "overrides": []
@@ -712,7 +716,8 @@
      "custom": {
       "lineWidth": 2,
       "fillOpacity": 10,
-      "showPoints": "never"
+      "showPoints": "never",
+      "pointSize": 6
      }
     },
     "overrides": []

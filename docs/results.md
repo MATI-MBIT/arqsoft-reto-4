@@ -63,6 +63,38 @@ Las ventanas resolvieron unos archivos más que los válidos que pasaron por pen
 
 **El reproceso sin duplicados (ADR-004) se sostuvo.** En D-5, los 50 reenvíos de archivos pendientes con la misma llave recibieron «duplicado» sin tocar el original, y los 50 archivos nuevos enviados en el mismo momento se acusaron. Los 50 mensajes de archivos ya resueltos que el inyector repitió directo en la cola no escribieron un segundo resultado: la escritura del resultado definitivo los rechazó todos. En las 13 ejecuciones, ningún archivo tuvo dos resultados.
 
+### Evidencia visual de ASR-D01
+
+**La foto es la pantalla de D-2 al cerrar la ejecución, con el archivo testigo seguido de punta a punta.** El testigo es el primer archivo que quedó pendiente; la pantalla lo elige sola con una consulta al registro de eventos.
+
+![Pantalla de D-2 al cierre: el RNIC se corta, el monitor lo detecta, la primera ventana reprograma, la segunda resuelve y el archivo testigo termina en PARCIAL; 0 rechazados por la caída](assets/resultados/testigos/d01-d2.png)
+
+**Cómo leerla.** Arriba, los contadores de la ejecución. En el centro, cada 5 s, los archivos acusados (verde), los que quedan pendientes (amarillo), los que se resuelven en su carril (azul) y los que resuelve la ventana (naranja). Abajo a la izquierda, lo que le pasa al sistema; a la derecha, lo que le pasa al testigo.
+
+**Qué ocurre.**
+
+1. A las 16:38:12 el azul cae a cero y el amarillo toma su lugar: desde ese segundo, lo que llega se acusa y queda pendiente.
+2. El inyector corta el RNIC a las 16:38:11,946.
+3. El monitor lo declara caído 519 ms después.
+4. La primera ventana corre con el RNIC caído: reprograma 2 394 archivos y no resuelve ninguno.
+5. Con el RNIC de vuelta, la segunda ventana resuelve los 2 394.
+6. El testigo, R009 #12829, se acusa en 3 ms y queda pendiente cuando la llamada al RNIC vence.
+7. Pasa por las dos ventanas y termina en PARCIAL: 12 declaraciones aceptadas y 1 rechazada por la regla, la de su cédula errada.
+8. Ningún archivo se rechazó por la caída ni recibió dos resultados.
+
+![Pantalla de D-5 al cierre: 50 reenvíos rechazados como duplicados y 50 mensajes repetidos sin segundo resultado; el testigo reenviado termina en TOTAL](assets/resultados/testigos/d01-d5.png)
+
+**La segunda foto es D-5, el escenario del reproceso sin duplicados.** El pico amarillo (1) son los 50 archivos nuevos que se enviaron junto con los reenvíos. Los 50 reenvíos con una llave existente se rechazan como duplicados (2), y los 50 mensajes que el inyector repite en la cola (3) no escriben un segundo resultado (4). El testigo, R009 #24241, se reenvía (5), el reenvío se rechaza (6) y el original termina en TOTAL en la ventana (7). Los contadores de arriba quedan en cero (8).
+
+**El clip muestra la misma historia en 34 s.** Es un caso corto de `load/evidencias.sh` con la carga de pequeños de fondo: el RNIC se corta en el segundo 8, la primera ventana corre en el 33 con el RNIC caído, el RNIC vuelve en el 42 y la segunda ventana corre en el 48. La franja de abajo dice el segundo del caso y el último estímulo. Hacia el segundo 28, el monitor marca CAÍDO, hay 200 acusados y 147 pendientes. Al final hay 519 acusados, 0 pendientes, 246 resueltos por la ventana y 0 rechazados por la caída; el testigo termina en PARCIAL con 40 declaraciones aceptadas y 1 rechazada.
+
+<details markdown="1">
+<summary>Ver el clip: el RNIC cae y nada se rechaza (34 s)</summary>
+
+<video controls preload="none" width="100%" src="assets/resultados/clips/caida.mp4"></video>
+
+</details>
+
 **Decisión.** Se aceptan ADR-001, ADR-002, ADR-003 y ADR-004 tal como están. El experimento no midió una ventana real con días de pendientes acumulados (R-003a).
 
 ## ASR-L04 · Aislamiento de carga entre archivos masivos y pequeños
@@ -88,6 +120,52 @@ En cada fila con masivos se miden los pequeños que terminaron de llegar mientra
 
 **Hallazgo: los masivos esperan turno dentro del carril B.** Con 5 hilos, dos masivos que caen en particiones del mismo hilo se procesan uno detrás de otro. Los masivos duraron 1 min 42 s, 3 min 23 s o 5 min 5 s según les tocara el primer, el segundo o el tercer turno, y con 10 masivos uno llegó a 6 min 47 s. Uno de cada tanda pasó la referencia de 5 min en L-1, L-4 con 6 y L-4 con 8, y tres pasaron en L-4 con 10. Esto contesta R-005a: con más masivos que hilos, el carril B se satura y el carril A no lo nota. Sin carriles (L-3), los masivos terminaron en 2 min porque tuvieron más hilos, que es el precio que acepta ADR-005.
 
+### Evidencia visual de ASR-L04
+
+**Las dos fotos son el tablero de L04 al cerrar L-1 (con carriles) y L-3 (sin carriles).** Tienen la misma carga, los mismos 5 masivos y la misma escala; lo único que cambia es el enrutamiento.
+
+![Tablero de L-1 al cierre: el p99 de los pequeños se queda bajo 0,5 s durante toda la ejecución mientras el carril B trabaja al 100 % de su CPU con los masivos](assets/resultados/testigos/l04-l1.png)
+
+**Cómo leerla.** Arriba, el veredicto sobre la ventana del tablero. En el centro, cada 10 s, el p99 (verde) y el más lento (amarillo) de los pequeños, en escala logarítmica, con la franja roja por encima de 3 s. La raya azul marca la llegada de los masivos. Abajo, la CPU de cada contenedor frente a su límite y los archivos en proceso por carril.
+
+**Qué ocurre en L-1, con carriles.**
+
+1. Las dos líneas siguen planas, bajo 0,5 s, antes, durante y después de los masivos.
+2. El p99 de la ejecución es de 491 ms.
+3. El carril B sube al 100 % de su CPU con los masivos, mientras el carril A sigue en su nivel de siempre.
+4. El carril B tiene 3 masivos en proceso a la vez; los otros esperan turno en sus hilos.
+
+![Tablero de L-3 al cierre: sin carriles, el más lento de los pequeños salta por encima de 1 min mientras los masivos ocupan el carril A](assets/resultados/testigos/l04-l3.png)
+
+**Qué ocurre en L-3, sin carriles.**
+
+1. Al llegar los masivos, el más lento de los pequeños salta a cerca de 2 min y baja a medida que se liberan los hilos.
+2. El p99 en la ventana del tablero es de 1,84 min.
+3. 523 pequeños pasan de 3 s.
+4. Todo va al carril A, que llega al 100 % de su CPU.
+5. El carril A tiene 6 o 7 archivos en proceso a la vez: los masivos le quitan los hilos a los pequeños.
+
+El tablero calcula sobre toda su ventana; el veredicto, solo sobre los pequeños que llegaron con masivos en proceso. Por eso las cifras de la foto de L-3 difieren un poco de la tabla (118 s y 512).
+
+**Los dos clips corren el mismo caso con y sin carriles, en 34 s cada uno.** La carga de pequeños arranca en el segundo 0 y los 5 masivos de 49 MB se lanzan en el 8. La pantalla cuenta como el veredicto: un pequeño acusado que todavía no tiene resultado entra al p99 con su espera hasta ese momento.
+
+- **Con carriles**, hacia el segundo 48 los 5 masivos están en el carril B, que trabaja al 100 % de su CPU con 4 en proceso. El p99 de los pequeños es de 470 ms, ninguno pasa de 3 s y ninguno espera. Al final, el p99 es de 457 ms y la línea del más lento sigue plana. El quinto masivo sigue en 0 %, esperando turno en un hilo: es el hallazgo que se describe más abajo.
+- **Sin carriles**, el contador del carril B dice «ocioso» y los 5 masivos aparecen en el carril A. Hacia el segundo 49, el p99 de los pequeños es de 37,9 s, 133 pasan de 3 s y 144 esperan su resultado. Al final, el p99 es de 59 s, 192 pasan de 3 s y 232 siguen esperando.
+
+<details markdown="1">
+<summary>Ver el clip: 5 masivos con carriles (34 s)</summary>
+
+<video controls preload="none" width="100%" src="assets/resultados/clips/masivos.mp4"></video>
+
+</details>
+
+<details markdown="1">
+<summary>Ver el clip: los mismos 5 masivos sin carriles (34 s)</summary>
+
+<video controls preload="none" width="100%" src="assets/resultados/clips/masivos-sin-carriles.mp4"></video>
+
+</details>
+
 **Decisión.** Se acepta ADR-005, con un ajuste para el carril B: repartir los masivos entre los hilos libres en vez de por la llave del archivo, o dimensionar el carril B con al menos un hilo por masivo esperado en el pico. El ajuste no toca el carril A ni la medida de ASR-L04.
 
 ## ASR-S06 · Ningún archivo se acepta sin validación criptográfica completa
@@ -110,6 +188,34 @@ En cada fila con masivos se miden los pequeños que terminaron de llegar mientra
 
 **Cada archivo aceptado tiene su evidencia (S-3).** Al cerrar cada ejecución se auditó el registro de evidencia completo: la firma de BCR de cada entrada es válida y el hash de la entrada es el de los bytes que procesó el carril. En S-1 fueron 2 379 de 2 379 aceptados, en S-2, 2 842 de 2 842, y en las ejecuciones de D01, todos los aceptados.
 
+### Evidencia visual de ASR-S06
+
+**La foto es la pantalla de S-2 al cerrar la ejecución.** El testigo es el primer archivo que se acusó en verificación pendiente.
+
+![Pantalla de S-2 al cierre: con la ECD caída, 2 051 archivos se acusan en verificación pendiente, 0 se aceptan antes de verificar y la ventana verifica 2 048](assets/resultados/testigos/s06-s2.png)
+
+**Cómo leerla.** Arriba, los contadores. En el centro, cada 5 s, cómo responde la recepción: acusa y verifica (verde), acusa en verificación pendiente (amarillo) o rechaza (azul). Abajo, los rechazos con su causa y el recorrido del testigo.
+
+**Qué ocurre.**
+
+1. A las 18:38 se corta la ECD y se vence la copia de la CRL: el verde se vuelve amarillo. La recepción sigue acusando, pero ya no puede verificar la revocación.
+2. 2 051 archivos se acusan en verificación pendiente.
+3. Ninguno llega a resultado antes de verificarse.
+4. El testigo, R003 #55961, se acusa en 17 ms en verificación pendiente.
+5. La primera ventana, con la ECD caída, lo reprograma.
+6. La segunda, con la ECD de vuelta, verifica su revocación, anexa la evidencia y lo libera al carril A.
+7. Termina en TOTAL, con sus 12 declaraciones.
+8. Los 3 archivos revocados que llegaron en el mismo lapso esperaron igual y se rechazaron en la ventana, con la causa «certificado revocado». 2 048 liberados y 3 rechazados suman los 2 051.
+
+**El clip junta las dos pruebas de S06 en 36 s.** En el segundo 6 se envía el catálogo, un archivo por caso, y la tabla de rechazos se llena con nueve filas, cada una con su causa. En el segundo 20 se corta la ECD y se vence la CRL; en el 30 llega un archivo con certificado revocado. Hacia el segundo 48, la ECD está caída, hay 9 rechazos listados y 175 archivos esperan su verificación. Las ventanas corren en el 45, con la ECD caída, y en el 56, con la ECD de vuelta. Al final hay 10 rechazados, 0 del catálogo aceptados, 193 acusados en verificación pendiente, 192 verificados y 0 aceptados antes de verificar: el que falta es el revocado, que la ventana rechazó. El testigo termina en PARCIAL con 30 declaraciones aceptadas y 3 rechazadas por la regla.
+
+<details markdown="1">
+<summary>Ver el clip: catálogo y ECD caída (36 s)</summary>
+
+<video controls preload="none" width="100%" src="assets/resultados/clips/ecd.mp4"></video>
+
+</details>
+
 **Decisión.** Se aceptan ADR-006, ADR-007 y ADR-008 tal como están.
 
 ## Lo que el experimento no prueba
@@ -124,6 +230,8 @@ En cada fila con masivos se miden los pequeños que terminaron de llegar mientra
 ## Evidencia de cada ejecución
 
 Cada ejecución dejó en `analisis/resultados/<ejecución>/` su veredicto completo (`veredicto.txt`), la salida de k6, el plan con que corrió y el enlace al tablero de Grafana fijado en su ventana de tiempo. Los eventos crudos se exportaron a CSV y no se versionan.
+
+**Las fotos y los clips de cada ASR son evidencia visual, no medición.** Las fotos testigo son los tableros de Grafana fijados en la ventana de una ejecución de decisión, con números que remiten al texto. Los clips son casos cortos de `load/evidencias.sh`, de unos 75 s, con la misma topología y la carga de pequeños de fondo. El renderizador de Grafana tomó la pantalla en el servidor cada 2,5 s y el clip la muestra a 1 cuadro por segundo, con una franja que dice el segundo del caso y el último estímulo. Cada clip se revisó cuadro por cuadro: el estímulo de la franja coincide con la respuesta de la pantalla, y el final dice lo mismo que el veredicto. Los registros de estímulos quedan en `analisis/evidencia/`.
 
 | Ejecución | Escenario | Horario | Medición |
 |---|---|---|---|

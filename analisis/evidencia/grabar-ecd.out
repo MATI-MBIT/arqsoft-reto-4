@@ -1,0 +1,14 @@
+listo · ruteo tamano
+== evidencia-ecd-195258 · catálogo y ECD caída · t0=1794099178
+[19:52:58] +  0s  arranca la carga de pequeños: 400 por minuto
+[19:53:04] +  6s  ⚡ se envía el catálogo criptográfico: un archivo por caso
+[19:53:18] + 20s  ⚡ se corta la ECD y se vence la copia local de la CRL
+[19:53:28] + 30s  ⚡ llega un archivo con certificado revocado mientras la ECD está caída
+[19:53:43] + 45s  abre la ventana nocturna (la ECD sigue caída)
+[19:53:43] + 45s  la ventana cierra: {"numero":1,"estado":"TERMINADA","resueltos":0,"liberados":0,"reprogramados":149,"notificados":0,"rechazados":0,"omitidos":0,"duracionMs":141}
+[19:53:50] + 52s  ✔ se restablece la ECD
+[19:53:54] + 56s  abre la ventana nocturna (la ECD está de vuelta)
+[19:53:55] + 56s  la ventana cierra: {"numero":2,"estado":"TERMINADA","resueltos":0,"liberados":192,"reprogramados":0,"notificados":0,"rechazados":1,"omitidos":0,"duracionMs":513}
+[19:54:18] + 80s  fin del caso
+clip: /Users/nikorozo/Documents/Proyectos/arqsoft-reto-4/docs/assets/resultados/clips/ecd.mp4 · 36 cuadros a 1 por segundo · 36.0 s
+cuadros en /var/folders/b5/q3wnclv10zg8mpbn1khkkxdc0000gn/T/tmp.CJjyPJpqoj

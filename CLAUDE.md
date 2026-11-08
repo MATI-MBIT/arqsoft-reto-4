@@ -111,6 +111,11 @@ resultados). `make help` lista todo; `make humo` lo prueba en ~12 min.
 - **Qué se corre es dato** (`load/plan.tsv`); **cómo, código** (`load/experimento.sh`).
 - **El veredicto sale de `registro.evento`**, cruzado por la llave del archivo con
   las vistas de `deploy/postgres/03-vistas.sql`. Prometheus y Grafana son para ver.
+- **La evidencia visual** de `docs/results.md` son fotos testigo anotadas de las
+  ejecuciones de decisión y clips de `load/evidencias.sh grabar <caso>` (el
+  renderizador de Grafana toma la pantalla `ev-*` en el servidor). Cada clip se
+  valida sacando cuadros con `analisis/evidencia/cuadros.swift`: el video tiene
+  que contar lo mismo que el veredicto.
 - Cada ejecución deja en `analisis/resultados/<id>/` el veredicto, los eventos en
   CSV, la salida de k6 y el enlace al tablero fijado en su ventana.
 - Con batería el orquestador no arranca (`FORZAR_BATERIA=1` lo fuerza): una

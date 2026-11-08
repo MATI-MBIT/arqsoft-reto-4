@@ -146,6 +146,40 @@ L04 cada masivo que empieza a llegar.
 Cada ejecución deja en su carpeta `tablero.txt` con el enlace al tablero fijado
 en su ventana de tiempo, para volver a la evidencia visual después.
 
+### La evidencia visual: fotos testigo y clips
+
+Como en el reto 2, `docs/results.md` lleva por ASR una foto anotada y un clip, y
+cada clip se validó cuadro por cuadro contra lo que dice el texto.
+
+- **Fotos testigo.** Se toman de los tableros de cada ASR fijados en la ventana
+  de la ejecución de decisión (`d01-d2`, `d01-d5`, `l04-l1`, `l04-l3`, `s06-s2`).
+  El tablero elige solo su archivo testigo con una consulta al registro (el
+  primero que quedó pendiente, el primero reenviado, el primero en verificación
+  pendiente). La foto cruda queda en `analisis/evidencia/crudos/` y la anotada se arma con
+  `analisis/evidencia/anotar.swift` (`x,y,w,h@cx,cy|etiqueta`).
+- **Pantallas de evidencia** (`ev-d01`, `ev-l04`, `ev-s06`, generadas por
+  `generar-tableros.py`): una por ASR, en 1600×1000 y con 90 s de ventana, con los
+  hechos agrupados y el testigo. En `ev-l04`, el pequeño acusado sin resultado
+  cuenta con su espera hasta ahora, como en el veredicto: sin eso, la pantalla
+  sin carriles mostraba solo los pequeños resueltos y contaba lo contrario de L-3.
+- **Clips.** `load/evidencias.sh grabar <caida|masivos|ecd> [tamano|unico]`
+  prepara la topología, espera a que la ventana de 90 s esté limpia, corre un
+  caso corto (~75 s) con la carga de pequeños de fondo y anota cada estímulo en
+  `analisis/evidencia/<caso>.log`. Mientras tanto, `grafana-image-renderer`
+  toma la pantalla en el servidor cada 2,5 s y `analisis/evidencia/video.swift`
+  arma el MP4 a 1 cuadro por segundo con una franja que dice el segundo del caso
+  y el último estímulo. Son demostraciones: las cifras salen de las ejecuciones
+  de decisión.
+- **Validación de cada clip.** `swift analisis/evidencia/cuadros.swift <clip>
+  <dir> <segundos...>` saca los cuadros de los segundos clave y se miran: que el
+  estímulo de la franja coincida con la respuesta de la pantalla y que el final
+  diga lo mismo que el veredicto.
+- **Por qué en el servidor.** La grabación desde Chrome mostraba «No data»: el
+  rango absoluto no refresca, y con el rango relativo Chrome frena los
+  temporizadores de una pestaña en segundo plano. El renderizador necesita el
+  mismo token en Grafana (`GF_RENDERING_RENDERER_TOKEN`) y en su servicio
+  (`AUTH_TOKEN`).
+
 ---
 
 ## 5. Validez de cada ejecución

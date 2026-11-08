@@ -1,0 +1,9 @@
+== evidencia-caida-194054 · el RNIC cae y vuelve · t0=1794098454
+[19:40:54] +  0s  arranca la carga de pequeños: 400 por minuto
+[19:41:02] +  8s  ⚡ se corta el RNIC
+[19:41:27] + 33s  abre la ventana nocturna (el RNIC sigue caído)
+[19:41:27] + 33s  la ventana 1 cierra: 0 resueltos · 170 reprogramados · 0 liberados · 0 rechazados
+[19:41:36] + 42s  ✔ se restablece el RNIC
+[19:41:42] + 48s  abre la ventana nocturna (el RNIC está de vuelta)
+[19:41:49] + 55s  la ventana 2 cierra: 246 resueltos · 0 reprogramados · 0 liberados · 0 rechazados
+[19:42:09] + 75s  fin del caso

@@ -467,7 +467,7 @@
   },
   {
    "type": "timeseries",
-   "title": "Latencia de cada pequeño (un punto por archivo) y el umbral de 3 s",
+   "title": "Cada 5 s: p99 y el más lento de los pequeños, frente al umbral de 3 s",
    "description": "Cada punto es un archivo pequeño. Las anotaciones marcan cada masivo que empieza a llegar",
    "gridPos": {
     "x": 0,
@@ -482,7 +482,7 @@
       "type": "grafana-postgresql-datasource",
       "uid": "registro"
      },
-     "rawSql": "SELECT recibido AS time, latencia_ms AS \"pequeño\" FROM registro.archivos WHERE $__timeFilter(recibido) AND tipo = 'pequeno' AND caso = 'valido' AND latencia_ms IS NOT NULL ORDER BY 1",
+     "rawSql": "SELECT $__timeGroupAlias(recibido, '10s'), (percentile_cont(0.99) WITHIN GROUP (ORDER BY latencia_ms))::float8 AS \"p99 de los pequeños\", max(latencia_ms)::float8 AS \"el más lento\" FROM registro.archivos WHERE $__timeFilter(recibido) AND tipo = 'pequeno' AND caso = 'valido' AND latencia_ms IS NOT NULL GROUP BY 1 ORDER BY 1",
      "format": "time_series",
      "rawQuery": true,
      "editorMode": "code"
@@ -495,9 +495,17 @@
    "fieldConfig": {
     "defaults": {
      "unit": "ms",
+     "min": 10,
+     "max": 200000,
      "custom": {
-      "drawStyle": "points",
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "showPoints": "always",
       "pointSize": 4,
+      "scaleDistribution": {
+       "type": "log",
+       "log": 10
+      },
       "thresholdsStyle": {
        "mode": "line+area"
       }
@@ -520,10 +528,11 @@
    },
    "options": {
     "legend": {
-     "displayMode": "hidden"
+     "displayMode": "list",
+     "placement": "bottom"
     },
     "tooltip": {
-     "mode": "single"
+     "mode": "multi"
     }
    },
    "id": 9
@@ -560,7 +569,8 @@
      "custom": {
       "lineWidth": 2,
       "fillOpacity": 10,
-      "showPoints": "never"
+      "showPoints": "never",
+      "pointSize": 6
      }
     },
     "overrides": []
@@ -608,7 +618,8 @@
      "custom": {
       "lineWidth": 2,
       "fillOpacity": 10,
-      "showPoints": "never"
+      "showPoints": "never",
+      "pointSize": 6
      }
     },
     "overrides": []
@@ -656,7 +667,8 @@
      "custom": {
       "lineWidth": 2,
       "fillOpacity": 10,
-      "showPoints": "never"
+      "showPoints": "never",
+      "pointSize": 6
      }
     },
     "overrides": []

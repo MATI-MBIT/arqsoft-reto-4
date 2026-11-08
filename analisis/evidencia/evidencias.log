@@ -1,0 +1,9 @@
+== evidencia-caida-193302 · el RNIC cae y vuelve
+[19:33:02] +  0s  arranca la carga de pequeños: 400 por minuto
+[19:33:10] +  8s  ⚡ se corta el RNIC
+[19:33:35] + 33s  abre la ventana nocturna (el RNIC sigue caído)
+[19:33:35] + 33s  la ventana cierra: {"numero":1,"estado":"TERMINADA","resueltos":0,"liberados":0,"reprogramados":169,"notificados":0,"rechazados":0,"omitidos":0,"duracionMs":88}
+[19:33:44] + 42s  ✔ se restablece el RNIC
+[19:33:50] + 48s  abre la ventana nocturna (el RNIC está de vuelta)
+[19:33:57] + 55s  la ventana cierra: {"numero":2,"estado":"TERMINADA","resueltos":234,"liberados":0,"reprogramados":0,"notificados":0,"rechazados":0,"omitidos":0,"duracionMs":7002}
+[19:34:17] + 75s  fin del caso
