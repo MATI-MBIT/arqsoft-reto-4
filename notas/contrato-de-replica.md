@@ -120,3 +120,24 @@ ambiente, para que Helix no la muestre como tiempo de detección (decisión del
 | Escenarios de calidad | Los 17 ASR (QS-001 a QS-017), cada uno en su historia | Árbol de utilidad tras recargar: 5 de desempeño, 4 de disponibilidad, 4 de seguridad, 2 de interoperabilidad y 2 de modificabilidad |
 
 El recorrido del reto 2 había dejado rastro sucio en `ARQ-005`; en esta arquitectura no quedó nada sucio.
+
+### 2026-11-07 — segunda sincronización
+
+Antes de empezar se guardó en Helix la versión «Antes de la sincronización del 7-nov» (Home → Version history), para poder restaurar. `Stakeholders`, `Objective` (salvo el glosario) y `Constraints` no cambiaron desde la primera carga.
+
+| Sección | Qué se cargó | Verificación |
+|---|---|---|
+| `Objective → Glossary` | Reemplazado por `Import Markdown`: 37 términos, con «Archivo válido», «Archivo duplicado» y «Ventana de reproceso» | 37 negritas y los tres términos tras recargar |
+| Historias | `I want` de HU-02, HU-03, HU-05, HU-06, HU-08, HU-10 y HU-12. Títulos, `As a` y `so that` ya coincidían | Las 14 leídas tras recargar |
+| Épicas y funcionalidades | F-2.1 con «masivos (5 001 a 100 000)». Las otras nueve funcionalidades quedaron sin descripción, como en `docs/`. Las épicas ya coincidían | Las 14 leídas tras recargar |
+| Escenarios de calidad | Los 17: artefacto «ASR-XX · servicio» de la ficha, ambiente de la ficha y medida en el campo nuevo `Other measure`. M01 pasa a High; D03 pasa a `Availability · Recovery`. p99 de L04 en 3 000 ms; % bloqueado en 100 en S06 y S03 | Los 17 leídos tras recargar |
+| `Experiments` | EXP-001 (D01), EXP-002 (L04) y EXP-003 (S06), en `Confirmed`, cada uno con su escenario vinculado. Planning: hipótesis, tácticas, diseño (escenarios, métricas y criterio), recursos y elementos. Results: resultados, análisis, conclusión, decisión, repositorio, enlace a `results.html` y las fotos, clips y gráficas como evidencia. El esfuerzo estimado queda vacío: `docs/` no lo da | Los tres leídos tras recargar y revisión visual de EXP-002 |
+
+Aprendido:
+
+- **El formulario de escenarios cambió desde el 4-nov.** Tiene un campo `Other measure (optional)` y un botón `Save` explícito. Las medidas que no caben en un control van ahí, no en el ambiente con «Medida:». `Security · Resistance` mide «% de ataques que bloquea» y `Recovery` tiene un selector de unidad.
+- Los desplegables usan valores con nombre (`availability_recovery`, `confirmado`), no la posición: hay que asignar el `value` de la opción.
+- Un campo de texto simple se reemplaza seleccionando su contenido por script y escribiendo con el teclado; para vaciarlo, `execCommand('delete')`.
+- Helix guarda con retraso también los textos, no solo los títulos: si se cambia de nodo enseguida, el cambio se pierde. Hay que esperar unos segundos y verificar siempre tras recargar.
+- El editor ignora el HTML pegado. `Import Markdown` sí se abre por script si se simula la secuencia completa de puntero (`pointerdown` … `click`), y conserva negritas, viñetas y enlaces.
+- La herramienta del navegador solo lee scripts dentro del proyecto: van en `.helix-tmp/`, que se ignora y se borra al terminar.
