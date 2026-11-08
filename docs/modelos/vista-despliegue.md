@@ -12,15 +12,17 @@ Cada diagrama se dibuja en el navegador a partir del archivo [`vista-despliegue.
 
 {% capture vista %}{% include_relative drawio/vista-despliegue.drawio %}{% endcapture %}
 
-## DG-DEP-001 · Despliegue objetivo
+## DG-DEP-003 · Despliegue objetivo
 
-Un nodo para la recepción, uno por carril y uno de soporte, más el nodo de datos con Kafka y PostgreSQL, con las réplicas y el protocolo de cada ruta (L04, D01, S06).
+Dónde corre cada servicio en producción. Cada nodo muestra lo que se instala en él: el `.jar` de Spring Boot sobre JVM 21 y su configuración, los esquemas de PostgreSQL, los tópicos de Kafka y la custodia de archivos. Las rutas llevan su protocolo y su puerto, y cada nodo dice cuántas instancias corren (L04, D01, S06).
+
+Los componentes lógicos no se repiten aquí: están en la [vista de componentes](vista-componentes.md) (DG-CMP-003). Los carriles A y B corren el mismo `carril.jar` en nodos separados, cada uno con su configuración, y esa separación es el bulkhead de ADR-005.
 
 {% include drawio.html xml=vista page=0 %}
 
-## DG-DEP-002 · Despliegue del experimento local
+## DG-DEP-004 · Despliegue del experimento local
 
-Un equipo con Docker Compose y los once contenedores del experimento, incluidos los simuladores del RNIC y de la ECD y Toxiproxy para inyectar caídas. Ver la página de [experimentos](../experiments.md).
+Un solo equipo con Docker Compose, tal como lo arma `deploy/docker-compose.yml`. Los contenedores de Orquídea corren los mismos `.jar` del despliegue objetivo. Alrededor están los simuladores del remitente, del RNIC y de la ECD, Toxiproxy y el inyector de fallas, Kafka y PostgreSQL, y Prometheus con Grafana. Por fuera de Docker, en el mismo equipo, k6 genera la carga con `pequenos.js` y `masivos.js`, y `experimento.sh` orquesta cada ejecución. Ver la página de [experimentos](../experiments.md).
 
 {% include drawio.html xml=vista page=1 %}
 

@@ -22,7 +22,7 @@ Quedan fuera la autenticación del canal (TLS mutuo), la integración con el Ban
 
 ## 2. Montaje
 
-Todo corre en Docker Compose sobre un solo equipo. El diagrama está en la vista de despliegue (DG-DEP-002).
+Todo corre en Docker Compose sobre un solo equipo. El diagrama está en la vista de despliegue (DG-DEP-004).
 
 | Contenedor | Papel | ASR |
 |---|---|---|
