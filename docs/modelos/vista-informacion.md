@@ -6,34 +6,59 @@ nav_order: 4
 
 # Vista de información de Orquídea
 
-Qué guarda Orquídea por cada archivo y por qué estados pasan el archivo, la declaración pendiente y cada tercero en el monitor.
+Qué guarda Orquídea, dónde lo guarda y quién es su dueño, y por qué estados pasan el archivo, la declaración y cada tercero en el monitor. La vista se alinea con los componentes de la [vista de componentes](vista-componentes.md) (DG-CMP-003).
 
 Cada diagrama se dibuja en el navegador a partir del archivo [`vista-informacion.drawio`](drawio/vista-informacion.drawio). Con la lupa se amplía, y con el botón de pantalla completa se lee mejor un diagrama grande. El lápiz lo abre en diagrams.net para editarlo.
 
+Todos los diagramas usan la convención de la vista de componentes. Cada elemento lleva la insignia de los ASR en cuyo alcance está: llena si es artefacto del ASR y punteada si participa sin modificarse. Al pie de cada diagrama van sus convenciones y la tabla de trazabilidad de los ASR críticos hacia sus elementos.
+
 {% capture vista %}{% include_relative drawio/vista-informacion.drawio %}{% endcapture %}
 
-## DG-CLS-001 · Modelo de información
+## DG-CLS-001 · Modelo de información y modelo canónico
 
-El remitente, el archivo con su llave única, la verificación criptográfica y su evidencia, las declaraciones, lo pendiente por tercero, el estado de cada tercero y los resultados (D01, S06).
+El diagrama de clases de lo que Orquídea guarda por cada archivo: el remitente y su certificado, el archivo con su llave única, el acuse, la verificación criptográfica y su evidencia, las declaraciones, lo pendiente por tercero, el estado de cada tercero, los resultados y las notificaciones (D01, S06).
+
+Incluye el modelo canónico al que traducen los adaptadores de la frontera anticorrupción. `DatoTercero` es la clase abstracta, y cada tercero tiene su subclase: `TasaMercado` (STM), `InfoTributariaAduanera` (ANTA), `InfoMigratoria` (MAMC) e `IdentidadCiudadano` (RNIC). Así el núcleo nunca ve el formato propio de un tercero.
+
+Los atributos de negocio de la declaración (moneda, monto, tasa y documento del titular) y los valores de `Decision` y `Resultado` son una propuesta del equipo `[SUPUESTO → equipo]`. Los atributos de los datos de ANTA y MAMC siguen abiertos `[PREGUNTA → BCR]`.
 
 {% include drawio.html xml=vista page=0 %}
 
-## DG-STM-001 · Ciclo de vida del archivo
+## DG-PER-001 · Persistencia
 
-De recibido a verificado, en verificación pendiente o rechazado, y de ahí a resuelto. Ningún camino llega a resuelto sin pasar por verificado (S06, D01).
+Dónde vive cada dato y qué componente lo escribe o lo lee. Se dibuja con las formas del curso: dominio, servicio, repositorio, base de datos y tabla.
+
+- **Cola durable.** El log de Kafka (KRaft) guarda los tópicos `carril-a`, `carril-b`, `pendientes` y `estado-terceros`. El acuse sale solo después de custodiar el archivo y publicarlo, de modo que nada acusado se pierde si un tercero cae (ADR-001, ADR-003).
+- **Esquema `repositorio`.** Doce tablas en PostgreSQL, agrupadas por dueño. El repositorio de archivos es la única puerta de escritura, y la llave única del archivo y la llave (archivo, declaración) del resultado evitan duplicados (ADR-004).
+- **Esquema `evidencia`.** Una entrada por archivo, de solo anexar y firmada por BCR (ADR-008).
+- **Caché local de revocación.** Vive en memoria del nodo de recepción y permite verificar con la ECD caída mientras la lista siga vigente (ADR-007).
+
+Los flujos numerados del diagrama dicen quién escribe o lee en cada almacén. Los nombres de tablas y columnas, y la estructura de los mensajes, se proponen a partir de DG-CLS-001 `[SUPUESTO → equipo]`. Falta decidir si los bytes del XML custodiado van en la tabla `archivo` o en un almacenamiento de objetos `[PREGUNTA → equipo]`.
 
 {% include drawio.html xml=vista page=1 %}
 
-## DG-STM-002 · Ciclo de vida de la declaración pendiente
+## DG-STM-001 · Ciclo de vida del archivo
 
-Una declaración que espera a un tercero caído: se reprograma en cada ventana, se notifica al agotar los días de reintento y se enriquece cuando el tercero vuelve (D01).
+De recibido a verificado, a verificación pendiente o a rechazado, y de ahí a resuelto. Ningún camino llega a resuelto sin pasar por verificado (S06).
+
+Con la ECD caída y la caché vencida, el archivo queda acusado pero sin resultado. El reprocesador lo reverifica en cada ventana nocturna y, al agotar los días de reintento, se notifica al remitente sin aceptarlo ni descartarlo (D01, ADR-007).
 
 {% include drawio.html xml=vista page=2 %}
 
-## DG-STM-003 · Estado de un tercero en el monitor
+## DG-STM-002 · Ciclo de vida de la declaración
 
-Cómo el ping/echo y el timeout llevan a un tercero de disponible a caído, y cómo su regreso habilita el reproceso (D01).
+Los estados de `Declaracion.estado`, desde que el carril la desencola hasta que su resultado queda escrito. Si el tercero no responde o está caído, la declaración pasa a pendiente; cada ventana nocturna la reprograma y suma un intento (D01, ADR-003).
+
+Al agotar los días de reintento se notifica al remitente, y la declaración sigue pendiente hasta que el tercero vuelva. El resultado se escribe una sola vez por (archivo, declaración), aunque el carril y el reprocesador compitan (ADR-004). Si la declaración espera a varios terceros, hay una `DeclaracionPendiente` por tercero.
 
 {% include drawio.html xml=vista page=3 %}
+
+## DG-STM-003 · Estado de un tercero en el monitor
+
+Un tercero pasa de disponible a caído después de N fallos seguidos, sea un eco que no llega a tiempo o una llamada que vence su timeout. La lentitud cuenta como caída (ADR-002).
+
+El monitor solo publica los cambios de estado en `estado-terceros`. Cuando el tercero vuelve, el orquestador y el reprocesador retoman lo pendiente en la siguiente ventana. Los valores de T_sondeo, T_echo y N siguen abiertos `[PREGUNTA → BCR]`.
+
+{% include drawio.html xml=vista page=4 %}
 
 {% include drawio-script.html %}
