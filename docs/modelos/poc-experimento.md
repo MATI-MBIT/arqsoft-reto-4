@@ -8,7 +8,7 @@ nav_order: 6
 
 Esta página muestra el prototipo con que se pone a prueba la arquitectura de los tres ASR críticos. El primer diagrama muestra las piezas construidas y cómo se conectan; el segundo abre el bus de eventos con sus tres tópicos; el tercero muestra qué pasa en cada ejecución del experimento, desde que se prepara hasta que sale su veredicto. El diseño del experimento está en la página de [experimentos](../experiments.md).
 
-Cada diagrama se dibuja en el navegador a partir del archivo [`poc-experimento.drawio`](drawio/poc-experimento.drawio). Con la lupa se amplía, y con el botón de pantalla completa se lee mejor un diagrama grande. El lápiz lo abre en diagrams.net para editarlo. Debajo de cada diagrama va además su imagen fija, exportada del mismo archivo, para los visores que no dibujan el `.drawio`.
+Cada diagrama se dibuja en el navegador a partir del archivo [`poc-experimento.drawio`](drawio/poc-experimento.drawio). Con la lupa se amplía, y con el botón de pantalla completa se lee mejor un diagrama grande. El lápiz lo abre en diagrams.net para editarlo. Debajo de cada diagrama hay un enlace a su imagen fija, exportada del mismo archivo, para los visores que no dibujan el `.drawio`.
 
 {% capture vista %}{% include_relative drawio/poc-experimento.drawio %}{% endcapture %}
 
@@ -23,7 +23,7 @@ Cada diagrama se dibuja en el navegador a partir del archivo [`poc-experimento.d
 
 {% include drawio.html xml=vista page=0 %}
 
-![DG-CMP-101 · Componentes del PoC: de izquierda a derecha, el generador de carga y el remitente simulado, Orquídea bajo prueba (recepción, bus de eventos, carriles A y B, monitor, reprocesador y repositorio), los terceros simulados con el proxy de fallas y, abajo, la observabilidad](png/poc-dg-cmp-101.png)
+Imagen fija de DG-CMP-101: [poc-dg-cmp-101.png](png/poc-dg-cmp-101.png)
 
 - **Qué muestra.** Se lee de izquierda a derecha, en el orden en que viaja un archivo: el generador de carga le pide al remitente simulado que arme y firme un archivo, la recepción lo recibe, el bus de eventos lo entrega al carril que le toca y el carril escribe el resultado en el repositorio. Las flechas que tocan el bus van en el sentido en que viaja el mensaje: quien publica apunta al bus y el bus apunta a quien recibe la entrega. A la derecha están los terceros simulados y el proxy que los corta. Abajo, la observabilidad. El orquestador y el generador de carga corren fuera de la frontera, en el equipo anfitrión. Cada componente de Orquídea lleva la táctica que aplica y la insignia de los ASR que toca.
 - **Cómo se elige el carril.** La recepción cuenta los bytes mientras el archivo llega. Con el último byte publica en `carril-a` si el archivo pesa 30 000 bytes o menos, y en `carril-b` si pesa más, sin abrirlo (SUP-07). El bus solo le entrega `carril-a` al carril A y `carril-b` al carril B. El umbral es un valor de prueba que BCR no ha fijado.
@@ -61,7 +61,7 @@ El diagrama es lógico y no nombra productos. Cada componente corresponde a un c
 
 {% include drawio.html xml=vista page=1 %}
 
-![DG-CMP-102 · El bus de eventos con sus tres tópicos: la recepción publica en carril-a los archivos de hasta 30 000 bytes y en carril-b los demás; cada carril consume el suyo y publica en pendientes si el RNIC no responde; el reprocesador consume pendientes en cada ventana y libera a su carril lo que verificó](png/poc-dg-cmp-102.png)
+Imagen fija de DG-CMP-102: [poc-dg-cmp-102.png](png/poc-dg-cmp-102.png)
 
 - **Qué muestra.** El mismo bus de la vista general, con sus tres tópicos como elementos. `carril-a` lleva los archivos de hasta 30 000 bytes y solo lo consume el carril A; `carril-b` lleva los demás y solo lo consume el carril B. `pendientes` recibe lo que no se pudo terminar: el archivo cuyo RNIC no respondió, que publica el carril, y el archivo con la revocación sin verificar, que publica la recepción. El reprocesador lo lee en cada ventana nocturna y, si verifica un archivo que estaba pendiente, lo publica en el tópico de su carril.
 - **Decisión que refleja.** La separación de tópicos es el bulkhead de ADR-005: ningún masivo entra a la cola del carril A. La recepción acusa solo después de que el bus confirma el mensaje, así que lo acusado ya está en la cola (ADR-001). `pendientes` es la espera durable de ADR-003 y ADR-007.
@@ -78,7 +78,7 @@ El diagrama es lógico y no nombra productos. Cada componente corresponde a un c
 
 {% include drawio.html xml=vista page=2 %}
 
-![DG-ACT-101 · Ciclo de una ejecución: preparar, calentar, medir con la carga de fondo en paralelo con la falla, los masivos o el catálogo, ventanas nocturnas, cierre con auditoría, veredicto SQL y chequeo de validez](png/poc-dg-act-101.png)
+Imagen fija de DG-ACT-101: [poc-dg-act-101.png](png/poc-dg-act-101.png)
 
 - **Qué muestra.** Cada fila de `load/plan.tsv` es una ejecución, y todas siguen el mismo ciclo. Se prepara la topología con las variables de la fila y se calienta con carga que no entra a la medición. Luego se mide: la carga de fondo corre mientras, en el segundo que fija la fila, se corta o se hace lento al tercero, se lanzan masivos, se envía el catálogo o se reenvían archivos. Se corren las ventanas nocturnas, se cierra con la auditoría de la evidencia y se calcula el veredicto en SQL.
 - **Decisión que refleja.** La ventana «abajo» corre con el tercero todavía caído y debe reprogramar sin rechazar (ADR-003). La «arriba» corre después de restablecerlo y debe procesar todo lo pendiente.
