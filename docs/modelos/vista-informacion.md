@@ -8,7 +8,7 @@ nav_order: 4
 
 Qué guarda Orquídea, dónde lo guarda y quién es su dueño, y por qué estados pasan el archivo, la declaración y cada tercero en el monitor. La vista se alinea con los componentes de la [vista de componentes](vista-componentes.md) (DG-CMP-003).
 
-Cada diagrama se dibuja en el navegador a partir del archivo [`vista-informacion.drawio`](drawio/vista-informacion.drawio). Con la lupa se amplía, y con el botón de pantalla completa se lee mejor un diagrama grande. El lápiz lo abre en diagrams.net para editarlo.
+Cada diagrama se dibuja en el navegador a partir del archivo [`vista-informacion.drawio`](drawio/vista-informacion.drawio). Con la lupa se amplía, y con el botón de pantalla completa se lee mejor un diagrama grande. El lápiz lo abre en diagrams.net para editarlo. Debajo de cada diagrama hay un enlace a su imagen fija, exportada del mismo archivo, para los visores que no dibujan el `.drawio`.
 
 Todos los diagramas usan la convención de la vista de componentes. Cada elemento lleva la insignia de los ASR en cuyo alcance está: llena si es artefacto del ASR y punteada si participa sin modificarse. Al pie de cada diagrama van sus convenciones y la tabla de trazabilidad de los ASR críticos hacia sus elementos.
 
@@ -24,6 +24,8 @@ Los atributos de negocio de la declaración (moneda, monto, tasa y documento del
 
 {% include drawio.html xml=vista page=0 %}
 
+Imagen fija de DG-CLS-001: [informacion-dg-cls-001.png](png/informacion-dg-cls-001.png)
+
 ## DG-PER-001 · Persistencia
 
 Dónde vive cada dato y qué componente lo escribe o lo lee. Se dibuja con las formas del curso: dominio, servicio, repositorio, base de datos y tabla.
@@ -37,6 +39,8 @@ Los flujos numerados del diagrama dicen quién escribe o lee en cada almacén. L
 
 {% include drawio.html xml=vista page=1 %}
 
+Imagen fija de DG-PER-001: [informacion-dg-per-001.png](png/informacion-dg-per-001.png)
+
 ## DG-STM-001 · Ciclo de vida del archivo
 
 De recibido a verificado, a verificación pendiente o a rechazado, y de ahí a resuelto. Ningún camino llega a resuelto sin pasar por verificado (S06).
@@ -44,6 +48,8 @@ De recibido a verificado, a verificación pendiente o a rechazado, y de ahí a r
 Con la ECD caída y la caché vencida, el archivo queda acusado pero sin resultado. El reprocesador lo reverifica en cada ventana nocturna y, al agotar los días de reintento, se notifica al remitente sin aceptarlo ni descartarlo (D01, ADR-007).
 
 {% include drawio.html xml=vista page=2 %}
+
+Imagen fija de DG-STM-001: [informacion-dg-stm-001.png](png/informacion-dg-stm-001.png)
 
 ## DG-STM-002 · Ciclo de vida de la declaración
 
@@ -53,6 +59,8 @@ Al agotar los días de reintento se notifica al remitente, y la declaración sig
 
 {% include drawio.html xml=vista page=3 %}
 
+Imagen fija de DG-STM-002: [informacion-dg-stm-002.png](png/informacion-dg-stm-002.png)
+
 ## DG-STM-003 · Estado de un tercero en el monitor
 
 Un tercero pasa de disponible a caído después de N fallos seguidos, sea un eco que no llega a tiempo o una llamada que vence su timeout. La lentitud cuenta como caída (ADR-002).
@@ -60,5 +68,7 @@ Un tercero pasa de disponible a caído después de N fallos seguidos, sea un eco
 El monitor solo publica los cambios de estado en `estado-terceros`. Cuando el tercero vuelve, el orquestador y el reprocesador retoman lo pendiente en la siguiente ventana. Los valores de T_sondeo, T_echo y N siguen abiertos `[PREGUNTA → BCR]`.
 
 {% include drawio.html xml=vista page=4 %}
+
+Imagen fija de DG-STM-003: [informacion-dg-stm-003.png](png/informacion-dg-stm-003.png)
 
 {% include drawio-script.html %}

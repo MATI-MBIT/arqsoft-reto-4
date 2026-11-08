@@ -8,7 +8,7 @@ nav_order: 5
 
 Dónde corre cada parte en producción y cómo se monta el experimento local en Docker.
 
-Cada diagrama se dibuja en el navegador a partir del archivo [`vista-despliegue.drawio`](drawio/vista-despliegue.drawio). Con la lupa se amplía, y con el botón de pantalla completa se lee mejor un diagrama grande. El lápiz lo abre en diagrams.net para editarlo.
+Cada diagrama se dibuja en el navegador a partir del archivo [`vista-despliegue.drawio`](drawio/vista-despliegue.drawio). Con la lupa se amplía, y con el botón de pantalla completa se lee mejor un diagrama grande. El lápiz lo abre en diagrams.net para editarlo. Debajo de cada diagrama hay un enlace a su imagen fija, exportada del mismo archivo, para los visores que no dibujan el `.drawio`.
 
 {% capture vista %}{% include_relative drawio/vista-despliegue.drawio %}{% endcapture %}
 
@@ -20,10 +20,14 @@ Los componentes lógicos no se repiten aquí: están en la [vista de componentes
 
 {% include drawio.html xml=vista page=0 %}
 
+Imagen fija de DG-DEP-003: [despliegue-dg-dep-003.png](png/despliegue-dg-dep-003.png)
+
 ## DG-DEP-004 · Despliegue del experimento local
 
 Un solo equipo con Docker Compose, tal como lo arma `deploy/docker-compose.yml`. Los contenedores de Orquídea corren los mismos `.jar` del despliegue objetivo. Alrededor están los simuladores del remitente, del RNIC y de la ECD, Toxiproxy y el inyector de fallas, Kafka y PostgreSQL, y Prometheus con Grafana. Por fuera de Docker, en el mismo equipo, k6 genera la carga con `pequenos.js` y `masivos.js`, y `experimento.sh` orquesta cada ejecución. Ver la página de [experimentos](../experiments.md).
 
 {% include drawio.html xml=vista page=1 %}
+
+Imagen fija de DG-DEP-004: [despliegue-dg-dep-004.png](png/despliegue-dg-dep-004.png)
 
 {% include drawio-script.html %}
