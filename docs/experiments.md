@@ -12,11 +12,11 @@ El experimento no tiene que cumplir los ASR. Si una medida no se alcanza, se rep
 
 ## 1. Resumen por ASR
 
-| ASR | Hipótesis (la medida del ASR) | Decisiones que se prueban | Escenarios |
+| ASR | Hipótesis | Decisiones que se prueban | Escenarios |
 |---|---|---|---|
-| ASR-D01 · disponibilidad, recuperación | Con un sistema externo caído, 100 % de los archivos válidos procesados dentro de los días de reintento | [ADR-001 a ADR-004](modelos/adrs-orquidea.md) | D-1 a D-5 |
-| ASR-L04 · latencia | Con 5 masivos en proceso, p99 ≤ 3 s por archivo pequeño | [ADR-005](modelos/adrs-orquidea.md) | L-1 a L-4 |
-| ASR-S06 · seguridad, prevención | 0 archivos aceptados sin firma, firmante, cadena, estampa y revocación verificadas | [ADR-006, ADR-007 y ADR-008](modelos/adrs-orquidea.md) | S-1 a S-3 |
+| ASR-D01 · disponibilidad, recuperación | H1: acusar sin esperar a los terceros y dejar en pendientes durables lo que necesita al caído hace que el 100 % de los archivos válidos quede procesado dentro de los días de reintento | [ADR-001 a ADR-004](modelos/adrs-orquidea.md) | D-1 a D-5 |
+| ASR-L04 · latencia | H2: dos carriles aislados, con enrutamiento por tamaño, mantienen el p99 de los pequeños en ≤ 3 s con 5 masivos en proceso | [ADR-005](modelos/adrs-orquidea.md) | L-1 a L-4 |
+| ASR-S06 · seguridad, prevención | H3: verificar en el mismo paso que se lee el archivo y retener lo que no se pudo verificar hace que 0 archivos lleguen a aceptación sin verificación completa | [ADR-006, ADR-007 y ADR-008](modelos/adrs-orquidea.md) | S-1 a S-3 |
 
 Quedan fuera la autenticación del canal (TLS mutuo), la integración con el Banco de la República, las reglas cambiarias completas y la entrega a las áreas de BCR.
 
@@ -53,7 +53,23 @@ Cada archivo deja en `postgres` sus marcas de tiempo, con el reloj del equipo: e
 
 ## 3. ASR-D01 · Ningún archivo se rechaza por la caída de un sistema externo
 
-**Hipótesis.** Con el RNIC simulado caído durante la carga, el 100 % de los archivos válidos se procesa dentro de los días de reintento.
+### La hipótesis de diseño
+
+#### H1 — Ningún archivo válido se pierde ni se rechaza con el RNIC caído
+
+**Creemos que** acusar sin esperar a los terceros, detectar la caída con un monitor de ping/echo y un timeout por llamada, y dejar en pendientes durables lo que necesita al tercero caído, con una llave de idempotencia, **para** un sistema externo que deja de responder o responde con latencia extrema durante la carga ([ASR-D01](quality-attributes.md#asr-d01)), **dará como resultado** que la recepción siga acusando y que cada archivo válido termine procesado en una ventana nocturna, **lo cual se validará cuando** el 100 % de los archivos válidos de D-1, D-2 y D-4 quede procesado dentro de los días de reintento, sin un solo rechazo por la caída. En D-5, ningún resultado puede escribirse dos veces.
+
+- **Variables independientes:** el estado del RNIC simulado, que `toxiproxy` deja disponible, cortado o más lento que el timeout del adaptador, y el estado del RNIC en cada ventana: caído o de vuelta.
+- **Variables dependientes:** los archivos válidos procesados frente a los enviados; los rechazos cuya causa es la caída; los resultados escritos dos veces; la demora del monitor en detectar la caída y el regreso, y la profundidad de los pendientes.
+
+Fundamento: el acuse sale después de custodiar el archivo y registrar su llave, sin llamar a ningún tercero (ADR-001), así que la caída no frena la recepción. El monitor y el timeout por llamada convierten la caída y la lentitud en una misma señal (ADR-002). Lo que no se pudo enriquecer no se rechaza: espera en un tópico durable hasta la ventana, que lo reprocesa si el tercero volvió y lo reprograma si sigue caído (ADR-003). La llave impide que un reenvío o un mensaje repetido produzca un segundo resultado (ADR-004).
+
+Lo que la refutaría, cualquiera de cuatro casos:
+
+- Un archivo válido rechazado por la caída del RNIC, en lugar de quedar pendiente.
+- Un archivo pendiente perdido, o sin procesar al cerrar la primera ventana con el RNIC de vuelta.
+- Un RNIC lento que deja hilos bloqueados o archivos rechazados, en vez de tratarse como caído.
+- Un archivo con dos resultados definitivos, por un reenvío o por un mensaje repetido.
 
 **Tácticas que se prueban.** Pipeline asíncrono con acuse temprano (ADR-001). Detección: monitor con ping/echo a cada tercero y timeout por llamada (ADR-002). Recuperación: pendientes durables, reintento diferido a la ventana nocturna y degradación con gracia (ADR-003). Llave de idempotencia en transacción local (ADR-004).
 
@@ -81,7 +97,22 @@ Las caídas de horas se comprimen: una «noche» dura lo que tarde la prueba en 
 
 ## 4. ASR-L04 · Aislamiento de carga entre archivos masivos y pequeños
 
-**Hipótesis.** Con 5 masivos en proceso, el p99 de los archivos pequeños es ≤ 3 s, desde que el archivo termina de llegar hasta que su resultado está disponible.
+### La hipótesis de diseño
+
+#### H2 — Los pequeños no esperan detrás de los masivos
+
+**Creemos que** separar el procesamiento en dos carriles aislados, cada uno con su tópico, su pool de hilos y su límite de CPU, y enrutar cada archivo por su tamaño en bytes al recibirlo, **para** archivos pequeños que llegan mientras 5 masivos están en proceso ([ASR-L04](quality-attributes.md#asr-l04)), **dará como resultado** que cada pequeño se resuelva sin esperar a que avancen los masivos, **lo cual se validará cuando** el p99 de los pequeños de L-1 sea ≤ 3 s, del último byte al resultado definitivo. El control sin carriles de L-3, con la misma carga, debe pasar de 3 s: si no pasa, los carriles no explican el resultado.
+
+- **Variables independientes:** el enrutamiento, por tamaño hacia dos carriles o único hacia un solo tópico y un solo pool, y el número de masivos en proceso: 0, 5, 6, 8 y 10.
+- **Variables dependientes:** el p99 y el p50 de los pequeños; los pequeños que pasan de 3 s; el margen de L-1 frente a la línea base de L-2; la CPU y los archivos en proceso de cada carril, y la duración de cada masivo.
+
+Fundamento: un masivo ocupa un hilo durante minutos, porque cada una de sus declaraciones pasa por las reglas cambiarias. En una sola fila, los pequeños que caen detrás de él esperan aunque cada uno se procese en milisegundos. Con dos carriles, el masivo solo consume los hilos y la CPU del carril B, y el carril A atiende a los pequeños a su ritmo (ADR-005). La recepción decide el carril contando los bytes mientras el archivo llega, sin abrirlo, así que enrutar no agrega espera.
+
+Lo que la refutaría, cualquiera de tres casos:
+
+- Un p99 de los pequeños mayor que 3 s en L-1.
+- Un control sin carriles (L-3) que también quede bajo 3 s: entonces el aislamiento no es lo que sostiene el resultado, y el experimento no prueba ADR-005.
+- Un archivo enrutado al carril equivocado que se pierde o no llega a resultado definitivo.
 
 **Tácticas que se prueban.** Carriles aislados (bulkhead), enrutamiento por tamaño al recibir y un pool con su política por carril (ADR-005).
 
@@ -103,7 +134,23 @@ Las caídas de horas se comprimen: una «noche» dura lo que tarde la prueba en 
 
 ## 5. ASR-S06 · Ningún archivo se acepta sin validación criptográfica completa
 
-**Hipótesis.** Ningún archivo con firma, firmante, cadena, estampa o revocación inválida, o que no se pudo verificar, llega a aceptación, con la ECD disponible o caída.
+### La hipótesis de diseño
+
+#### H3 — Nada llega a aceptación sin la verificación criptográfica completa
+
+**Creemos que** verificar la firma, el firmante, la cadena, la estampa y la revocación en el mismo paso que lee el archivo, retener el resultado de todo archivo cuya revocación no se pudo comprobar y anexar una evidencia firmada de cada verificación, **para** un archivo cuya firma no es válida o no se puede verificar ([ASR-S06](quality-attributes.md#asr-s06)), **dará como resultado** que ninguno llegue a aceptación: el inválido se rechaza con su causa y el que no se pudo verificar espera en verificación pendiente, **lo cual se validará cuando** 0 archivos del catálogo de S-1 y 0 de los acusados en verificación pendiente de S-2 tengan aceptación total o parcial antes de verificarse. En S-3, cada aceptado debe tener su entrada de evidencia firmada, con el hash de los bytes que se procesaron.
+
+- **Variables independientes:** el caso del catálogo criptográfico que se envía y el estado de la ECD: disponible, o caída con la copia local de la revocación vencida.
+- **Variables dependientes:** los archivos aceptados sin verificación completa; la causa de rechazo de cada caso; el tiempo en verificación pendiente, y los aceptados sin evidencia o con otro hash.
+
+Fundamento: la verificación corre sobre los mismos bytes que se custodian y se procesan, así que lo verificado es exactamente lo procesado (ADR-006). Una revocación que no se puede comprobar no se trata como válida: el archivo se acusa, queda en verificación pendiente y se resuelve en la ventana, como un pendiente de D01 (ADR-007). La evidencia firmada por BCR deja la prueba que el remitente no puede negar (ADR-008).
+
+Lo que la refutaría, cualquiera de cuatro casos:
+
+- Un archivo del catálogo con aceptación total o parcial.
+- Un archivo en verificación pendiente que llega a resultado definitivo antes de verificarse.
+- Un rechazo sin causa, o con una causa que no corresponde al caso enviado.
+- Un aceptado sin entrada de evidencia, o con un hash distinto del de los bytes procesados.
 
 **Tácticas que se prueban.** Autenticar la firma y el firmante, verificar la integridad y validar la entrada (ADR-006); revocación en caché con verificación pendiente (ADR-007); registro de evidencia firmado (ADR-008).
 

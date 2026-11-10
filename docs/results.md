@@ -8,7 +8,7 @@ helix_section: "Experiments → Results & analysis"
 
 Esta página reporta las ejecuciones del experimento diseñado en [Experimento](experiments.md), corridas el 7 de noviembre de 2026 entre las 16:11 y las 18:46 sobre el prototipo descrito en [PoC del experimento](modelos/poc-experimento.md). Fueron 13 ejecuciones de decisión, una por escenario, y las 13 resultaron válidas.
 
-**En resumen, las tres hipótesis se sostienen.** Con el RNIC caído, lento o caído varios días, el 100 % de los archivos válidos se procesó dentro de los días de reintento y ninguno se rechazó por la caída (ASR-D01). Con 5 masivos en proceso, el p99 de los archivos pequeños fue de 491 ms frente al umbral de 3 s, y siguió por debajo de 0,5 s con 10 masivos; sin carriles subió a 118 s (ASR-L04). Ningún archivo del catálogo criptográfico ni ninguno en verificación pendiente llegó a aceptación (ASR-S06).
+**En resumen, las tres hipótesis del experimento (H1, H2 y H3) se sostienen.** Con el RNIC caído, lento o caído varios días, el 100 % de los archivos válidos se procesó dentro de los días de reintento y ninguno se rechazó por la caída (ASR-D01). Con 5 masivos en proceso, el p99 de los archivos pequeños fue de 491 ms frente al umbral de 3 s, y siguió por debajo de 0,5 s con 10 masivos; sin carriles subió a 118 s (ASR-L04). Ningún archivo del catálogo criptográfico ni ninguno en verificación pendiente llegó a aceptación (ASR-S06).
 
 | ASR | Escenario | Umbral | Medido | Veredicto |
 |---|---|---|---|---|
