@@ -141,3 +141,11 @@ Aprendido:
 - Helix guarda con retraso también los textos, no solo los títulos: si se cambia de nodo enseguida, el cambio se pierde. Hay que esperar unos segundos y verificar siempre tras recargar.
 - El editor ignora el HTML pegado. `Import Markdown` sí se abre por script si se simula la secuencia completa de puntero (`pointerdown` … `click`), y conserva negritas, viñetas y enlaces.
 - La herramienta del navegador solo lee scripts dentro del proyecto: van en `.helix-tmp/`, que se ignora y se borra al terminar.
+
+### 2026-11-11 — hipótesis de los experimentos
+
+| Sección | Qué se cargó | Verificación |
+|---|---|---|
+| `Experiments → Planning → Design Hypothesis` | EXP-001, EXP-002 y EXP-003 con H1, H2 y H3 de `experiments.md` (ee206ad), por `Import Markdown`: título, las cuatro líneas de la plantilla, «Por qué lo creemos», variables y «La refutaría» | Los tres leídos tras recargar: 8 negritas y 9 o 10 viñetas cada uno |
+
+La sesión de Helix se había cerrado; Nicolás inició sesión antes de cargar.
