@@ -14,9 +14,9 @@ El experimento no tiene que cumplir los ASR. Si una medida no se alcanza, se rep
 
 | ASR | Hipótesis | Decisiones que se prueban | Escenarios |
 |---|---|---|---|
-| ASR-D01 · disponibilidad, recuperación | H1: acusar sin consultar a los sistemas externos, detectar su caída y guardar en una cola durable lo que no se pudo completar hace que el 100 % de los archivos válidos quede procesado dentro de los días de reintento | [ADR-001 a ADR-004](modelos/adrs-orquidea.md) | D-1 a D-5 |
+| ASR-D01 · disponibilidad, recuperación | H1: acusar sin esperar a los sistemas externos y guardar lo pendiente en una cola persistente. Así, el 100 % de los archivos válidos queda procesado dentro de los días de reintento | [ADR-001 a ADR-004](modelos/adrs-orquidea.md) | D-1 a D-5 |
 | ASR-L04 · latencia | H2: dos carriles aislados, con cada archivo enviado al suyo según su tamaño, mantienen el p99 de los pequeños en 3 s o menos con 5 masivos en proceso | [ADR-005](modelos/adrs-orquidea.md) | L-1 a L-4 |
-| ASR-S06 · seguridad, prevención | H3: verificar todo mientras se lee el archivo y retener lo que no se pudo verificar hace que ningún archivo llegue a aceptación sin verificación completa | [ADR-006, ADR-007 y ADR-008](modelos/adrs-orquidea.md) | S-1 a S-3 |
+| ASR-S06 · seguridad, prevención | H3: verificar la firma por completo mientras se lee el archivo y retener todo archivo cuya revocación no se pudo comprobar. Así, ningún archivo llega a aceptación sin verificación completa | [ADR-006, ADR-007 y ADR-008](modelos/adrs-orquidea.md) | S-1 a S-3 |
 
 Quedan fuera la autenticación del canal (TLS mutuo), la integración con el Banco de la República, las reglas cambiarias completas y la entrega a las áreas de BCR.
 
@@ -55,14 +55,16 @@ Cada archivo deja en `postgres` sus marcas de tiempo, con el reloj del equipo: e
 
 ### Hipótesis H1 · Ningún archivo válido se rechaza porque un sistema externo se cae
 
-- **Creemos que** acusar cada archivo sin consultar a los sistemas externos, detectar su caída con un monitor y guardar en una cola durable lo que no se pudo completar,
+- **Creemos que** acusar cada archivo sin consultar a los sistemas externos, detectar su caída con un monitor y guardar en una cola persistente lo que no se pudo completar,
 - **para** el caso en que un sistema externo deja de responder, o responde demasiado lento, mientras siguen llegando archivos ([ASR-D01](quality-attributes.md#asr-d01)),
-- **dará como resultado** que Orquídea siga recibiendo y acusando, y que cada archivo válido quede procesado en la primera ventana nocturna con el sistema de vuelta.
-- **Lo validaremos cuando** el 100 % de los archivos válidos de D-1, D-2 y D-4 quede procesado dentro de los días de reintento, sin un solo rechazo por la caída.
+- **dará como resultado** que Orquídea siga recibiendo y acusando, y que cada archivo válido quede procesado en una ventana de reproceso, dentro de los días de reintento.
+- **Lo validaremos cuando** el 100 % de los archivos válidos quede procesado dentro de los días de reintento, sin un solo rechazo por la caída, en D-1, D-2 y D-4.
 
-En D-5, además, ningún archivo puede recibir dos resultados definitivos, ni por un reenvío del remitente ni por un mensaje repetido en la cola.
+La ventana de reproceso es la corrida nocturna que vuelve a procesar lo pendiente. Los días de reintento son cuántas ventanas se reintenta antes de avisar al remitente: en la prueba son 2 `[SUPUESTO → BCR]`. D-1 corta el RNIC y lo restablece antes de la ventana, D-2 lo deja caído en la primera ventana y D-4 lo vuelve más lento que el tiempo máximo de espera.
 
-**Por qué lo creemos.** El acuse sale cuando el archivo ya está guardado y su llave registrada, sin llamar a ningún sistema externo, así que la caída no frena la recepción (ADR-001). El monitor consulta cada sistema externo una vez por segundo (ping/echo) y lo declara caído tras tres fallos seguidos (ADR-002). Cada llamada tiene, además, un tiempo máximo de espera (timeout), de modo que un sistema lento cuenta como caído. Lo que no se pudo completar no se rechaza: espera en la cola hasta la ventana nocturna, que lo procesa si el sistema volvió y lo reprograma si sigue caído (ADR-003). La llave única de cada archivo impide que se procese dos veces (ADR-004).
+En el escenario de reenvíos (D-5), ningún archivo puede recibir dos resultados definitivos, ni por un reenvío del remitente ni por un mensaje repetido en la cola.
+
+**Por qué lo creemos.** El acuse sale cuando el archivo ya está guardado y su llave registrada, sin llamar a ningún sistema externo: la caída no frena la recepción (ADR-001). El monitor consulta cada sistema externo una vez por segundo (ping/echo) y lo declara caído tras tres fallos seguidos (ADR-002). Cada llamada tiene, además, un tiempo máximo de espera (timeout), de modo que un sistema lento cuenta como caído. Lo que no se pudo completar no se rechaza: espera en la cola, que lo conserva aunque un servicio se reinicie, hasta la ventana de reproceso (ADR-003). Esa ventana lo procesa si el sistema volvió y lo reprograma si sigue caído. La llave única de cada archivo impide que se procese dos veces (ADR-004).
 
 - **Lo que cambiamos (variables independientes):** el estado del RNIC simulado durante la carga, que `toxiproxy` deja disponible, cortado o más lento que el timeout, y su estado en cada ventana: caído o de vuelta.
 - **Lo que medimos (variables dependientes):** los archivos válidos procesados frente a los enviados, los rechazos causados por la caída, los resultados escritos dos veces, el tiempo que tarda el monitor en detectar la caída y el regreso, y cuántos archivos esperan en la cola.
@@ -70,8 +72,8 @@ En D-5, además, ningún archivo puede recibir dos resultados definitivos, ni po
 **La refutaría cualquiera de estos casos:**
 
 - Un archivo válido rechazado por la caída, en lugar de quedar pendiente.
-- Un archivo pendiente que se pierde, o que sigue sin procesar al cerrar la primera ventana con el RNIC de vuelta.
-- Un RNIC lento que bloquea hilos o provoca rechazos, en lugar de tratarse como caído.
+- Un archivo pendiente que se pierde, o que sigue sin procesar al agotar los días de reintento con el RNIC de vuelta.
+- Un RNIC lento que deja el procesamiento detenido esperando su respuesta, o que provoca rechazos, en lugar de tratarse como caído.
 - Un archivo con dos resultados definitivos.
 
 **Tácticas que se prueban.** Pipeline asíncrono con acuse temprano (ADR-001). Detección: monitor con ping/echo a cada sistema externo y timeout por llamada (ADR-002). Recuperación: pendientes durables, reintento diferido a la ventana nocturna y degradación con gracia (ADR-003). Llave de idempotencia en transacción local (ADR-004).
@@ -105,13 +107,13 @@ Las caídas de horas se comprimen: una «noche» dura lo que tarde la prueba en 
 - **Creemos que** procesar los archivos en dos carriles aislados, uno para pequeños y otro para masivos, y enviar cada archivo al suyo según su tamaño al recibirlo,
 - **para** archivos pequeños que llegan mientras 5 masivos están en proceso ([ASR-L04](quality-attributes.md#asr-l04)),
 - **dará como resultado** que cada pequeño reciba su resultado definitivo sin esperar a que avancen los masivos.
-- **Lo validaremos cuando** el p99 de los pequeños de L-1 sea de 3 s o menos, medido desde el último byte recibido hasta el resultado definitivo.
+- **Lo validaremos cuando**, con 5 masivos en proceso (L-1), el p99 de los pequeños sea de 3 s o menos: 99 de cada 100 reciben su resultado definitivo en ese tiempo, contado desde su último byte.
 
-El p99 es el tiempo dentro del cual reciben su resultado 99 de cada 100 pequeños. El control sin carriles (L-3), con la misma carga, debe pasar de 3 s: si no pasa, los carriles no explican el resultado.
+El control sin carriles (L-3) corre la misma carga con una sola cola para todos los archivos. Debe pasar de 3 s: si no pasa, los carriles no explican el resultado.
 
-**Por qué lo creemos.** Un masivo ocupa un hilo durante minutos, porque cada una de sus hasta 100 000 declaraciones pasa por las reglas cambiarias. En una sola fila, los pequeños que quedan detrás de él esperan, aunque cada uno se procese en milisegundos. Con dos carriles, cada uno con su propia cola, sus propios hilos y su propio límite de CPU, el masivo solo consume los recursos del carril B. Es el patrón de mamparos (bulkhead): una falla o una sobrecarga queda contenida en su compartimento (ADR-005). La recepción elige el carril contando los bytes mientras el archivo llega, sin abrirlo, así que enrutar no agrega espera.
+**Por qué lo creemos.** Un masivo ocupa un hilo de procesamiento durante minutos, porque cada una de sus hasta 100 000 declaraciones pasa por las reglas cambiarias. En una sola cola, los pequeños que quedan detrás de él esperan, aunque cada uno se procese en milisegundos. Con dos carriles, cada uno con su propia cola, sus propios hilos y su propio límite de CPU, el masivo solo consume los recursos del carril B. Es el patrón de mamparos (bulkhead): una sobrecarga queda contenida en su compartimento (ADR-005). La recepción elige el carril contando los bytes mientras el archivo llega, sin abrirlo, de modo que enrutar no agrega espera.
 
-- **Lo que cambiamos (variables independientes):** el enrutamiento, por tamaño hacia dos carriles o único hacia una sola cola, y el número de masivos en proceso: 0, 5, 6, 8 y 10.
+- **Lo que cambiamos (variables independientes):** el enrutamiento, por tamaño hacia dos carriles o sin carriles, todo a una sola cola, y el número de masivos en proceso: 0, 5, 6, 8 y 10.
 - **Lo que medimos (variables dependientes):** el p99 y la mediana (p50) de los pequeños, cuántos pasan de 3 s, el margen de L-1 frente a la línea base sin masivos (L-2), la CPU y los archivos en proceso de cada carril, y la duración de cada masivo.
 
 **La refutaría cualquiera de estos casos:**
@@ -142,14 +144,14 @@ El p99 es el tiempo dentro del cual reciben su resultado 99 de cada 100 pequeño
 
 ### Hipótesis H3 · Ningún archivo se acepta sin verificar su firma por completo
 
-- **Creemos que** verificar la firma, el firmante, la cadena del certificado, la estampa cronológica y la revocación mientras se lee el archivo, y retener todo archivo cuya revocación no se pudo comprobar,
+- **Creemos que** verificar la firma de cada archivo por completo mientras se lee, y retener todo archivo cuya revocación no se pudo comprobar,
 - **para** un archivo cuya firma no es válida o no se puede verificar ([ASR-S06](quality-attributes.md#asr-s06)),
 - **dará como resultado** que ninguno llegue a aceptación: el inválido se rechaza con su causa, y el que no se pudo verificar queda en verificación pendiente.
-- **Lo validaremos cuando** ningún archivo del catálogo de S-1, ni ninguno de los que quedaron en verificación pendiente en S-2, tenga aceptación total o parcial antes de verificarse.
+- **Lo validaremos cuando** ningún archivo inválido del catálogo (S-1), ni ninguno de los que quedaron en verificación pendiente con la entidad de certificación caída (S-2), tenga aceptación total o parcial antes de verificarse.
 
-En S-3, además, cada archivo aceptado debe tener su evidencia firmada por BCR, con el hash de los bytes que se procesaron.
+En el escenario de evidencia (S-3), cada archivo aceptado debe tener su evidencia firmada por BCR, con la huella digital (hash) de los bytes que se procesaron.
 
-**Por qué lo creemos.** La verificación corre sobre los mismos bytes que se guardan y se procesan, así que lo verificado es exactamente lo procesado (ADR-006). La revocación se consulta en una copia local de la lista de certificados revocados (CRL) que publica la entidad de certificación. Si esa copia venció y la entidad no responde, el archivo no se da por válido: se acusa, queda en verificación pendiente y la ventana nocturna lo resuelve (ADR-007). Cada verificación deja una evidencia firmada por BCR, que el remitente no puede negar después (ADR-008).
+**Por qué lo creemos.** Verificar por completo es comprobar cinco cosas: la firma, que el firmante sea el remitente, que el certificado venga de una entidad que BCR acepta (la cadena), la estampa cronológica y que el certificado no esté revocado. La verificación corre sobre los mismos bytes que se guardan y se procesan: lo verificado es exactamente lo procesado (ADR-006). La revocación se consulta en una copia local de la lista de certificados revocados (CRL) que publica la entidad de certificación. Si esa copia venció y la entidad no responde, el archivo no se da por válido: se acusa, queda en verificación pendiente y la ventana de reproceso lo resuelve (ADR-007). Cada verificación deja una evidencia firmada por BCR, que el remitente no puede negar después (ADR-008).
 
 - **Lo que cambiamos (variables independientes):** el caso del catálogo criptográfico que se envía, y el estado de la entidad de certificación: disponible, o caída con la copia local de la CRL vencida.
 - **Lo que medimos (variables dependientes):** los archivos aceptados sin verificación completa, la causa de rechazo de cada caso, el tiempo en verificación pendiente, y los aceptados sin evidencia o con un hash distinto.
